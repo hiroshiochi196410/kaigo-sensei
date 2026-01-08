@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaigo Sensei - 売れる形：Roleplay AI</title>
+
+  <!-- 文字化け防止（UTF-8固定） -->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <script>
+    function showDiag(title, err) {
+      const box = document.getElementById('diag');
+      if (!box) return;
+      box.style.display = 'block';
+      const msg = (err && (err.stack || err.message)) ? (err.stack || err.message) : String(err);
+      box.textContent = title + "\n" + msg;
+    }
+    window.addEventListener('error', (e) => showDiag('JS Error:', e.error || e.message || e));
+    window.addEventListener('unhandledrejection', (e) => showDiag('Promise Error:', e.reason || e));
+  </script>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom-client.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif; background:#f5f7ff; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .header { background:#4f46e5; color:#fff; padding:18px 16px; }
+    .title { font-size:26px; font-weight:800; margin:0; }
+    .sub { margin-top:6px; opacity:.9; font-size:13px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px; }
+    .btn { border:0; padding:10px 14px; border-radius:999px; cursor:pointer; background:rgba(255,255,255,.2); color:#fff; }
+    .btn:hover { background:rgba(255,255,255,.28); }
+    .btn.active { background:#fff; color:#111; font-weight:700; }
+    .pill { margin-left:auto; display:flex; gap:10px; align-items:center; background:rgba(255,255,255,.18); padding:8px 12px; border-radius:999px; }
+    .card { background:#fff; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,.06); }
+    .chat { padding:16px; min-height:360px; max-height:520px; overflow:auto; }
+    .msgRow { margin:10px 0; display:flex; }
+    .msgRow.user { justify-content:flex-end; }
+    .bubble { max-width: 86%; padding:10px 12px; border-radius:12px; line-height:1.35; }
+    .bubble.user { background:#4f46e5; color:#fff; }
+    .bubble.bot { background:#f2f2f6; color:#111; }
+    .meta { font-size:12px; opacity:.75; margin-bottom:6px; }
+    .jpn { font-size:18px; font-weight:800; display:flex; align-items:center; gap:8px; }
+    .tag { display:inline-block; font-size:12px; padding:4px 8px; border-radius:10px; background:#eef2ff; color:#3730a3; margin-top:8px; }
+    .tag2 { display:inline-block; font-size:12px; padding:4px 8px; border-radius:10px; background:#f8fafc; color:#334155; margin-left:8px; margin-top:8px; }
+    .inputArea { padding:12px; border-top:1px solid #eef; }
+    .inputRow { display:flex; gap:10px; }
+    input[type="text"] { flex:1; padding:12px 12px; border-radius:12px; border:1px solid #d7d7e6; outline:none; font-size:16px; }
+    input[type="text"]:focus { border-color:#4f46e5; box-shadow:0 0 0 3px rgba(79,70,229,.15); }
+    .send { border:0; background:#4f46e5; color:#fff; padding:12px 14px; border-radius:12px; cursor:pointer; }
+    .send:disabled { opacity:.5; cursor:not-allowed; }
+    .hint { font-size:12px; color:#667; text-align:center; padding:10px 0 2px; }
+    #diag { display:none; white-space:pre-wrap; background:#111; color:#0f0; padding:12px; border-radius:12px; margin:12px 0; }
+    .banner { background:#eef2ff; color:#1e1b4b; border:1px solid #c7d2fe; padding:10px 12px; border-radius:12px; margin:12px 0; }
+    .banner strong { display:block; margin-bottom:4px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; color:#7c2d12; padding:10px 12px; border-radius:12px; }
+    .tiny { font-size:12px; opacity:.85; }
+    .divider { height:1px; background:#eef; margin:10px 0; }
+
+    .modalOverlay { position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px; z-index:50; }
+    .modal { width:min(720px, 100%); background:#fff; border-radius:16px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+    .modal h2 { margin:0; font-size:18px; }
+    .modal p { margin:8px 0; }
+    .modal .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .primary { background:#4f46e5; color:#fff; padding:12px 14px; border-radius:12px; border:0; cursor:pointer; text-decoration:none; display:inline-block; }
+    .secondary { background:#f1f5f9; color:#0f172a; padding:12px 14px; border-radius:12px; border:1px solid #e2e8f0; cursor:pointer; text-decoration:none; display:inline-block; }
+    .link { color:#4f46e5; text-decoration:none; }
+    .badge { display:inline-block; font-size:12px; padding:6px 10px; border-radius:999px; }
+    .badge.dark { background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.25); }
+    .flex { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .headerLinks { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .headerLink { background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.25); padding:8px 12px; border-radius:999px; text-decoration:none; font-size:12px; }
+    .headerLink:hover { background:rgba(255,255,255,.26); }
+  </style>
+</head>
+
+<body>
+  <div id="diag" class="wrap"></div>
+  <div id="root">Loading…</div>
+
+  <script type="text/babel">
+/** ===========================
+ * FREE TRIAL COUNTER (DEMO)
+ * =========================== */
+const TRIAL_LIMIT = 3;                 // 無料回数（営業デモは3回）
+const TRIAL_KEY = "ks_trial_v1";        // localStorage key
+
+function todayKey() {
+  // 日付でリセットしたい場合はこれを使う（例：1日3回）
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** ▼「通算3回」にしたい場合（リセットしない） */
+function loadTrialTotal() {
+  const raw = localStorage.getItem(TRIAL_KEY);
+  if (!raw) return { used: 0, mode: "total" };
+  try { return JSON.parse(raw); } catch { return { used: 0, mode: "total" }; }
+}
+function saveTrialTotal(data) {
+  localStorage.setItem(TRIAL_KEY, JSON.stringify(data));
+}
+function remainingTotal() {
+  const d = loadTrialTotal();
+  return Math.max(0, TRIAL_LIMIT - (d.used || 0));
+}
+function consumeTotal() {
+  const d = loadTrialTotal();
+  d.used = (d.used || 0) + 1;
+  d.mode = "total";
+  saveTrialTotal(d);
+  return remainingTotal();
+}
+
+/** ▼「1日3回」にしたい場合（毎日リセット） */
+function loadTrialDaily() {
+  const raw = localStorage.getItem(TRIAL_KEY);
+  if (!raw) return { date: todayKey(), used: 0, mode: "daily" };
+  try {
+    const d = JSON.parse(raw);
+    if (d.date !== todayKey()) return { date: todayKey(), used: 0, mode: "daily" };
+    return d;
+  } catch {
+    return { date: todayKey(), used: 0, mode: "daily" };
+  }
+}
+function saveTrialDaily(data) {
+  localStorage.setItem(TRIAL_KEY, JSON.stringify(data));
+}
+function remainingDaily() {
+  const d = loadTrialDaily();
+  return Math.max(0, TRIAL_LIMIT - (d.used || 0));
+}
+function consumeDaily() {
+  const d = loadTrialDaily();
+  d.used = (d.used || 0) + 1;
+  d.mode = "daily";
+  saveTrialDaily(d);
+  return remainingDaily();
+}
+
+/** ★今回は営業デモとして「通算3回」を既定にする */
+function trialRemaining() { return remainingTotal(); }
+function trialConsume() { return consumeTotal(); }
+
+/** 表示更新（FREE 残り x/3 を更新する） */
+function updateTrialBadgeUI() {
+  const rem = trialRemaining();
+  // ここはあなたのHTMLに合わせて selector を調整
+  const badge = document.querySelector("[data-trial-badge]");
+  if (badge) badge.textContent = `FREE 残り ${rem}/${TRIAL_LIMIT}`;
+}
+   
+    const { useState, useEffect, useRef } = React;
+
+    // ====== Settings（ここだけ差し替えればOK） ======
+    const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/xxxxx"; // ←Stripe Payment Link（未設定ならこのままでOK）
+
+    // ★ お問い合わせ（Google予約/フォーム）
+    const CONTACT_BOOKING_URL =
+      "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1DZzbc2Em4gn-ABTKavXY1dpFHRpO0ynpn8iSeOx_9vRUdr2MDLcRSv_tZHY4aMVy6ceqQGO2L?gv=true";
+
+    // ★ 会社ホームページ
+    const COMPANY_URL = "https://aipuru-hu.com";
+
+    // 施設向け問い合わせ（同じ予約ページへ誘導）
+    const FACILITY_CONTACT_URL = CONTACT_BOOKING_URL;
+
+    // Storage keys (versioned to avoid legacy browser cache issues)
+    const STORAGE_PREFIX = "kaigoSensei_v1_";
+    const PAID_KEY = STORAGE_PREFIX + "paid";
+    const TRIAL_DATE_KEY = STORAGE_PREFIX + "trialDate";
+    const TRIAL_COUNT_KEY = STORAGE_PREFIX + "trialCount";
+
+    // Debug: reset local state (call window.__kaigoReset() in console)
+    function resetLocalState(){
+      localStorage.removeItem(PAID_KEY);
+      localStorage.removeItem(TRIAL_DATE_KEY);
+      localStorage.removeItem(TRIAL_COUNT_KEY);
+      location.reload();
+    }
+    window.__kaigoReset = resetLocalState;
+
+const TRIAL_LIMIT_PER_DAY = 3;
+
+    const detectLanguage = (text) =>
+      /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text) ? 'japanese' : 'indonesian';
+
+    const todayKey = () => new Date().toDateString();
+
+    function getTrialState() {
+      const paid = localStorage.getItem(PAID_KEY) === "true";
+      const d = localStorage.getItem(TRIAL_DATE_KEY);
+      const t = todayKey();
+      if (d !== t) {
+        localStorage.setItem(TRIAL_DATE_KEY, t);
+        localStorage.setItem(TRIAL_COUNT_KEY, "0");
+      }
+      const count = Number(localStorage.getItem(TRIAL_COUNT_KEY) || "0");
+      return { paid, count, left: Math.max(0, TRIAL_LIMIT_PER_DAY - count) };
+    }
+
+    function consumeTrial() {
+      const { paid, count } = getTrialState();
+      if (paid) return true;
+      if (count >= TRIAL_LIMIT_PER_DAY) return false;
+      localStorage.setItem(TRIAL_COUNT_KEY, String(count + 1));
+      return true;
+    }
+
+    function setPaidUser() {
+      localStorage.setItem(PAID_KEY, "true");
+    }
+
+    const callClaudeAPI = async (prompt) => {
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          alert('APIエラー: ' + (data.error || data.details || res.statusText));
+          console.error('API error payload:', data);
+          return null;
+        }
+
+        // /api/chat の返却形式に合わせる（Claude messages 形式想定）
+        const contentText = data?.content?.[0]?.text ?? data?.text ?? '';
+        const start = contentText.indexOf('{');
+        const end = contentText.lastIndexOf('}');
+        if (start === -1 || end === -1 || end <= start) {
+          alert('通信は成功しましたが、AIの返答形式が想定外でした。\nもう一度送信してください。');
+          console.error('Unexpected AI text:', contentText);
+          return null;
+        }
+        const jsonText = contentText.slice(start, end + 1);
+        return JSON.parse(jsonText);
+      } catch (e) {
+        alert('通信エラー: ' + e.message);
+        return null;
+      }
+    };
+
+    const jsonGuard = `ANDA HARUS mengikuti aturan ini:
+- Keluarkan HANYA JSON valid. Jangan pakai markdown. Jangan pakai teks lain.
+- Semua nilai string harus diapit tanda kutip ganda.
+`;
+
+    const promptTranslate = (text) => `${jsonGuard}
+Terjemahkan Bahasa Indonesia -> Bahasa Jepang yang sopan dan natural untuk konteks kerja perawatan lansia.
+Buat juga romaji (mudah dibaca orang Indonesia) dan katakana.
+Tambahkan 1 tips singkat.
+
+Input: "${text}"
+
+Keluarkan JSON persis:
+{"japanese":"...","romaji":"...","katakana":"...","indonesian":"${text}","tips":"..."}
+`;
+
+    const promptRoleplayStart = (persona) => `${jsonGuard}
+Anda adalah pelatih percakapan Bahasa Jepang untuk pekerja perawatan lansia (kaigo).
+Buat roleplay singkat. Persona: "${persona}"
+Buat situasi nyata di panti jompo / rumah sakit / perawatan.
+Keluarkan HANYA JSON.
+
+Format JSON persis:
+{"situation":"...","aiRole":"...","yourRole":"...","goal":"...","firstMessageJapanese":"...","firstMessageRomaji":"...","firstMessageKatakana":"...","firstMessageIndonesian":"..."}
+`;
+
+    const promptRoleplayTurn = (persona, situation, studentJapanese) => `${jsonGuard}
+Roleplay kaigo. Persona: "${persona}"
+Situasi: "${situation}"
+Siswa menjawab dalam Bahasa Jepang: "${studentJapanese}"
+
+Tugas:
+- Balas sebagai lawan bicara (pemakai layanan/keluarga/dll) dalam Bahasa Jepang yang natural.
+- Buat romaji & katakana.
+- Beri evaluasi singkat (sopan, jelas, empati) + perbaikan 1 contoh kalimat.
+
+Keluarkan JSON persis:
+{"aiJapanese":"...","aiRomaji":"...","aiKatakana":"...","aiIndonesian":"...","feedback":"...","betterJapanese":"...","betterRomaji":"...","betterKatakana":"..."}
+`;
+
+    const App = () => {
+      const [mode, setMode] = useState('translate'); // translate | roleplay
+      const [showKatakana, setShowKatakana] = useState(false);
+      const [input, setInput] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [messages, setMessages] = useState([]);
+      const [paywall, setPaywall] = useState(false);
+      const [trial, setTrial] = useState(getTrialState());
+
+      const [persona, setPersona] = useState('利用者（穏やか）');
+      const [rp, setRp] = useState(null);
+      const chatRef = useRef(null);
+
+      useEffect(() => { setTrial(getTrialState()); }, [paywall, mode]);
+      useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages, isLoading]);
+
+      const switchMode = async (m) => {
+        setMode(m);
+        setMessages([]);
+        setInput('');
+        setPaywall(false);
+        setTrial(getTrialState());
+        if (m === 'roleplay') {
+          setRp(null);
+          setIsLoading(true);
+          try {
+            const start = await callClaudeAPI(promptRoleplayStart(persona));
+            if (start) {
+              setRp(start);
+              setMessages([{ type:'bot', kind:'roleplay-start', data:start }]);
+            }
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      };
+
+      const send = async () => {
+        const text = input.trim();
+        if (!text) return;
+
+        setMessages(prev => [...prev, { type:'user', text }]);
+        setInput('');
+        setIsLoading(true);
+
+        try {
+          if (mode === 'translate') {
+            if (detectLanguage(text) !== 'indonesian') {
+              setMessages(prev => [...prev, { type:'bot', kind:'warn', text:'Gunakan Bahasa Indonesia! (Terjemah mode)' }]);
+              return;
+            }
+            const r = await callClaudeAPI(promptTranslate(text));
+            if (r) setMessages(prev => [...prev, { type:'bot', kind:'translate', data:r }]);
+          } else {
+            if (detectLanguage(text) !== 'japanese') {
+              setMessages(prev => [...prev, { type:'bot', kind:'warn', text:'Gunakan Bahasa Jepang! (Roleplay mode)' }]);
+              return;
+            }
+
+            const ok = consumeTrial();
+            setTrial(getTrialState());
+            if (!ok) { setPaywall(true); return; }
+
+            if (!rp) return;
+            const r = await callClaudeAPI(promptRoleplayTurn(persona, rp.situation, text));
+            if (r) setMessages(prev => [...prev, { type:'bot', kind:'roleplay', data:r }]);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const paidNow = () => {
+        setPaidUser();
+        setTrial(getTrialState());
+        setPaywall(false);
+        setMessages(prev => [...prev, { type:'bot', kind:'info', text:'✅ Proモードを有効化しました（この端末）。' }]);
+      };
+
+      const roleplayBanner = () => {
+        const t = getTrialState();
+        if (t.paid) {
+          return <div className="banner"><strong>✅ Pro（無制限）</strong><div className="tiny">Roleplayは回数制限なしです。</div></div>;
+        }
+        const left = t.left;
+        return (
+          <div className="banner">
+            <strong>🎓 無料体験中（残り {left} / {TRIAL_LIMIT_PER_DAY} 回）</strong>
+            <div className="tiny">このAIは、介護現場の日本語を「怒られずに練習する」ためのツールです。</div>
+          </div>
+        );
+      };
+
+      const RoleplayStartCard = ({data}) => (
+        <div>
+          <div className="meta">🎭 Roleplay開始</div>
+          <div><strong>状況：</strong>{data.situation}</div>
+          <div className="tiny"><strong>あなた：</strong>{data.yourRole} ／ <strong>AI：</strong>{data.aiRole}</div>
+          <div className="tiny"><strong>目標：</strong>{data.goal}</div>
+          <div className="divider"></div>
+          <div className="jpn">{data.firstMessageJapanese}</div>
+          <div className="tag">🔊 {data.firstMessageRomaji}</div>
+          {showKatakana && data.firstMessageKatakana && <div className="tag2">🈁 {data.firstMessageKatakana}</div>}
+          <div className="tiny" style={{marginTop:8}}>🇮🇩 {data.firstMessageIndonesian}</div>
+        </div>
+      );
+
+      const RoleplayTurnCard = ({data}) => (
+        <div>
+          <div className="meta">🤖 AI</div>
+          <div className="jpn">{data.aiJapanese}</div>
+          <div className="tag">🔊 {data.aiRomaji}</div>
+          {showKatakana && data.aiKatakana && <div className="tag2">🈁 {data.aiKatakana}</div>}
+          <div className="tiny" style={{marginTop:8}}>🇮🇩 {data.aiIndonesian}</div>
+          <div className="divider"></div>
+          <div className="tiny"><strong>📝 フィードバック：</strong> {data.feedback}</div>
+          <div className="tiny" style={{marginTop:8}}><strong>✅ もっと良い言い方：</strong> {data.betterJapanese}</div>
+          <div className="tag">🔊 {data.betterRomaji}</div>
+          {showKatakana && data.betterKatakana && <div className="tag2">🈁 {data.betterKatakana}</div>}
+        </div>
+      );
+
+      const TranslateCard = ({data}) => (
+        <div>
+          <div className="meta">📝 {data.indonesian}</div>
+          <div className="jpn">{data.japanese}</div>
+          <div className="tag">🔊 {data.romaji || ''}</div>
+          {showKatakana && data.katakana && <div className="tag2">🈁 {data.katakana}</div>}
+          {data.tips && <div className="tiny" style={{marginTop:8}}>💡 {data.tips}</div>}
+        </div>
+      );
+
+      return (
+        <div>
+          <div className="header">
+            <div className="wrap">
+              <div className="flex" style={{justifyContent:'space-between'}}>
+                <div>
+                  <h1 className="title">Kaigo Sensei（売れる形：Roleplay）</h1>
+                  <div className="sub">{mode==='roleplay' ? "🛡️ 怒られない研修 • 現場の会話を安全に練習" : "🇮🇩→🇯🇵 Terjemah • 介護現場の丁寧表現"}</div>
+                </div>
+
+                <div className="headerLinks">
+                  <a className="headerLink" href={CONTACT_BOOKING_URL} target="_blank" rel="noreferrer">📩 お問い合わせ / 相談予約</a>
+                  <a className="headerLink" href={COMPANY_URL} target="_blank" rel="noreferrer">🏢 会社情報</a>
+                  <div className="badge dark" style={{alignSelf:'center'}}>
+                    {trial.paid ? "PRO" : `FREE 残り ${trial.left}/${TRIAL_LIMIT_PER_DAY}`}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row">
+                <button className={'btn ' + (mode==='translate'?'active':'')} onClick={()=>switchMode('translate')}>
+                  📖 Terjemah
+                </button>
+                <button className={'btn ' + (mode==='roleplay'?'active':'')} onClick={()=>switchMode('roleplay')}>
+                  🎭 Roleplay AI
+                </button>
+
+                <div className="pill">
+                  <label style={{display:'flex', gap:8, alignItems:'center', cursor:'pointer'}}>
+                    <input type="checkbox" checked={showKatakana} onChange={(e)=>setShowKatakana(e.target.checked)} />
+                    <span style={{fontSize:12}}>カタカナ表示</span>
+                  </label>
+                </div>
+              </div>
+
+              {mode==='roleplay' && (
+                <div className="row" style={{marginTop:10}}>
+                  {["利用者（穏やか）","利用者（怒り）","認知症","家族（不安）","家族（クレーム）"].map(p => (
+                    <button key={p}
+                      className={'btn ' + (persona===p ? 'active' : '')}
+                      onClick={async ()=>{ setPersona(p); if (mode==='roleplay') await switchMode('roleplay'); }}
+                      style={{padding:'8px 12px'}}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="wrap">
+            {mode==='roleplay' ? roleplayBanner() : (
+              <div className="banner">
+                <strong>📖 Terjemah</strong>
+                <div className="tiny">インドネシア語を入れると、介護現場向けの丁寧な日本語＋ローマ字（＋カタカナ）で返します。</div>
+              </div>
+            )}
+
+            <div className="card">
+              <div className="chat" ref={chatRef}>
+                {messages.length===0 && !isLoading && (
+                  <div className="warn">
+                    <div style={{fontWeight:800}}>{mode==='roleplay' ? 'Roleplay：日本語で返答してください' : 'Terjemah：インドネシア語で入力してください'}</div>
+                    <div className="tiny">{mode==='roleplay' ? '例）こちらにお座りください。' : '例）Tolong duduk di sini.'}</div>
+                  </div>
+                )}
+
+                {messages.map((m, i) => (
+                  <div key={i} className={'msgRow ' + (m.type==='user'?'user':'bot')}>
+                    {m.type==='user' ? (
+                      <div className="bubble user">{m.text}</div>
+                    ) : (
+                      <div className="bubble bot">
+                        {m.kind==='translate' && <TranslateCard data={m.data} />}
+                        {m.kind==='roleplay-start' && <RoleplayStartCard data={m.data} />}
+                        {m.kind==='roleplay' && <RoleplayTurnCard data={m.data} />}
+                        {m.kind==='warn' && <div className="warn">{m.text}</div>}
+                        {m.kind==='info' && <div className="banner"><strong>Info</strong><div className="tiny">{m.text}</div></div>}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {isLoading && (
+                  <div className="msgRow bot">
+                    <div className="bubble bot">Thinking…</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="inputArea">
+                <div className="inputRow">
+                  <input
+                    type="text"
+                    value={input}
+                    placeholder={mode==='roleplay' ? '日本語で返答…' : 'Bahasa Indonesia…'}
+                    onChange={(e)=>setInput(e.target.value)}
+                    onKeyDown={(e)=>{ if(e.key==='Enter') send(); }}
+                  />
+                  <button className="send" onClick={send} disabled={isLoading || !input.trim()}>
+                    送信
+                  </button>
+                </div>
+                <div className="hint">Tip: ローマ字（🔊）は常時表示。カタカナ（🈁）はスイッチでON/OFF。</div>
+              </div>
+            </div>
+          </div>
+
+          {/* ===== Paywall ===== */}
+          {paywall && (
+            <div className="modalOverlay" onClick={()=>setPaywall(false)}>
+              <div className="modal" onClick={(e)=>e.stopPropagation()}>
+                <h2>🔒 この先は、現場研修レベルの内容になります。</h2>
+                <p className="tiny">無料体験（1日{TRIAL_LIMIT_PER_DAY}回）を使い切りました。</p>
+                <div className="divider"></div>
+                <p style={{marginTop:0}}>
+                  ✔ 日本語で怒られなくなる<br/>
+                  ✔ 注意される理由が分かる<br/>
+                  ✔ 何度失敗しても大丈夫
+                </p>
+                <p className="tiny"><strong>新人が「日本語が怖い」と言わなくなるAIです。</strong></p>
+
+                <div className="actions">
+                  <a className="primary" href={STRIPE_PAYMENT_LINK} target="_blank" rel="noreferrer">
+                    研修レベルのRoleplayを使う
+                  </a>
+                  <button className="secondary" onClick={()=>{ localStorage.setItem(PAID_KEY,"true"); setPaywall(false); }}>
+                    決済後：この端末をPROにする
+                  </button>
+                  <button className="secondary" onClick={()=>setPaywall(false)}>
+                    今日はここまで
+                  </button>
+                </div>
+
+                <div className="divider"></div>
+
+                {/* お問い合わせ（Google予約へ誘導） */}
+                <p className="tiny">
+                  📩 <a className="link" href={FACILITY_CONTACT_URL} target="_blank" rel="noreferrer">
+                    お問い合わせ・無料相談予約（Google）
+                  </a><br/>
+                  🏢 <a className="link" href={COMPANY_URL} target="_blank" rel="noreferrer">
+                    会社情報（aipuru-hu.com）
+                  </a><br/>
+                  施設導入（30,000円／月 目安）・教育研修のご相談もこちらから。
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    try {
+      const el = document.getElementById('root');
+      if (window.ReactDOMClient && ReactDOMClient.createRoot) {
+        ReactDOMClient.createRoot(el).render(<App />);
+      } else if (window.ReactDOM && ReactDOM.render) {
+        ReactDOM.render(<App />, el);
+      } else {
+        throw new Error('ReactDOM mount not found');
+      }
+    } catch (e) {
+      showDiag('Fatal UI error:', e);
+      document.getElementById('root').innerHTML = '<div style="padding:16px">UI起動に失敗しました。診断ログを確認してください。</div>';
+    }
+  </script>
+</body>
+</html>
