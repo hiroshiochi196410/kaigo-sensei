@@ -1,18 +1,12 @@
 {
-  "functions": {
-    "api/chat.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/app",
-      "destination": "/app/index.html"
+      "src": "/",
+      "dest": "/app/index.html"
     },
     {
-      "source": "/app/(.*)",
-      "destination": "/app/index.html"
+      "src": "/app",
+      "dest": "/app/index.html"
     }
   ]
 }
