@@ -1,4 +1,18 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false
+  "functions": {
+    "api/chat.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/app",
+      "destination": "/app/index.html"
+    },
+    {
+      "source": "/app/(.*)",
+      "destination": "/app/index.html"
+    }
+  ]
 }

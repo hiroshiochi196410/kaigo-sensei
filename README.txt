@@ -1,13 +1,14 @@
-【配置】
-- /index.html         : LP（トップ）
-- /app/index.html     : アプリ本体
-- /api/chat.js        : OpenAI呼び出しAPI（Vercel Serverless Function）
-- /vercel.json        : ルーティングは最小（cleanUrlsのみ）
+Kaigo Sensei - LP + App + OpenAI API
 
-【Vercelに登録する環境変数】
-- OPENAI_API_KEY : OpenAIのAPIキー
+1) Vercel Environment Variables:
+   OPENAI_API_KEY = your OpenAI API key
 
-【よくある原因（/appでAPIのコードが表示される）】
-- vercel.json の rewrites / routes で /app を /api/chat に飛ばしている
-- /app/index.html が存在しない、または誤って api/chat.js の内容を入れてしまっている
-→ まず GitHub の /app/index.html が "<!DOCTYPE html>" で始まるHTMLになっているか確認してください。
+2) Deploy:
+   - Put this repository at root.
+   - Ensure Vercel Project Settings > Root Directory is '.' (empty)
+   - Redeploy after setting OPENAI_API_KEY.
+
+Routes:
+ - /           LP
+ - /app        App
+ - /api/chat   Serverless API
