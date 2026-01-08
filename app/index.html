@@ -1,58 +1,299 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaigo Sensei</title>
-<style>
-body{font-family:sans-serif;background:#f6f7fb;margin:0}
-header{background:#4f46e5;color:#fff;padding:40px}
-main{max-width:900px;margin:40px auto;padding:20px}
-button{padding:14px 22px;border:none;border-radius:8px;background:#4f46e5;color:#fff;font-size:16px}
-.hidden{display:none}
-.box{background:#fff;border-radius:12px;padding:20px;margin-top:20px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaigo Sensei｜Roleplay（体験）</title>
+  <style>
+    :root{--indigo:#4f46e5;--bg:#f5f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);}
+    header{background:#111827;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:10}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .pill{display:inline-flex;gap:8px;align-items:center;background:#1f2937;color:#e5e7eb;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 10px;font-weight:800;font-size:12px}
+    .badgeFree{background:#eef2ff;color:#1e1b4b;border-radius:999px;padding:6px 10px;font-weight:900;font-size:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:900;font-size:14px;border:1px solid rgba(0,0,0,.10);background:#fff;color:#111827;cursor:pointer}
+    .btn.primary{background:var(--indigo);color:#fff;border-color:transparent}
+    .grid{display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.05)}
+    label{font-weight:800;font-size:12px}
+    select,textarea,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);font-size:14px;box-sizing:border-box;background:#fff}
+    textarea{min-height:120px;resize:vertical}
+    .muted{color:var(--muted);font-size:12px}
+    .split{display:flex;gap:10px;flex-wrap:wrap}
+    .kbox{background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:12px}
+    .kbox h3{margin:0 0 8px;font-size:13px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;white-space:pre-wrap}
+    .hidden{display:none}
+  </style>
 </head>
 <body>
 <header>
-<h1>Kaigo Sensei</h1>
-<p>外国人介護職向け 会話練習AI</p>
+  <div class="wrap row">
+    <div class="row" style="gap:10px">
+      <div style="font-weight:1000;letter-spacing:.2px">Kaigo Sensei</div>
+      <div class="pill">あなた：介護職 / AI：利用者・家族</div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="badgeFree" id="trialBadge">🆓 無料体験 残り <span id="trialLeft">3</span> 回</div>
+      <button class="btn" id="resetBtn" title="体験カウントをリセット（デモ用）">リセット</button>
+      <a class="btn" href="/">LPへ</a>
+    </div>
+  </div>
 </header>
 
-<main>
-<div id="trial">無料体験 残り <span id="left">3</span> 回</div>
+<main class="wrap">
+  <div class="grid">
+    <section class="card">
+      <h2 style="margin:0 0 10px;font-size:18px;">シナリオ設定</h2>
 
-<div class="box">
-<h2>あなた：介護職</h2>
-<textarea id="input" style="width:100%;height:120px"></textarea><br><br>
-<button onclick="send()">送信</button>
-</div>
+      <div class="split">
+        <div style="flex:1;min-width:240px">
+          <label>相手（AI側）</label>
+          <select id="persona">
+            <option value="user_calm">利用者：穏やか（基本）</option>
+            <option value="user_confused">利用者：少し混乱（認知症の入口）</option>
+            <option value="family_anxious">家族：不安・質問が多い</option>
+            <option value="family_angry">家族：怒り・クレーム</option>
+          </select>
+          <div class="muted" style="margin-top:6px;">※あなたが日本語で対応（介護職として返答）します。</div>
+        </div>
+        <div style="flex:1;min-width:240px">
+          <label>状況</label>
+          <select id="scene">
+            <option value="bath">入浴介助</option>
+            <option value="toilet">排泄介助</option>
+            <option value="meal">食事介助</option>
+            <option value="callbell">ナースコール（呼び出し）</option>
+            <option value="med">服薬</option>
+            <option value="complaint">クレーム初動</option>
+          </select>
+          <div class="muted" style="margin-top:6px;">会話の目的：誤解を減らし、短く丁寧に。</div>
+        </div>
+      </div>
 
-<div class="box hidden" id="pay">
-<h3>無料体験は終了しました</h3>
-<button onclick="location.href='https://buy.stripe.com/xxxx'">本稼働へ</button>
-</div>
+      <div style="margin-top:12px">
+        <label>あなた（介護職）の発言（日本語）</label>
+        <textarea id="userText" placeholder="例：すみません。今からお風呂に入りましょう。寒くないように温かくしますね。"></textarea>
+        <div class="split" style="margin-top:10px">
+          <button class="btn primary" id="sendBtn">送信（Roleplay）</button>
+          <button class="btn" id="exampleBtn">例文を入れる</button>
+        </div>
+        <div class="muted" style="margin-top:8px;">※無料体験は3回まで。回数を超えると本稼働案内が表示されます。</div>
+      </div>
 
-<div class="box" id="out"></div>
+      <div class="card" style="margin-top:14px;background:#0b1220;color:#e5e7eb;border:none">
+        <h3 style="margin:0 0 10px;font-size:14px;">本稼働（Pro）に切り替える</h3>
+        <div class="muted" style="color:#cbd5e1">施設導入・本稼働の相談はこちら。決済リンクは後で差し替え可。</div>
+        <div class="split" style="margin-top:10px">
+          <a class="btn primary" style="background:#22c55e" href="#" id="payLink">💳 本稼働に切り替える（決済）</a>
+          <a class="btn" style="border-color:rgba(255,255,255,.18);background:transparent;color:#e5e7eb" href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1DZzbc2Em4gn-ABTKavXY1dpFHRpO0ynpn8iSeOx_9vRUdr2MDLcRSv_tZHY4aMVy6ceqQGO2L?gv=true" target="_blank" rel="noreferrer">📅 無料相談</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 style="margin:0 0 10px;font-size:18px;">結果</h2>
+
+      <div id="paywall" class="kbox hidden">
+        <h3>無料体験は終了しました</h3>
+        <div class="muted">続きは本稼働（Pro）で利用できます。</div>
+        <div class="split" style="margin-top:10px">
+          <a class="btn primary" href="#" id="payLink2">本稼働に切り替える</a>
+          <a class="btn" href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1DZzbc2Em4gn-ABTKavXY1dpFHRpO0ynpn8iSeOx_9vRUdr2MDLcRSv_tZHY4aMVy6ceqQGO2L?gv=true" target="_blank" rel="noreferrer">無料相談</a>
+        </div>
+      </div>
+
+      <div class="kbox" id="aiBox">
+        <h3>AI（相手）の返答：日本語</h3>
+        <div class="mono" id="aiJp">—</div>
+      </div>
+
+      <div class="kbox" style="margin-top:10px">
+        <h3>読み（ローマ字）</h3>
+        <div class="mono" id="aiRomaji">—</div>
+      </div>
+
+      <div class="kbox" style="margin-top:10px">
+        <h3>インドネシア語</h3>
+        <div class="mono" id="aiId">—</div>
+      </div>
+
+      <div class="kbox" style="margin-top:10px">
+        <h3>フィードバック（あなた＝介護職の表現）</h3>
+        <div class="mono" id="fbJp">—</div>
+      </div>
+
+      <div class="kbox" style="margin-top:10px">
+        <h3>おすすめの言い換え（介護職として）</h3>
+        <div class="mono" id="suggestJp">—</div>
+        <div class="muted" style="margin-top:8px;">読み（ローマ字）：</div>
+        <div class="mono" id="suggestRomaji">—</div>
+        <div class="muted" style="margin-top:8px;">インドネシア語：</div>
+        <div class="mono" id="suggestId">—</div>
+      </div>
+
+      <div class="muted" style="margin-top:12px" id="status">準備OK</div>
+    </section>
+  </div>
 </main>
 
 <script>
-let limit=3;
-let used=Number(localStorage.getItem("used")||0);
-function update(){
- document.getElementById("left").textContent=Math.max(0,limit-used);
- if(used>=limit){document.getElementById("pay").classList.remove("hidden")}
-}
-update();
+/** ===========================
+ *  TRIAL / PRO STATE (B + C)
+ * =========================== */
+const TRIAL_LIMIT = 3;
+const KEY_STATE = "ks_state_v3"; // 旧版の影響を受けないようバージョン付き
+const STRIPE_PAYMENT_LINK = "#"; // ←後で差し替え（Stripe Payment Link）
 
-async function send(){
- if(used>=limit) return;
- const text=document.getElementById("input").value;
- const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
- const data=await res.json();
- document.getElementById("out").innerText=data.text||"error";
- used++;localStorage.setItem("used",used);update();
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY_STATE);
+    if(!raw) return { used:0, pro:false };
+    const s = JSON.parse(raw);
+    return { used: Number(s.used||0), pro: !!s.pro };
+  }catch(e){ return { used:0, pro:false }; }
 }
+function saveState(s){ localStorage.setItem(KEY_STATE, JSON.stringify(s)); }
+function remaining(s){ return Math.max(0, TRIAL_LIMIT - (s.used||0)); }
+
+function renderTrial(){
+  const s = loadState();
+  document.getElementById("trialLeft").textContent = remaining(s);
+  const badge = document.getElementById("trialBadge");
+  const paywall = document.getElementById("paywall");
+  if(s.pro){
+    badge.textContent = "💼 本稼働（Pro）";
+    paywall.classList.add("hidden");
+  }else{
+    badge.innerHTML = '🆓 無料体験 残り <span id="trialLeft">'+remaining(s)+'</span> 回';
+    if(remaining(s) <= 0){
+      paywall.classList.remove("hidden");
+    }else{
+      paywall.classList.add("hidden");
+    }
+  }
+  // payment link
+  document.getElementById("payLink").href = STRIPE_PAYMENT_LINK;
+  document.getElementById("payLink2").href = STRIPE_PAYMENT_LINK;
+}
+renderTrial();
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  localStorage.removeItem(KEY_STATE);
+  renderTrial();
+  setStatus("リセットしました（体験回数が戻りました）");
+});
+
+document.getElementById("exampleBtn").addEventListener("click", () => {
+  document.getElementById("userText").value =
+    "すみません。今からお風呂に入りましょう。寒くないように温かくしますね。";
+});
+
+function setStatus(msg){ document.getElementById("status").textContent = msg; }
+
+/** ===========================
+ *  ROLEPLAY (correct roles)
+ * =========================== */
+function personaPrompt(v){
+  switch(v){
+    case "user_confused": return "You are an elderly care facility resident. You are a bit confused and anxious. Reply in Japanese like a real person.";
+    case "family_anxious": return "You are a family member of a resident. You are anxious and ask many questions. Reply in Japanese.";
+    case "family_angry": return "You are a family member making a complaint. You are angry but realistic. Reply in Japanese.";
+    default: return "You are an elderly care facility resident. You are calm and polite. Reply in Japanese.";
+  }
+}
+function scenePrompt(v){
+  switch(v){
+    case "toilet": return "Context: toileting assistance. Keep it realistic for a Japanese care facility.";
+    case "meal": return "Context: meal assistance / diet / choking concern. Keep it realistic.";
+    case "callbell": return "Context: call bell / urgent request. Keep it realistic.";
+    case "med": return "Context: medication assistance. Keep it realistic.";
+    case "complaint": return "Context: complaint handling at the scene. Keep it realistic and tense.";
+    default: return "Context: bathing assistance. Keep it realistic.";
+  }
+}
+
+// Very simple kana->romaji (Hepburn-ish). Not perfect but works for rubi.
+// If you want perfect romaji, have the model output romaji too (we do that).
+function safeText(x){ return (x==null) ? "" : String(x); }
+
+async function callApi(payload){
+  const res = await fetch("/api/chat", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(()=> ({}));
+  if(!res.ok){
+    throw new Error(data?.error || ("HTTP " + res.status));
+  }
+  return data;
+}
+
+function fillResult(obj){
+  document.getElementById("aiJp").textContent = safeText(obj.ai_reply_jp || obj.text || obj.content || "—");
+  document.getElementById("aiRomaji").textContent = safeText(obj.ai_reply_romaji || "—");
+  document.getElementById("aiId").textContent = safeText(obj.ai_reply_id || "—");
+  document.getElementById("fbJp").textContent = safeText(obj.feedback_jp || "—");
+  document.getElementById("suggestJp").textContent = safeText(obj.suggested_reply_jp || "—");
+  document.getElementById("suggestRomaji").textContent = safeText(obj.suggested_reply_romaji || "—");
+  document.getElementById("suggestId").textContent = safeText(obj.suggested_reply_id || "—");
+}
+
+document.getElementById("sendBtn").addEventListener("click", async () => {
+  const s = loadState();
+  if(!s.pro && remaining(s) <= 0){
+    renderTrial();
+    setStatus("無料体験が終了しています。本稼働へ切り替えてください。");
+    return;
+  }
+
+  const userText = document.getElementById("userText").value.trim();
+  if(!userText){ setStatus("入力してください"); return; }
+
+  setStatus("送信中…");
+  try{
+    const persona = document.getElementById("persona").value;
+    const scene = document.getElementById("scene").value;
+
+    const payload = {
+      prompt: userText,
+      meta: {
+        persona,
+        scene
+      }
+    };
+
+    const data = await callApi(payload);
+
+    // Server returns {text} and maybe {json}
+    let obj = null;
+    if(typeof data.json === "object" && data.json) obj = data.json;
+    else if(typeof data.text === "string"){
+      try{ obj = JSON.parse(data.text); }catch(e){ obj = { text: data.text }; }
+    }else if(typeof data.content === "string"){
+      obj = { text: data.content };
+    }else{
+      obj = data;
+    }
+
+    fillResult(obj);
+
+    // consume trial on success only
+    const ns = loadState();
+    if(!ns.pro){
+      ns.used = (ns.used||0) + 1;
+      saveState(ns);
+    }
+    renderTrial();
+    setStatus("完了");
+  }catch(e){
+    console.error(e);
+    setStatus("エラー: " + (e.message || e));
+  }
+});
 </script>
 </body>
 </html>

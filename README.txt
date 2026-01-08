@@ -1,14 +1,11 @@
-Kaigo Sensei - LP + App + OpenAI API
+Kaigo Sensei（復元版：LP + UI + B/C統合 + OpenAI）
+- ルート / : LP
+- /app : Roleplayアプリ（無料→本稼働のスイッチ表示あり）
+- /api/chat : OpenAI API（JSON返却：日本語/ローマ字/インドネシア語）
 
-1) Vercel Environment Variables:
-   OPENAI_API_KEY = your OpenAI API key
+Vercel環境変数:
+- OPENAI_API_KEY を必ず設定
+- （任意）OPENAI_MODEL
 
-2) Deploy:
-   - Put this repository at root.
-   - Ensure Vercel Project Settings > Root Directory is '.' (empty)
-   - Redeploy after setting OPENAI_API_KEY.
-
-Routes:
- - /           LP
- - /app        App
- - /api/chat   Serverless API
+Stripeリンク:
+- /app/index.html の STRIPE_PAYMENT_LINK を差し替え
