@@ -88,6 +88,12 @@
           <button class="btn primary" id="sendBtn">送信（Roleplay）</button>
           <button class="btn" id="exampleBtn">例文を入れる</button>
         </div>
+
+        <div id="examplesPanel" class="card" style="display:none; margin-top:12px">
+          <div class="h2" style="margin:0 0 10px 0">例文（日本語 / ローマ字 / インドネシア語）</div>
+          <div id="examplesList" class="stack"></div>
+          <div class="muted" style="margin-top:8px">※例文をクリックすると、入力欄に自動で入ります。</div>
+        </div>
         <div class="muted" style="margin-top:8px;">※無料体験は3回まで。回数を超えると本稼働案内が表示されます。</div>
       </div>
 
@@ -208,7 +214,7 @@ document.getElementById("exampleBtn").addEventListener("click", () => {
   const persona = document.getElementById("persona").value;
   const scene = document.getElementById("scene").value;
   const ex = getExamples(scene, persona);
-  if(ex && ex.length){ document.getElementById("userText").value = ex[0]; }
+  if(ex && ex.length){ document.getElementById("userText").value = (ex[0]?.ja || ex[0] || ""); }
 });
 
 function setStatus(msg){ document.getElementById("status").textContent = msg; }
@@ -235,64 +241,85 @@ function scenePrompt(v){
   }
 }
 
-function getExamples(scene, persona){
-  const key = scene + "|" + persona;
-  const byKey = {
-    "bath|user_calm": [
-      "今からお風呂に入りましょう。寒くないように、温かくしますね。",
-      "お湯の温度は大丈夫ですか？熱かったらすぐ言ってくださいね。",
-      "ゆっくりで大丈夫です。滑らないように支えますね。"
-    ],
-    "bath|user_confused": [
-      "今はお風呂の時間です。ここは安全ですよ。いっしょに入りましょう。",
-      "大丈夫です。急ぎません。手をつないで行きましょう。",
-      "お湯はぬるめにしますね。怖くないように声をかけます。"
-    ],
-    "bath|family_anxious": [
-      "入浴前に体調と皮膚の状態を確認しています。心配な点は教えてください。",
-      "お湯の温度や転倒に注意して、必ず付き添って安全に行います。",
-      "無理はしません。今日はシャワーだけなど状況に合わせます。"
-    ],
-    "bath|family_angry": [
-      "ご不安にさせて申し訳ありません。状況を確認して、すぐに説明します。",
-      "安全手順と記録を確認し、再発防止の対応をお伝えします。",
-      "本日は責任者にも共有し、改善策を早急に実施します。"
-    ]
-  };
-  const bySceneDefault = {
-    "meal": [
-      "飲み込みやすいように、一口ずついきましょう。",
-      "むせやすいので、ゆっくりで大丈夫です。お水も少し飲みましょう。",
-      "味はどうですか？熱かったら冷ましますね。"
-    ],
-    "toilet": [
-      "今、トイレに行きましょう。転ばないように支えますね。",
-      "恥ずかしくないように、カーテンを閉めますね。",
-      "痛いところはありませんか？無理しないでくださいね。"
-    ],
-    "callbell": [
-      "呼んでくれてありがとうございます。どうしましたか？",
-      "今すぐ伺います。安全のため、そのまま少し待ってくださいね。",
-      "痛みや息苦しさはありますか？"
-    ],
-    "med": [
-      "お薬の時間です。今から一緒に飲みましょう。",
-      "飲みにくければ、お水を増やしますね。",
-      "今日はこのお薬です。分からないことがあれば教えてください。"
-    ],
-    "complaint": [
-      "ご不快な思いをさせて申し訳ありません。まず状況を確認させてください。",
-      "今のご要望を整理して、責任者にもすぐ共有します。",
-      "事実確認のうえ、対応と再発防止をお伝えします。"
-    ],
-    "bath": [
-      "今からお風呂に入りましょう。寒くないように、温かくしますね。",
-      "お湯の温度は大丈夫ですか？熱かったらすぐ言ってくださいね。",
-      "ゆっくりで大丈夫です。滑らないように支えますね。"
-    ]
-  };
-  return (byKey[key] || bySceneDefault[scene] || bySceneDefault["bath"]).slice(0,3);
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
+
+// ---- 例文データ（シナリオごと） ----
+const EXAMPLE_DATA = {
+  "入浴介助": [
+    { ja:"今からお風呂に入りましょう。寒くないように温かくしますね。", romaji:"Ima kara ofuro ni hairimashou. Samukunai you ni atatakaku shimasu ne.", id:"Sekarang kita mandi ya. Saya akan buat airnya hangat supaya tidak kedinginan." },
+    { ja:"体調はいかがですか？苦しいところはありませんか。", romaji:"Taichou wa ikaga desu ka? Kurushii tokoro wa arimasen ka.", id:"Bagaimana kondisi Anda? Ada bagian yang terasa sakit atau sesak?" },
+    { ja:"滑りやすいので、ゆっくり立ちましょう。支えますね。", romaji:"Suberiyasui node, yukkuri tachimashou. Sasaemasu ne.", id:"Lantainya licin, jadi berdiri pelan-pelan ya. Saya bantu pegang." }
+  ],
+  "食事介助": [
+    { ja:"一口ずつゆっくり食べましょう。飲み込みは大丈夫ですか。", romaji:"Hitokuchi zutsu yukkuri tabemashou. Nomikomi wa daijoubu desu ka.", id:"Mari makan pelan-pelan, satu suap ya. Menelannya aman?" },
+    { ja:"熱くないですか？少し冷ましてからにしましょう。", romaji:"Atsukunai desu ka? Sukoshi samashite kara ni shimashou.", id:"Tidak terlalu panas? Kita tunggu agak dingin dulu ya." },
+    { ja:"お水を少し飲みますか？むせそうなら教えてください。", romaji:"Omizu o sukoshi nomimasu ka? Muse-sou nara oshiete kudasai.", id:"Mau minum sedikit air? Kalau mau tersedak, bilang ya." }
+  ],
+  "移乗介助": [
+    { ja:"今からベッドから車いすへ移ります。ゆっくりで大丈夫です。", romaji:"Ima kara beddo kara kuruma-isu e utsurimasu. Yukkuri de daijoubu desu.", id:"Sekarang kita pindah dari tempat tidur ke kursi roda. Pelan-pelan saja." },
+    { ja:"立つ前に、足は床につけられますか？", romaji:"Tatsu mae ni, ashi wa yuka ni tsukeraremasu ka?", id:"Sebelum berdiri, apakah kaki bisa menapak lantai?" },
+    { ja:"私の肩につかまってください。せーので立ちましょう。", romaji:"Watashi no kata ni tsukamatte kudasai. Se-no de tachimashou.", id:"Pegang bahu saya ya. Kita berdiri bersama, satu dua tiga." }
+  ],
+  "排泄介助": [
+    { ja:"トイレに行きますか？今のタイミングで大丈夫です。", romaji:"Toire ni ikimasu ka? Ima no taimingu de daijoubu desu.", id:"Mau ke toilet? Sekarang waktunya pas kok." },
+    { ja:"恥ずかしいところは隠しますね。安心してください。", romaji:"Hazukashii tokoro wa kakushimasu ne. Anshin shite kudasai.", id:"Bagian yang memalukan akan saya tutupi. Tenang ya." },
+    { ja:"痛みはありませんか？無理しないで教えてください。", romaji:"Itami wa arimasen ka? Muri shinaide oshiete kudasai.", id:"Ada rasa sakit? Jangan dipaksakan, beri tahu saya ya." }
+  ],
+  "服薬介助": [
+    { ja:"お薬の時間です。お水と一緒に飲みましょう。", romaji:"Okusuri no jikan desu. Omizu to issho ni nomimashou.", id:"Waktunya minum obat. Mari minum dengan air ya." },
+    { ja:"飲みにくければ、姿勢を整えますね。", romaji:"Nominikukereba, shisei o totonoemasu ne.", id:"Kalau susah menelan, saya bantu atur posisi duduk ya." },
+    { ja:"飲めましたか？口の中に残っていないか確認します。", romaji:"Nomemashita ka? Kuchi no naka ni nokotte inai ka kakunin shimasu.", id:"Sudah tertelan? Saya cek apakah ada yang masih tersisa di mulut." }
+  ],
+  "クレーム対応": [
+    { ja:"ご不快な思いをさせてしまい、申し訳ありません。状況を確認します。", romaji:"Gofukai na omoi o sasete shimai, moushiwake arimasen. Joukyou o kakunin shimasu.", id:"Maaf sudah membuat Anda tidak nyaman. Saya akan cek situasinya." },
+    { ja:"具体的に、いつ・どこで・何があったか教えてください。", romaji:"Gutaiteki ni, itsu/doko de/nani ga atta ka oshiete kudasai.", id:"Bisa ceritakan kapan, di mana, dan apa yang terjadi?" },
+    { ja:"すぐに上司へ共有し、対応案をご連絡します。", romaji:"Sugu ni joushi e kyouyuu shi, taiou-an o gorennraku shimasu.", id:"Saya akan segera lapor atasan dan menghubungi Anda dengan rencana tindak lanjut." }
+  ]
+};
+
+function getExamples(scene, persona){
+  // personaは今後の拡張用（現状はsceneで出し分け）
+  return EXAMPLE_DATA[scene] || [
+    { ja:"よろしくお願いします。", romaji:"Yoroshiku onegaishimasu.", id:"Mohon bantuannya ya." }
+  ];
+}
+
+function renderExamples(){
+  const persona = document.getElementById("persona").value;
+  const scene = document.getElementById("scene").value;
+  const list = document.getElementById("examplesList");
+  const panel = document.getElementById("examplesPanel");
+  if(!list || !panel) return;
+
+  const ex = getExamples(scene, persona);
+  panel.style.display = "block";
+
+  list.innerHTML = ex.map((e, i) => `
+    <div class="card" style="padding:12px; cursor:pointer" data-ex-idx="${i}">
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${escapeHtml(e.ja)}</div>
+      <div class="muted" style="margin:0 0 6px 0;">${escapeHtml(e.romaji)}</div>
+      <div style="font-size:13px;">${escapeHtml(e.id)}</div>
+    </div>
+  `).join("");
+
+  // click to fill Japanese into input box
+  [...list.querySelectorAll("[data-ex-idx]")].forEach((el) => {
+    el.addEventListener("click", () => {
+      const idx = Number(el.getAttribute("data-ex-idx"));
+      const picked = ex[idx];
+      if(picked) document.getElementById("userText").value = picked.ja;
+    });
+  });
+}
+
 
 function sceneArt(scene){
   const common = (inner) => `<svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
@@ -345,17 +372,12 @@ function updateUI(){
 
   const list = document.getElementById("exampleList");
   if(list){
+    // 旧UI（ボタン型の例文）を使う場合はここを拡張できますが、
+    // 現在は「例文（3言語）」パネルに統一します。
     list.innerHTML = "";
-    const ex = getExamples(scene, persona);
-    ex.forEach((t) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "exchip";
-      b.textContent = t;
-      b.addEventListener("click", () => { document.getElementById("userText").value = t; });
-      list.appendChild(b);
-    });
   }
+  try { renderExamples(); } catch(e) {}
+
 
   document.getElementById("userText").placeholder =
     `（介護職として）${document.getElementById("scene").selectedOptions[0].textContent}の場面で、日本語で声かけを書いてください。`;
