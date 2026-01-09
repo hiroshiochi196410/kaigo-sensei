@@ -1,84 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kaigo Sensei｜現場研修Roleplay AI</title>
-  <meta name="description" content="外国人介護職の定着と現場コミュニケーション改善を、怒られないRoleplayで支援。" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kaigo Roleplay AI (Split Generation)</title>
   <style>
-    :root{--indigo:#4f46e5;--bg:#f5f7fb;--card:#fff;--text:#111827;--muted:#6b7280;}
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);}
-    header{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;padding:36px 18px;}
-    .wrap{max-width:980px;margin:0 auto;}
-    h1{margin:0 0 8px;font-size:28px;line-height:1.2;}
-    .sub{opacity:.95}
-    .grid{display:grid;gap:16px;grid-template-columns:1fr;}
-    @media(min-width:860px){.grid{grid-template-columns:1.2fr .8fr;}}
-    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.06);}
-    .pill{display:inline-flex;gap:8px;align-items:center;background:#eef2ff;color:#1e1b4b;border-radius:999px;padding:8px 12px;font-weight:700;font-size:12px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:999px;text-decoration:none;font-weight:800;font-size:14px;border:1px solid rgba(0,0,0,.08)}
-    .btn.primary{background:var(--indigo);color:#fff;border-color:transparent}
-    .btn.secondary{background:#fff;color:#111827}
-    .btnRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-    ul{margin:10px 0 0 18px;color:var(--muted)}
-    .kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .kpi .mini{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;min-width:160px}
-    .mini b{display:block;font-size:16px}
-    footer{padding:24px 18px;text-align:center;color:var(--muted);font-size:12px}
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    select, textarea, button { font-size: 16px; }
+    textarea { width: 100%; min-height: 90px; padding: 10px; }
+    button { padding: 10px 14px; cursor: pointer; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
+    .muted { color: #666; font-size: 14px; }
+    .loading { display: inline-block; margin-left: 8px; }
+    .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
+    pre { white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="pill">🏥 施設研修向け / 外国人職員サポート</div>
-    <h1>怒られない現場研修<br/>Kaigo Sensei（Roleplay AI）</h1>
-    <div class="sub">「日本語が怖い」を減らし、定着と現場対応を底上げします。</div>
+  <h2>介護ロールプレイAI（分割生成デモ）</h2>
+  <div class="muted">
+    送信すると <span class="badge">Step1: 日本語</span> が先に表示され、続いて <span class="badge">Step2: ローマ字＋インドネシア語</span> が追記されます。
   </div>
-</header>
 
-<main class="wrap" style="padding:18px;">
-  <div class="grid">
-    <section class="card">
-      <h2 style="margin:0 0 10px;">できること</h2>
-      <ul>
-        <li>利用者・家族・クレーム対応の<strong>想定問答</strong></li>
-        <li>介護職としての<strong>言い回し提案</strong>（優しい・丁寧・短い）</li>
-        <li>返信の<strong>改善ポイント</strong>（短く、誤解を減らす）</li>
-        <li>日本語 + ローマ字（読み） + インドネシア語の<strong>3点セット</strong></li>
-      </ul>
+  <div class="row" style="margin-top:12px;">
+    <label>persona:
+      <select id="persona">
+        <option value="user_calm">利用者：穏やか</option>
+        <option value="user_angry">利用者：怒り</option>
+        <option value="dementia">利用者：少し混乱</option>
+        <option value="family_anxious">家族：不安</option>
+        <option value="family_complaint">家族：クレーム</option>
+      </select>
+    </label>
 
-      <div class="kpi">
-        <div class="mini"><b>1日10分</b><span style="color:var(--muted);">スキマ研修</span></div>
-        <div class="mini"><b>何度でも</b><span style="color:var(--muted);">怒られない</span></div>
-        <div class="mini"><b>現場想定</b><span style="color:var(--muted);">事故防止</span></div>
-      </div>
-
-      <div class="btnRow">
-        <a class="btn primary" href="/app">🚀 現場を想定したroleplayを体験する</a>
-        <a class="btn secondary" href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1DZzbc2Em4gn-ABTKavXY1dpFHRpO0ynpn8iSeOx_9vRUdr2MDLcRSv_tZHY4aMVy6ceqQGO2L?gv=true" target="_blank" rel="noreferrer">📅 無料相談を予約する（60分）</a>
-        <a class="btn secondary" href="https://aipuru-hu.com" target="_blank" rel="noreferrer">🏢 会社情報を見る</a>
-      </div>
-
-      <p style="margin:14px 0 0;color:var(--muted);font-size:13px;">
-        ※ 体験は回数制限があります。続きは本稼働（Pro）でご利用いただけます。
-      </p>
-    </section>
-
-    <aside class="card">
-      <h3 style="margin:0 0 10px;">施設導入（例）</h3>
-      <p style="margin:0;color:var(--muted);">外国人職員の定着・教育・クレーム対応練習を、現場で回せる形に。</p>
-      <div style="margin-top:12px;padding:12px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;">
-        <div style="font-weight:900;font-size:18px;">月額 30,000円 / 施設（想定）</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:6px;">※ 人数・シナリオ数で調整可</div>
-      </div>
-      <div class="btnRow" style="margin-top:14px;">
-        <a class="btn primary" href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1DZzbc2Em4gn-ABTKavXY1dpFHRpO0ynpn8iSeOx_9vRUdr2MDLcRSv_tZHY4aMVy6ceqQGO2L?gv=true" target="_blank" rel="noreferrer">無料相談（導入相談）</a>
-      </div>
-      <p style="margin:14px 0 0;color:var(--muted);font-size:12px;">導入前に、実際の現場文脈に合わせてシナリオを調整します。</p>
-    </aside>
+    <label>scene:
+      <select id="scene">
+        <option value="bath">入浴介助</option>
+        <option value="meal">食事介助</option>
+        <option value="toilet">排泄介助</option>
+        <option value="night">夜間対応</option>
+        <option value="complaint">苦情・クレーム</option>
+      </select>
+    </label>
   </div>
-</main>
 
-<footer>© 2026 Kaigo Sensei / aipuru-hu.com</footer>
+  <div style="margin-top:12px;">
+    <div class="muted">介護士（あなた）の発話（日本語）</div>
+    <textarea id="prompt" placeholder="例：寒くないですか？今からお湯をかけますね。"></textarea>
+  </div>
+
+  <div style="margin-top:10px;">
+    <button id="send">送信</button>
+    <span id="status" class="muted"></span>
+  </div>
+
+  <div id="out" class="card" style="display:none;">
+    <div class="muted">出力</div>
+    <h3 style="margin:8px 0 4px;">相手の返答（JP）</h3>
+    <div id="ai_jp"></div>
+
+    <h3 style="margin:12px 0 4px;">フィードバック（JP）</h3>
+    <div id="fb_jp"></div>
+
+    <h3 style="margin:12px 0 4px;">推奨返答（JP）</h3>
+    <div id="sug_jp"></div>
+
+    <div id="addon_block" style="display:none;">
+      <hr style="margin:14px 0;">
+      <h3 style="margin:8px 0 4px;">相手の返答（Romaji / ID）</h3>
+      <div><b>Romaji:</b> <span id="ai_ro"></span></div>
+      <div><b>ID:</b> <span id="ai_id"></span></div>
+
+      <h3 style="margin:12px 0 4px;">推奨返答（Romaji / ID）</h3>
+      <div><b>Romaji:</b> <span id="sug_ro"></span></div>
+      <div><b>ID:</b> <span id="sug_id"></span></div>
+    </div>
+
+    <details style="margin-top:12px;">
+      <summary class="muted">デバッグ（生JSON）</summary>
+      <pre id="debug"></pre>
+    </details>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function setStatus(msg) { $("status").textContent = msg || ""; }
+
+  function renderStep1(jp) {
+    $("out").style.display = "block";
+    $("addon_block").style.display = "none";
+    $("ai_jp").textContent = jp?.ai_reply_jp || "";
+    $("fb_jp").textContent = jp?.feedback_jp || "";
+    $("sug_jp").textContent = jp?.suggested_reply_jp || "";
+  }
+
+  function renderStep2(addon) {
+    $("addon_block").style.display = "block";
+    $("ai_ro").textContent = addon?.ai_reply_romaji || "";
+    $("ai_id").textContent = addon?.ai_reply_id || "";
+    $("sug_ro").textContent = addon?.suggested_reply_romaji || "";
+    $("sug_id").textContent = addon?.suggested_reply_id || "";
+  }
+
+  async function postJSON(url, payload) {
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const msg = data?.error || ("HTTP " + r.status);
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  $("send").addEventListener("click", async () => {
+    const prompt = $("prompt").value.trim();
+    const persona = $("persona").value;
+    const scene = $("scene").value;
+
+    if (!prompt) {
+      alert("発話（日本語）を入力してください。");
+      return;
+    }
+
+    $("send").disabled = true;
+    setStatus("Step1（日本語）生成中…");
+    $("debug").textContent = "";
+
+    try {
+      // Step1
+      const s1 = await postJSON("/api/chat", {
+        prompt,
+        meta: { persona, scene, stage: 1 }
+      });
+      const jp = s1?.json || null;
+      renderStep1(jp);
+      $("debug").textContent = JSON.stringify({ step1: s1 }, null, 2);
+
+      // Step2 (async background)
+      setStatus("Step2（ローマ字・インドネシア語）変換中…");
+      postJSON("/api/chat", {
+        prompt: "",
+        meta: { persona, scene, stage: 2, jp }
+      }).then((s2) => {
+        const addon = s2?.json || null;
+        renderStep2(addon);
+        const current = JSON.parse($("debug").textContent || "{}");
+        current.step2 = s2;
+        $("debug").textContent = JSON.stringify(current, null, 2);
+        setStatus("完了");
+      }).catch((e) => {
+        // Step2が落ちてもStep1が出ていれば実用上OK
+        setStatus("Step2失敗（JPは表示済み）: " + e.message);
+      });
+
+    } catch (e) {
+      setStatus("エラー: " + e.message);
+    } finally {
+      $("send").disabled = false;
+    }
+  });
+</script>
 </body>
 </html>
