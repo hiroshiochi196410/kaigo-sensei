@@ -5,6 +5,26 @@
         "jp": "では、体が冷えないように肩からお湯をかけますね。熱くないですか？",
         "romaji": "Dewa, karada ga hienai you ni kata kara oyu o kakemasu ne. Atsukunai desu ka?",
         "id": "Baik, saya akan menyiram air hangat dari bahu agar tubuh tidak kedinginan. Tidak terlalu panas?"
+      },
+      {
+        "jp": "滑りやすいので、ゆっくり立ちましょう。私が支えますね。",
+        "romaji": "Suberiyasui node, yukkuri tachimashou. Watashi ga sasaemasu ne.",
+        "id": "Lantainya licin, jadi berdiri pelan-pelan ya. Saya akan menopang."
+      },
+      {
+        "jp": "髪を洗いますね。お湯が目に入らないようにします。",
+        "romaji": "Kami o araimasu ne. Oyu ga me ni hairanai you ni shimasu.",
+        "id": "Saya akan keramas ya. Saya jaga supaya air tidak masuk ke mata."
+      },
+      {
+        "jp": "寒くないですか？タオルをかけて、手早く進めますね。",
+        "romaji": "Samukunai desu ka? Taoru o kakete, tebayaku susumemasu ne.",
+        "id": "Tidak kedinginan? Saya tutup dengan handuk dan kita lakukan cepat ya."
+      },
+      {
+        "jp": "痛いところはありませんか？気になる所があれば教えてください。",
+        "romaji": "Itai tokoro wa arimasen ka? Kininaru tokoro ga areba oshiete kudasai.",
+        "id": "Ada bagian yang sakit? Kalau ada yang mengganggu, tolong beri tahu."
       }
     ],
     "meal": [
@@ -42,6 +62,26 @@
         "jp": "すみません、嫌な気持ちにさせてしまいました。今どうしたいですか？",
         "romaji": "Sumimasen, iya na kimochi ni sasete shimaimashita. Ima dou shitai desu ka?",
         "id": "Maaf, saya membuat Anda tidak nyaman. Sekarang Anda ingin bagaimana?"
+      },
+      {
+        "jp": "無理に進めません。今日は湯船はやめて、体を拭くだけにしますか？",
+        "romaji": "Muri ni susumemasen. Kyou wa yubune wa yamete, karada o fuku dake ni shimasu ka?",
+        "id": "Saya tidak akan memaksa. Hari ini mau batal berendam dan hanya lap tubuh saja?"
+      },
+      {
+        "jp": "お湯の温度、熱いですか？ぬるくします。どれくらいが良いですか？",
+        "romaji": "Oyu no ondo, atsui desu ka? Nuruku shimasu. Dore kurai ga ii desu ka?",
+        "id": "Airnya terlalu panas? Saya buat lebih hangat-suamsuam. Maunya kira-kira seberapa?"
+      },
+      {
+        "jp": "触られるのが嫌でしたね。どこまでなら大丈夫か、教えてください。",
+        "romaji": "Sawarareru no ga iya deshita ne. Doko made nara daijoubu ka, oshiete kudasai.",
+        "id": "Anda tidak suka disentuh ya. Tolong beri tahu, sampai mana yang masih nyaman."
+      },
+      {
+        "jp": "急ぎません。深呼吸してから、ゆっくり一つずつ進めましょう。",
+        "romaji": "Isogimasen. Shinkokyuu shite kara, yukkuri hitotsu zutsu susumemashou.",
+        "id": "Tidak usah buru-buru. Tarik napas dulu, lalu kita lakukan pelan-pelan satu per satu."
       }
     ],
     "meal": [
@@ -79,6 +119,26 @@
         "jp": "ここはお風呂場ですよ。寒くないように、ゆっくり進めますね。",
         "romaji": "Koko wa ofuroba desu yo. Samukunai you ni, yukkuri susumemasu ne.",
         "id": "Ini kamar mandi ya. Supaya tidak dingin, kita pelan-pelan saja."
+      },
+      {
+        "jp": "いまお湯をかけますね。びっくりしないように、少しずつです。",
+        "romaji": "Ima oyu o kakemasu ne. Bikkuri shinai you ni, sukoshi zutsu desu.",
+        "id": "Sekarang saya siram air hangat ya. Pelan-pelan supaya tidak kaget."
+      },
+      {
+        "jp": "タオルをかけますね。まず腕から洗いましょう。",
+        "romaji": "Taoru o kakemasu ne. Mazu ude kara araimashou.",
+        "id": "Saya tutup dengan handuk ya. Kita cuci dari lengan dulu."
+      },
+      {
+        "jp": "立つときは手をつなぎます。ゆっくり、一緒に動きましょう。",
+        "romaji": "Tatsu toki wa te o tsunagimasu. Yukkuri, issho ni ugokimashou.",
+        "id": "Saat berdiri kita pegangan tangan ya. Pelan-pelan, bergerak bersama."
+      },
+      {
+        "jp": "終わったら体を拭いて、服を着ましょう。もう少しで終わりますよ。",
+        "romaji": "Owattara karada o fuite, fuku o kimashou. Mou sukoshi de owarimasu yo.",
+        "id": "Setelah selesai, kita lap badan dan pakai baju ya. Sebentar lagi selesai."
       }
     ],
     "meal": [
@@ -116,6 +176,26 @@
         "jp": "ご心配ですよね。入浴中は常に見守り、危険があればすぐ対応します。",
         "romaji": "Goshinpai desu yo ne. Nyuuyoku-chuu wa tsuneni mimamori, kiken ga areba sugu taiou shimasu.",
         "id": "Wajar khawatir. Saat mandi kami selalu memantau, dan jika ada bahaya kami segera bertindak."
+      },
+      {
+        "jp": "浴室は滑りやすいので、手すりと介助で転倒予防をしています。",
+        "romaji": "Yokushitsu wa suberiyasui node, tesuri to kaijo de tentou yobou o shiteimasu.",
+        "id": "Karena kamar mandi licin, kami mencegah jatuh dengan pegangan dan bantuan."
+      },
+      {
+        "jp": "体調（血圧・息切れ）を確認しながら、短時間で無理なく行います。",
+        "romaji": "Taichou (ketsuatsu / ikigire) o kakunin shinagara, tanjikan de murinaku okonaimasu.",
+        "id": "Kami cek kondisi (tekanan darah/napas) dan mandi singkat tanpa memaksa."
+      },
+      {
+        "jp": "羞恥心に配慮して、露出を最小限にして進めています。",
+        "romaji": "Shuuchishin ni hairyo shite, roshutsu o saishougen ni shite susumeteimasu.",
+        "id": "Kami jaga rasa malu dengan meminimalkan bagian yang terbuka."
+      },
+      {
+        "jp": "気になる点があれば記録を見ながらご説明します。いつでもお声かけください。",
+        "romaji": "Kininaru ten ga areba kiroku o minagara gosetsumei shimasu. Itsudemo okake kudasai.",
+        "id": "Kalau ada yang mengkhawatirkan, kami jelaskan sambil melihat catatan. Silakan tanya kapan saja."
       }
     ],
     "meal": [
@@ -153,6 +233,26 @@
         "jp": "ご不快な思いをさせて申し訳ありません。事実を確認し、再発防止を行います。",
         "romaji": "Gofukai na omoi o sasete moushiwake arimasen. Jijitsu o kakunin shi, saihatsu boushi o okonaimasu.",
         "id": "Maaf membuat Anda tidak nyaman. Kami akan cek faktanya dan mencegah terulang."
+      },
+      {
+        "jp": "本日の入浴記録と担当者から聞き取りを行い、経緯を整理します。",
+        "romaji": "Honjitsu no nyuuyoku kiroku to tantousha kara kikitori o okonai, keii o seiri shimasu.",
+        "id": "Kami periksa catatan mandi hari ini dan wawancara petugas, lalu susun kronologinya."
+      },
+      {
+        "jp": "安全面に問題があれば、すぐに手順を見直し、職員へ周知します。",
+        "romaji": "Anzenmen ni mondai ga areba, sugu ni tejun o minaoshi, shokuin e shuuchi shimasu.",
+        "id": "Jika ada masalah keselamatan, kami segera revisi prosedur dan informasikan ke staf."
+      },
+      {
+        "jp": "ご要望は承りました。対応方針と期限を決めて、改めてご連絡します。",
+        "romaji": "Goyoubou wa uketamawarimashita. Taiou houshin to kigen o kimete, aratamete gorennraku shimasu.",
+        "id": "Permintaan Anda sudah kami terima. Kami tentukan rencana dan batas waktunya, lalu hubungi kembali."
+      },
+      {
+        "jp": "個人情報の範囲で、確認できた事実と今後の対策を丁寧にご説明します。",
+        "romaji": "Kojin jouhou no han'i de, kakunin dekita jijitsu to kongo no taisaku o teinei ni gosetsumei shimasu.",
+        "id": "Dalam batas privasi, kami jelaskan fakta yang terkonfirmasi dan langkah pencegahan ke depan."
       }
     ],
     "meal": [

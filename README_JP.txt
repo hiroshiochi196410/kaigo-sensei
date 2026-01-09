@@ -1,21 +1,11 @@
-例文ボタン復活パッチ（persona×sceneで切替）
-============================================
+入浴（bath）例文：厚め版 examples.json
+==============================
 
-追加ファイル:
-  examples.json   ← 例文データ（日本語/ローマ字/インドネシア語）
+これは examples.json の完全ファイルです。
+- 各 persona の bath を 5例文 に増量（合計25）
+- meal / toilet / night / complaint は最小のまま（必要なら同様に増やせます）
 
-置き換え/追加:
-  index.html      ← 「例文を入れる」ボタン付きのデモ版（あなたの本番UIへ移植可）
-
-導入手順（最短）:
-  1) リポジトリ直下に examples.json を追加（重要）
-  2) index.html をこの版に置き換える（まず動作確認）
-  3) 既存UIに合わせて見た目を戻す（必要なら）
-
-データ構造:
-  examples[persona][scene] = [ { jp, romaji, id }, ... ]
-  ※ 同じ persona/scene に複数入れると、ボタンを押すたびに順番に切り替わります。
-
-よくあるミス:
-  - examples.json を api/ に置く → ❌（直下に置く）
-  - ファイル名の大文字小文字違い → ❌（examples.json）
+反映方法:
+  1) GitHubのリポジトリ直下の examples.json を、このファイルに置き換え
+  2) Commit すると Vercel に自動デプロイ
+  3) 画面で persona/scene=bath を選び「例文を入れる」を連打して切替確認
