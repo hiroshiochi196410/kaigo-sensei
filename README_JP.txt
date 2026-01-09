@@ -1,11 +1,11 @@
-入浴（bath）例文：厚め版 examples.json
-==============================
+入浴カテゴリ対応パッチ
+====================
 
-これは examples.json の完全ファイルです。
-- 各 persona の bath を 5例文 に増量（合計25）
-- meal / toilet / night / complaint は最小のまま（必要なら同様に増やせます）
+内容:
+- examples.json : 入浴をカテゴリ（声かけ/温度/羞恥/拒否/安全）で管理
+- index.html    : カテゴリ選択UI付きデモ
 
-反映方法:
-  1) GitHubのリポジトリ直下の examples.json を、このファイルに置き換え
-  2) Commit すると Vercel に自動デプロイ
-  3) 画面で persona/scene=bath を選び「例文を入れる」を連打して切替確認
+使い方:
+1) リポジトリ直下の examples.json を置き換え
+2) index.html を確認用に開く
+3) 本番UIへカテゴリselect部分を移植

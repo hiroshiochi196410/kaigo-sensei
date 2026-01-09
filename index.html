@@ -1,223 +1,37 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kaigo Roleplay AI (Split Generation + Examples)</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    select, textarea, button { font-size: 16px; }
-    textarea { width: 100%; min-height: 90px; padding: 10px; }
-    button { padding: 10px 14px; cursor: pointer; }
-    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
-    .muted { color: #666; font-size: 14px; }
-    .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
-    pre { white-space: pre-wrap; word-break: break-word; }
-  </style>
+<meta charset="utf-8">
+<title>入浴カテゴリ対応デモ</title>
 </head>
 <body>
-  <h2>介護ロールプレイAI（分割生成デモ＋例文ボタン）</h2>
-  <div class="muted">
-    <span class="badge">例文</span> を入れて送信 → <span class="badge">Step1: 日本語</span> が先に表示され、続いて <span class="badge">Step2: ローマ字＋インドネシア語</span> が追記されます。
-  </div>
+<h2>入浴カテゴリ選択デモ</h2>
 
-  <div class="row" style="margin-top:12px;">
-    <label>persona:
-      <select id="persona">
-        <option value="user_calm">利用者：穏やか</option>
-        <option value="user_angry">利用者：怒り</option>
-        <option value="dementia">利用者：少し混乱</option>
-        <option value="family_anxious">家族：不安</option>
-        <option value="family_complaint">家族：クレーム</option>
-      </select>
-    </label>
+<select id="persona">
+  <option value="user_calm">利用者：穏やか</option>
+</select>
 
-    <label>scene:
-      <select id="scene">
-        <option value="bath">入浴介助</option>
-        <option value="meal">食事介助</option>
-        <option value="toilet">排泄介助</option>
-        <option value="night">夜間対応</option>
-        <option value="complaint">苦情・クレーム</option>
-      </select>
-    </label>
+<select id="bathCategory">
+  <option value="voice">声かけ</option>
+  <option value="temperature">温度確認</option>
+  <option value="privacy">羞恥配慮</option>
+  <option value="refusal">拒否対応</option>
+  <option value="safety">安全配慮</option>
+</select>
 
-    <button id="fillExample" type="button">例文を入れる</button>
-    <span id="exampleStatus" class="muted"></span>
-  </div>
-
-  <div style="margin-top:12px;">
-    <div class="muted">介護士（あなた）の発話（日本語）</div>
-    <textarea id="prompt" placeholder="例：寒くないですか？今からお湯をかけますね。"></textarea>
-  </div>
-
-  <div style="margin-top:10px;">
-    <button id="send">送信</button>
-    <span id="status" class="muted"></span>
-  </div>
-
-  <div id="out" class="card" style="display:none;">
-    <div class="muted">出力</div>
-    <h3 style="margin:8px 0 4px;">相手の返答（JP）</h3>
-    <div id="ai_jp"></div>
-
-    <h3 style="margin:12px 0 4px;">フィードバック（JP）</h3>
-    <div id="fb_jp"></div>
-
-    <h3 style="margin:12px 0 4px;">推奨返答（JP）</h3>
-    <div id="sug_jp"></div>
-
-    <div id="addon_block" style="display:none;">
-      <hr style="margin:14px 0;">
-      <h3 style="margin:8px 0 4px;">相手の返答（Romaji / ID）</h3>
-      <div><b>Romaji:</b> <span id="ai_ro"></span></div>
-      <div><b>ID:</b> <span id="ai_id"></span></div>
-
-      <h3 style="margin:12px 0 4px;">推奨返答（Romaji / ID）</h3>
-      <div><b>Romaji:</b> <span id="sug_ro"></span></div>
-      <div><b>ID:</b> <span id="sug_id"></span></div>
-    </div>
-
-    <details style="margin-top:12px;">
-      <summary class="muted">デバッグ（生JSON）</summary>
-      <pre id="debug"></pre>
-    </details>
-  </div>
+<button id="fill">例文を入れる</button>
+<textarea id="prompt" style="width:100%;height:80px;"></textarea>
 
 <script>
-  const $ = (id) => document.getElementById(id);
+let EX=null;
+fetch("/examples.json").then(r=>r.json()).then(j=>EX=j);
 
-  function setStatus(msg) { $("status").textContent = msg || ""; }
-  function setExampleStatus(msg) { $("exampleStatus").textContent = msg || ""; }
-
-  let EXAMPLES = null;
-  let exampleIndex = {}; // { persona: { scene: n } }
-
-  async function loadExamples() {
-    if (EXAMPLES) return EXAMPLES;
-    setExampleStatus("例文読み込み中…");
-    const r = await fetch("/examples.json", { cache: "no-store" });
-    EXAMPLES = await r.json();
-    setExampleStatus("例文OK");
-    return EXAMPLES;
-  }
-
-  function nextExample(persona, scene) {
-    if (!EXAMPLES) return null;
-    const list = EXAMPLES?.[persona]?.[scene] || [];
-    if (!list.length) return null;
-    const idx = (exampleIndex?.[persona]?.[scene] ?? -1) + 1;
-    if (!exampleIndex[persona]) exampleIndex[persona] = {};
-    exampleIndex[persona][scene] = idx % list.length;
-    return list[exampleIndex[persona][scene]];
-  }
-
-  async function fillExample() {
-    const persona = $("persona").value;
-    const scene = $("scene").value;
-    await loadExamples();
-    const ex = nextExample(persona, scene);
-
-    if (!ex) {
-      $("prompt").value = "";
-      setExampleStatus("例文なし（examples.jsonを確認）");
-      return;
-    }
-
-    $("prompt").value = ex.jp;
-    setExampleStatus("例文を入力しました");
-  }
-
-  function renderStep1(jp) {
-    $("out").style.display = "block";
-    $("addon_block").style.display = "none";
-    $("ai_jp").textContent = jp?.ai_reply_jp || "";
-    $("fb_jp").textContent = jp?.feedback_jp || "";
-    $("sug_jp").textContent = jp?.suggested_reply_jp || "";
-  }
-
-  function renderStep2(addon) {
-    $("addon_block").style.display = "block";
-    $("ai_ro").textContent = addon?.ai_reply_romaji || "";
-    $("ai_id").textContent = addon?.ai_reply_id || "";
-    $("sug_ro").textContent = addon?.suggested_reply_romaji || "";
-    $("sug_id").textContent = addon?.suggested_reply_id || "";
-  }
-
-  async function postJSON(url, payload) {
-    const r = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      const msg = data?.error || ("HTTP " + r.status);
-      throw new Error(msg);
-    }
-    return data;
-  }
-
-  $("fillExample").addEventListener("click", () => {
-    fillExample().catch((e) => setExampleStatus("例文エラー: " + e.message));
-  });
-
-  // Auto switch example on persona/scene change only if textarea is empty
-  function maybeAutoFill() {
-    if ($("prompt").value.trim()) return;
-    fillExample().catch(() => {});
-  }
-  $("persona").addEventListener("change", maybeAutoFill);
-  $("scene").addEventListener("change", maybeAutoFill);
-
-  // Preload examples quietly
-  loadExamples().catch(() => setExampleStatus("例文読込失敗"));
-
-  $("send").addEventListener("click", async () => {
-    const prompt = $("prompt").value.trim();
-    const persona = $("persona").value;
-    const scene = $("scene").value;
-
-    if (!prompt) {
-      alert("発話（日本語）を入力してください。");
-      return;
-    }
-
-    $("send").disabled = true;
-    setStatus("Step1（日本語）生成中…");
-    $("debug").textContent = "";
-
-    try {
-      const s1 = await postJSON("/api/chat", {
-        prompt,
-        meta: { persona, scene, stage: 1 }
-      });
-      const jp = s1?.json || null;
-      renderStep1(jp);
-      $("debug").textContent = JSON.stringify({ step1: s1 }, null, 2);
-
-      setStatus("Step2（ローマ字・インドネシア語）変換中…");
-      postJSON("/api/chat", {
-        prompt: "",
-        meta: { persona, scene, stage: 2, jp }
-      }).then((s2) => {
-        const addon = s2?.json || null;
-        renderStep2(addon);
-        const current = JSON.parse($("debug").textContent || "{}");
-        current.step2 = s2;
-        $("debug").textContent = JSON.stringify(current, null, 2);
-        setStatus("完了");
-      }).catch((e) => {
-        setStatus("Step2失敗（JPは表示済み）: " + e.message);
-      });
-
-    } catch (e) {
-      setStatus("エラー: " + e.message);
-    } finally {
-      $("send").disabled = false;
-    }
-  });
+document.getElementById("fill").onclick=()=>{
+  const p=document.getElementById("persona").value;
+  const c=document.getElementById("bathCategory").value;
+  const ex=EX.bath[p][c][0];
+  document.getElementById("prompt").value=ex.jp;
+};
 </script>
 </body>
 </html>
