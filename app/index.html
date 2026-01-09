@@ -35,8 +35,16 @@
 </head>
 <body>
 <header>
-  <h1>Kaigo Sensei（/app）</h1>
-  <div class="muted">例文：日本語＋ローマ字＋インドネシア語（ボタンで入力へ）</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <h1>Kaigo Sensei（/app）</h1>
+      <div class="muted">例文：日本語＋ローマ字＋インドネシア語（ボタンで入力へ）</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn secondary" style="padding:10px 14px" type="button" id="btnToLP" onclick="location.href='/'">LPへ</button>
+      <button class="btn secondary" style="padding:10px 14px" type="button" id="btnReload" onclick="location.reload()">再読み込み</button>
+    </div>
+  </div>
 </header>
 
 <main>
