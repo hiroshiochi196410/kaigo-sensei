@@ -215,6 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const payBox = document.getElementById("payBox");
   const netStatus = document.getElementById("netStatus");
 
+  // 体感フリーズ対策：送信中はボタンを無効化し、UI更新を先に描画させる
+  let isSending = false;
+
   function renderExample(){
     const ex = getExample(personaSelect.value, sceneSelect.value);
     exJp.textContent = ex.jp;
@@ -243,10 +246,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   exampleBtn.addEventListener("click", () => {
-    const jp = exampleBtn.dataset.jp || getExample(personaSelect.value, sceneSelect.value).jp;
-    userInput.value = jp;
-    userInput.focus();
+    if (isSending) {
+      netStatus.textContent = "送信処理中のため、例文の挿入は少し待ってください。";
+      return;
+    }
+    // 選択状態に合わせて先に例文パネルを更新（体感の遅さ対策）
+    renderExample();
+    const jp = getExample(personaSelect.value, sceneSelect.value).jp;
     netStatus.textContent = "例文を入力欄に入れました。";
+    // UIを一度描画してから入力欄へ反映（ブラウザが重い時のフリーズ感を減らす）
+    requestAnimationFrame(() => {
+      userInput.value = jp;
+      userInput.focus();
+    });
   });
 
   resetBtn.addEventListener("click", () => {
@@ -256,6 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   sendBtn.addEventListener("click", async () => {
+    if (isSending) return;
     const used = getUsed();
     const left = Math.max(0, TRIAL_LIMIT - used);
     if (left <= 0){
@@ -269,14 +282,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const payload = { prompt, persona: personaSelect.value, scene: sceneSelect.value, scene_label: SCENE_LABEL[sceneSelect.value] || "" };
+    // UIを先に描画させてから送信開始（体感フリーズ対策）
+    isSending = true;
+    sendBtn.disabled = true;
+    exampleBtn.disabled = true;
     netStatus.textContent = "送信中…（/api/chat）";
 
     try{
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok){
@@ -300,7 +321,13 @@ document.addEventListener("DOMContentLoaded", () => {
       netStatus.textContent = "受信しました。";
     }catch(e){
       console.error(e);
-      netStatus.textContent = "通信に失敗しました（ネットワーク/設定を確認）";
+      netStatus.textContent = (e?.name === "AbortError")
+        ? "タイムアウトしました（15秒）。もう一度お試しください。"
+        : "通信に失敗しました（ネットワーク/設定を確認）";
+    }finally{
+      isSending = false;
+      sendBtn.disabled = false;
+      exampleBtn.disabled = false;
     }
   });
 
