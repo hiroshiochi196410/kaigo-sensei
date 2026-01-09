@@ -1,37 +1,125 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<title>入浴カテゴリ対応デモ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>介護ロールプレイAI（入浴カテゴリ・例文ローテ）</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    select, textarea, button { font-size: 16px; }
+    textarea { width: 100%; min-height: 110px; padding: 10px; }
+    button { padding: 10px 14px; cursor: pointer; }
+    .muted { color: #666; font-size: 14px; }
+    .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+  </style>
 </head>
 <body>
-<h2>入浴カテゴリ選択デモ</h2>
+  <h2>入浴カテゴリ選択デモ（例文が押すたびに変わる）</h2>
+  <div class="muted">
+    <span class="badge">入浴のみ</span> をカテゴリ分けし、<span class="badge">例文を入れる</span> を押すたびにローテーションします。
+  </div>
 
-<select id="persona">
-  <option value="user_calm">利用者：穏やか</option>
-</select>
+  <div class="row" style="margin-top:12px;">
+    <label>persona:
+      <select id="persona">
+        <option value="user_calm">利用者：穏やか</option>
+        <option value="user_angry">利用者：怒り</option>
+        <option value="dementia">利用者：少し混乱</option>
+        <option value="family_anxious">家族：不安</option>
+        <option value="family_complaint">家族：クレーム</option>
+      </select>
+    </label>
 
-<select id="bathCategory">
-  <option value="voice">声かけ</option>
-  <option value="temperature">温度確認</option>
-  <option value="privacy">羞恥配慮</option>
-  <option value="refusal">拒否対応</option>
-  <option value="safety">安全配慮</option>
-</select>
+    <label>入浴カテゴリ:
+      <select id="bathCategory"></select>
+    </label>
 
-<button id="fill">例文を入れる</button>
-<textarea id="prompt" style="width:100%;height:80px;"></textarea>
+    <button id="fillExample" type="button">例文を入れる</button>
+    <span id="exampleStatus" class="muted"></span>
+  </div>
+
+  <div style="margin-top:12px;">
+    <div class="muted">介護士（あなた）の発話（日本語）</div>
+    <textarea id="prompt" placeholder="例文ボタンで自動入力されます。"></textarea>
+  </div>
+
+  <details class="card">
+    <summary class="muted">デバッグ（現在の例文データ）</summary>
+    <pre id="debug"></pre>
+  </details>
 
 <script>
-let EX=null;
-fetch("/examples.json").then(r=>r.json()).then(j=>EX=j);
+  const $ = (id) => document.getElementById(id);
+  const setExampleStatus = (msg) => $("exampleStatus").textContent = msg || "";
 
-document.getElementById("fill").onclick=()=>{
-  const p=document.getElementById("persona").value;
-  const c=document.getElementById("bathCategory").value;
-  const ex=EX.bath[p][c][0];
-  document.getElementById("prompt").value=ex.jp;
-};
+  let EX = null;
+  // counters[persona][category] = next index
+  const counters = {};
+
+  function keyInit(persona, cat) {
+    if (!counters[persona]) counters[persona] = {};
+    if (typeof counters[persona][cat] !== "number") counters[persona][cat] = 0;
+  }
+
+  async function loadExamples() {
+    if (EX) return EX;
+    setExampleStatus("例文読み込み中…");
+    const r = await fetch("/examples.json", { cache: "no-store" });
+    EX = await r.json();
+    setExampleStatus("例文OK");
+    // Populate category select
+    const sel = $("bathCategory");
+    sel.innerHTML = "";
+    (EX.bath_categories || []).forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c.key;
+      opt.textContent = c.label;
+      sel.appendChild(opt);
+    });
+    $("debug").textContent = JSON.stringify(EX.bath_categories, null, 2);
+    return EX;
+  }
+
+  function getNextExample(persona, cat) {
+    const list = EX?.bath?.[persona]?.[cat] || [];
+    if (!list.length) return null;
+    keyInit(persona, cat);
+    const i = counters[persona][cat] % list.length;
+    counters[persona][cat] = counters[persona][cat] + 1;
+    return list[i];
+  }
+
+  async function fillExample() {
+    await loadExamples();
+    const persona = $("persona").value;
+    const cat = $("bathCategory").value;
+
+    const ex = getNextExample(persona, cat);
+    if (!ex) {
+      $("prompt").value = "";
+      setExampleStatus("例文なし（examples.json を確認）");
+      return;
+    }
+    $("prompt").value = ex.jp;
+    setExampleStatus(`例文を入力しました（${cat} / ${persona}）`);
+  }
+
+  $("fillExample").addEventListener("click", () => {
+    fillExample().catch((e) => setExampleStatus("例文エラー: " + e.message));
+  });
+
+  // auto fill when empty and changed
+  function maybeAutoFill() {
+    if ($("prompt").value.trim()) return;
+    fillExample().catch(() => {});
+  }
+  $("persona").addEventListener("change", maybeAutoFill);
+  $("bathCategory").addEventListener("change", maybeAutoFill);
+
+  loadExamples().catch(() => setExampleStatus("例文読込失敗"));
 </script>
 </body>
 </html>
