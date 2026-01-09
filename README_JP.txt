@@ -1,36 +1,21 @@
-分割生成パッチ（B: JP + suggested + feedback） 使い方
-==================================================
+例文ボタン復活パッチ（persona×sceneで切替）
+============================================
 
-目的:
-  体感速度を上げるため、AI応答を2段階に分割します。
-    Step1: 日本語のみ（ai_reply_jp / suggested_reply_jp / feedback_jp）
-    Step2: 変換のみ（romaji / Indonesian）
+追加ファイル:
+  examples.json   ← 例文データ（日本語/ローマ字/インドネシア語）
 
-ファイル構成:
-  api/chat.js   …差し替え用（stage=1/2 分岐）
-  index.html    …分割生成デモ（あなたのUIに組み込み用の参考）
+置き換え/追加:
+  index.html      ← 「例文を入れる」ボタン付きのデモ版（あなたの本番UIへ移植可）
 
-1) 置き換え（必須）
-  あなたのリポジトリの /api/chat.js を、このパッチの api/chat.js で置き換えてください。
+導入手順（最短）:
+  1) リポジトリ直下に examples.json を追加（重要）
+  2) index.html をこの版に置き換える（まず動作確認）
+  3) 既存UIに合わせて見た目を戻す（必要なら）
 
-2) フロント側の組み込み（必須）
-  既存の index.html / app.js などで、送信処理を以下の流れにします。
+データ構造:
+  examples[persona][scene] = [ { jp, romaji, id }, ... ]
+  ※ 同じ persona/scene に複数入れると、ボタンを押すたびに順番に切り替わります。
 
-  (1) stage=1 を呼ぶ → 返ってきた jp を即表示
-  (2) stage=2 を呼ぶ → romaji/id を後から追記表示
-
-3) 環境変数（既存のままでOK）
-  OPENAI_API_KEY  …必須
-  OPENAI_MODEL    …任意（未設定なら gpt-4o-mini）
-
-4) 既存UIへ最短で組み込むコツ
-  - “結果表示欄”を4つに分ける:
-      ai_reply_jp / feedback_jp / suggested_reply_jp / (addon)
-  - addon は Step2 成功時だけ表示
-
-5) よくあるつまずき
-  - /api/chat にPOSTできていない → Vercelで /api/chat.js が認識されているか確認
-  - Step2で meta.jp が空 → stage=1 の json をそのまま meta.jp に渡す
-
----
-このREADMEは、あなたの現行UIに合わせてさらにピンポイントに調整できます。
+よくあるミス:
+  - examples.json を api/ に置く → ❌（直下に置く）
+  - ファイル名の大文字小文字違い → ❌（examples.json）

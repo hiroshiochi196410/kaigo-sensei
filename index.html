@@ -3,24 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kaigo Roleplay AI (Split Generation)</title>
+  <title>Kaigo Roleplay AI (Split Generation + Examples)</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     select, textarea, button { font-size: 16px; }
     textarea { width: 100%; min-height: 90px; padding: 10px; }
     button { padding: 10px 14px; cursor: pointer; }
     .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
     .muted { color: #666; font-size: 14px; }
-    .loading { display: inline-block; margin-left: 8px; }
     .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
     pre { white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
-  <h2>介護ロールプレイAI（分割生成デモ）</h2>
+  <h2>介護ロールプレイAI（分割生成デモ＋例文ボタン）</h2>
   <div class="muted">
-    送信すると <span class="badge">Step1: 日本語</span> が先に表示され、続いて <span class="badge">Step2: ローマ字＋インドネシア語</span> が追記されます。
+    <span class="badge">例文</span> を入れて送信 → <span class="badge">Step1: 日本語</span> が先に表示され、続いて <span class="badge">Step2: ローマ字＋インドネシア語</span> が追記されます。
   </div>
 
   <div class="row" style="margin-top:12px;">
@@ -43,6 +42,9 @@
         <option value="complaint">苦情・クレーム</option>
       </select>
     </label>
+
+    <button id="fillExample" type="button">例文を入れる</button>
+    <span id="exampleStatus" class="muted"></span>
   </div>
 
   <div style="margin-top:12px;">
@@ -87,6 +89,45 @@
   const $ = (id) => document.getElementById(id);
 
   function setStatus(msg) { $("status").textContent = msg || ""; }
+  function setExampleStatus(msg) { $("exampleStatus").textContent = msg || ""; }
+
+  let EXAMPLES = null;
+  let exampleIndex = {}; // { persona: { scene: n } }
+
+  async function loadExamples() {
+    if (EXAMPLES) return EXAMPLES;
+    setExampleStatus("例文読み込み中…");
+    const r = await fetch("/examples.json", { cache: "no-store" });
+    EXAMPLES = await r.json();
+    setExampleStatus("例文OK");
+    return EXAMPLES;
+  }
+
+  function nextExample(persona, scene) {
+    if (!EXAMPLES) return null;
+    const list = EXAMPLES?.[persona]?.[scene] || [];
+    if (!list.length) return null;
+    const idx = (exampleIndex?.[persona]?.[scene] ?? -1) + 1;
+    if (!exampleIndex[persona]) exampleIndex[persona] = {};
+    exampleIndex[persona][scene] = idx % list.length;
+    return list[exampleIndex[persona][scene]];
+  }
+
+  async function fillExample() {
+    const persona = $("persona").value;
+    const scene = $("scene").value;
+    await loadExamples();
+    const ex = nextExample(persona, scene);
+
+    if (!ex) {
+      $("prompt").value = "";
+      setExampleStatus("例文なし（examples.jsonを確認）");
+      return;
+    }
+
+    $("prompt").value = ex.jp;
+    setExampleStatus("例文を入力しました");
+  }
 
   function renderStep1(jp) {
     $("out").style.display = "block";
@@ -118,6 +159,21 @@
     return data;
   }
 
+  $("fillExample").addEventListener("click", () => {
+    fillExample().catch((e) => setExampleStatus("例文エラー: " + e.message));
+  });
+
+  // Auto switch example on persona/scene change only if textarea is empty
+  function maybeAutoFill() {
+    if ($("prompt").value.trim()) return;
+    fillExample().catch(() => {});
+  }
+  $("persona").addEventListener("change", maybeAutoFill);
+  $("scene").addEventListener("change", maybeAutoFill);
+
+  // Preload examples quietly
+  loadExamples().catch(() => setExampleStatus("例文読込失敗"));
+
   $("send").addEventListener("click", async () => {
     const prompt = $("prompt").value.trim();
     const persona = $("persona").value;
@@ -133,7 +189,6 @@
     $("debug").textContent = "";
 
     try {
-      // Step1
       const s1 = await postJSON("/api/chat", {
         prompt,
         meta: { persona, scene, stage: 1 }
@@ -142,7 +197,6 @@
       renderStep1(jp);
       $("debug").textContent = JSON.stringify({ step1: s1 }, null, 2);
 
-      // Step2 (async background)
       setStatus("Step2（ローマ字・インドネシア語）変換中…");
       postJSON("/api/chat", {
         prompt: "",
@@ -155,7 +209,6 @@
         $("debug").textContent = JSON.stringify(current, null, 2);
         setStatus("完了");
       }).catch((e) => {
-        // Step2が落ちてもStep1が出ていれば実用上OK
         setStatus("Step2失敗（JPは表示済み）: " + e.message);
       });
 
