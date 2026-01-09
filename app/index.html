@@ -215,7 +215,19 @@ document.getElementById("exampleBtn").addEventListener("click", () => {
   const scene = document.getElementById("scene").value;
   const ex = getExamples(scene, persona);
   if(ex && ex.length){ document.getElementById("userText").value = (ex[0]?.ja || ex[0] || ""); }
-});
+}
+    // 例文：相手/状況の変更に追従して更新
+    const personaEl = document.getElementById('persona');
+    const sceneEl = document.getElementById('scene');
+    const onScenarioChange = () => {
+      // 入力は前のシナリオのまま残すと混乱するので一旦クリア（必要ならこの1行を削除）
+      const userText = document.getElementById('userText');
+      if (userText) userText.value = '';
+      renderExamples();
+    };
+    if (personaEl) personaEl.addEventListener('change', onScenarioChange);
+    if (sceneEl) sceneEl.addEventListener('change', onScenarioChange);
+);
 
 function setStatus(msg){ document.getElementById("status").textContent = msg; }
 
@@ -292,33 +304,49 @@ function getExamples(scene, persona){
   ];
 }
 
-function renderExamples(){
-  const persona = document.getElementById("persona").value;
-  const scene = document.getElementById("scene").value;
-  const list = document.getElementById("examplesList");
-  const panel = document.getElementById("examplesPanel");
-  if(!list || !panel) return;
+function renderExamples() {
+      const persona = document.getElementById('persona')?.value || 'user_calm';
+      const scene = document.getElementById('scene')?.value || 'bath';
+      const list = document.getElementById('examplesList');
+      const panel = document.getElementById('examplesPanel');
+      if (!list || !panel) return;
 
-  const ex = getExamples(scene, persona);
-  panel.style.display = "block";
+      const exs = getExamples(scene, persona) || [];
+      if (exs.length === 0) {
+        list.innerHTML = '<div style="color:#667; font-size:14px;">この組み合わせの例文は準備中です。</div>';
+        panel.style.display = 'block';
+        return;
+      }
 
-  list.innerHTML = ex.map((e, i) => `
-    <div class="card" style="padding:12px; cursor:pointer" data-ex-idx="${i}">
-      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${escapeHtml(e.ja)}</div>
-      <div class="muted" style="margin:0 0 6px 0;">${escapeHtml(e.romaji)}</div>
-      <div style="font-size:13px;">${escapeHtml(e.id)}</div>
-    </div>
-  `).join("");
+      // 例文を3言語で表示（日本語 / ローマ字 / インドネシア語）
+      list.innerHTML = exs.map((ex, idx) => {
+        const ja = (ex.ja || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const ro = (ex.romaji || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const id = (ex.id || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return `
+          <div class="exampleCard" data-idx="${idx}">
+            <div class="exTitle">例文 ${idx+1}</div>
+            <div class="exLine"><b>日本語</b><br>${ja}</div>
+            <div class="exLine"><b>ローマ字</b><br>${ro}</div>
+            <div class="exLine"><b>インドネシア語</b><br>${id}</div>
+            <div class="exActions">
+              <button class="btnSmall" type="button" onclick="applyExample(${idx})">この例文を入力</button>
+            </div>
+          </div>
+        `;
+      }).join('');
 
-  // click to fill Japanese into input box
-  [...list.querySelectorAll("[data-ex-idx]")].forEach((el) => {
-    el.addEventListener("click", () => {
-      const idx = Number(el.getAttribute("data-ex-idx"));
-      const picked = ex[idx];
-      if(picked) document.getElementById("userText").value = picked.ja;
-    });
-  });
-}
+      panel.style.display = 'block';
+    }
+
+    function applyExample(idx){
+      const persona = document.getElementById('persona')?.value || 'user_calm';
+      const scene = document.getElementById('scene')?.value || 'bath';
+      const exs = getExamples(scene, persona) || [];
+      const ex = exs[idx] || exs[0];
+      const userText = document.getElementById('userText');
+      if (userText && ex && ex.ja) userText.value = ex.ja;
+    }
 
 
 function sceneArt(scene){
