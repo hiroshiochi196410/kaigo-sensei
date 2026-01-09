@@ -1,9 +1,7 @@
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res
-        .status(405)
-        .json({ error: "Method not allowed", message: "POST only" });
+      return res.status(405).json({ error: "Method not allowed", message: "POST only" });
     }
 
     const { prompt, meta } = req.body || {};
@@ -14,80 +12,115 @@ export default async function handler(req, res) {
     const scene = meta?.scene || "bath";
     const stage = Number(meta?.stage || 1); // 1 or 2
 
-    // Scenario mappings
-    const personaMap = {
+    const PERSONAS = {
       user_calm: {
-        label: "利用者：穏やか（協力的）",
+        label: "利用者：穏やか",
         ai_role: "resident",
-        ai_tone_jp: "落ち着いていて協力的。短く丁寧に返す。"
+        ai_tone_jp: "calm, cooperative, polite"
       },
       user_angry: {
-        label: "利用者：怒り（強めの口調）",
+        label: "利用者：怒り",
         ai_role: "resident",
-        ai_tone_jp: "不満・苛立ちが強い。言葉が荒くなりやすい。"
+        ai_tone_jp: "irritated, defensive, short answers"
       },
       dementia: {
-        label: "利用者：少し混乱（認知症の入口）",
+        label: "利用者：少し混乱",
         ai_role: "resident",
-        ai_tone_jp: "時間・場所の見当識が揺らぐ。短い文で混乱気味に話す。"
+        ai_tone_jp: "confused, needs simple reassurance, short sentences"
       },
       family_anxious: {
-        label: "家族：不安（心配が強い）",
+        label: "家族：不安",
         ai_role: "family",
-        ai_tone_jp: "心配で質問が多い。丁寧だが不安が滲む。"
+        ai_tone_jp: "worried, asks safety questions, wants clear explanation"
       },
       family_complaint: {
-        label: "家族：クレーム（怒り・要求）",
+        label: "家族：クレーム",
         ai_role: "family",
-        ai_tone_jp: "強めのクレーム。事実確認と要求が中心。"
+        ai_tone_jp: "complaining, demands accountability, expects apology and plan"
       }
     };
 
-    const sceneMap = {
-      bath: { label: "入浴介助", jp: "入浴の声かけ・安全確認・羞恥配慮。" },
-      meal: { label: "食事介助", jp: "食事のペース調整・誤嚥予防・励まし。" },
-      toilet: { label: "排泄介助", jp: "排泄誘導・プライバシー配慮・体調確認。" },
-      night: { label: "夜間対応", jp: "不安・不眠・見守り・転倒予防。" },
-      complaint: { label: "苦情・クレーム", jp: "謝罪・傾聴・事実確認・次の対応提示。" }
+    const SCENES = {
+      bath: {
+        label: "入浴",
+        jp: "privacy, consent, temperature check, fall prevention"
+      },
+      meal: {
+        label: "食事",
+        jp: "posture, choking risk, pace, preferences, dignity"
+      },
+      toilet: {
+        label: "排泄",
+        jp: "privacy, timely assistance, safe transfer, hygiene, dignity"
+      },
+      night: {
+        label: "夜間",
+        jp: "anxiety, insomnia, wandering risk, fall prevention, reassurance"
+      },
+      complaint: {
+        label: "クレーム対応",
+        jp: "apology, fact-finding, plan, escalation, follow-up"
+      }
     };
 
-    const personaInfo = personaMap[persona] || personaMap.user_calm;
-    const sceneInfo = sceneMap[scene] || sceneMap.bath;
+    const personaInfo = PERSONAS[persona] || PERSONAS.user_calm;
+    const sceneInfo = SCENES[scene] || SCENES.bath;
 
-    // Helper: OpenAI call with timeout
-    async function callOpenAI(bodyObj, timeoutMs = 25000) {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), timeoutMs);
+    // ---------- helpers ----------
+    const extractJson = (text) => {
+      if (!text) return null;
+      try { return JSON.parse(text); } catch (_) {}
+      const m = text.match(/\{[\s\S]*\}/);
+      if (!m) return null;
+      try { return JSON.parse(m[0]); } catch (_) { return null; }
+    };
 
-      try {
-        const r = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(bodyObj),
-          signal: controller.signal
-        });
-
-        const data = await r.json().catch(() => ({}));
-        if (!r.ok) {
-          return { ok: false, status: r.status, data };
+    const getOutputText = (resp) => {
+      // Responses API shapes vary; be defensive
+      if (typeof resp?.output_text === "string") return resp.output_text;
+      const out = resp?.output;
+      if (Array.isArray(out) && out.length) {
+        const c = out[0]?.content;
+        if (Array.isArray(c) && c.length) {
+          const t = c.find(x => x?.type === "output_text")?.text;
+          if (t) return t;
+          if (typeof c[0]?.text === "string") return c[0].text;
         }
-        return { ok: true, status: r.status, data };
-      } catch (e) {
-        const msg =
-          e?.name === "AbortError" ? "Upstream timeout" : String(e?.message || e);
-        return { ok: false, status: 504, data: { error: msg } };
-      } finally {
-        clearTimeout(t);
       }
+      return null;
+    };
+
+    async function callOpenAI({ system, user, temperature = 0.3, max_output_tokens = 500 }) {
+      // Prefer Responses API
+      const r = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4.1-mini",
+          temperature,
+          max_output_tokens,
+          response_format: { type: "json_object" },
+          input: [
+            { role: "system", content: system },
+            { role: "user", content: user }
+          ]
+        })
+      });
+
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        return { ok: false, status: r.status, body: j };
+      }
+      const text = getOutputText(j);
+      const parsed = extractJson(text) || j; // fallback
+      return { ok: true, parsed };
     }
 
-    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-
     // ------------------------------------------------------------
-    // STAGE 1: Generate JP only (B: ai_reply_jp + suggested_reply_jp + feedback_jp)
+    // STAGE 1: Generate JP only
     // ------------------------------------------------------------
     if (stage === 1) {
       if (!prompt) return res.status(400).json({ error: "Missing prompt" });
@@ -110,120 +143,77 @@ export default async function handler(req, res) {
         "}",
         "Rules:",
         "- Keep it concise.",
-        "- Safety and dignity first (privacy, reassurance, fall prevention, consent)."
+        "- Safety and dignity first (privacy, reassurance, fall prevention, consent).",
+        "- Do not mention policy, do not add extra fields."
       ].join("\n");
 
       const userContent =
         `Caregiver said (Japanese):\n${prompt}\n\n` +
-        `Keys: persona_key=${persona}, scene_key=${scene}`;
+        "Generate the resident/family reply in Japanese, then coaching feedback, then a better caregiver reply.";
 
-      const result = await callOpenAI({
-        model,
-        temperature: 0.3,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: userContent }
-        ]
-      });
+      const result = await callOpenAI({ system, user: userContent, temperature: 0.4, max_output_tokens: 450 });
 
       if (!result.ok) {
-        return res
-          .status(result.status)
-          .json({ error: "OpenAI API error", details: result.data });
-      }
-
-      const text = result.data?.choices?.[0]?.message?.content ?? "";
-      let json = null;
-      try {
-        json = JSON.parse(text);
-      } catch {
-        json = null;
-      }
-
-      return res.status(200).json({
-        stage: 1,
-        text,
-        json,
-        trace: { persona, scene }
-      });
-    }
-
-    // ------------------------------------------------------------
-    // STAGE 2: Convert ONLY (Romaji + Indonesian) from stage1 JP outputs
-    // ------------------------------------------------------------
-    if (stage === 2) {
-      const jp = meta?.jp; // { ai_reply_jp, suggested_reply_jp, feedback_jp }
-      if (!jp?.ai_reply_jp || !jp?.suggested_reply_jp) {
-        return res.status(400).json({
-          error: "Missing meta.jp",
-          message:
-            'Call stage=2 with meta.jp: { ai_reply_jp, suggested_reply_jp, feedback_jp }'
+        return res.status(502).json({
+          error: "Upstream error",
+          message: "OpenAI request failed",
+          details: result.body
         });
       }
 
-      const system = [
-        "You are a careful converter.",
-        "Convert Japanese text to (1) easy-to-read romaji and (2) simple natural Indonesian.",
-        "Do NOT add new meaning. Do NOT invent extra content.",
-        "Return ONLY valid JSON (no markdown, no extra text).",
-        "Schema:",
-        "{",
-        '  "ai_reply_romaji": "...",',
-        '  "ai_reply_id": "...",',
-        '  "suggested_reply_romaji": "...",',
-        '  "suggested_reply_id": "..."',
-        "}",
-        "Rules:",
-        "- Romaji should be readable for beginners (avoid overly academic Hepburn details).",
-        "- Indonesian should be short, polite, natural."
-      ].join("\n");
-
-      const userContent = [
-        "Convert the following.",
-        "",
-        "[ai_reply_jp]",
-        jp.ai_reply_jp,
-        "",
-        "[suggested_reply_jp]",
-        jp.suggested_reply_jp
-      ].join("\n");
-
-      const result = await callOpenAI({
-        model,
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: userContent }
-        ]
-      });
-
-      if (!result.ok) {
-        return res
-          .status(result.status)
-          .json({ error: "OpenAI API error", details: result.data });
-      }
-
-      const text = result.data?.choices?.[0]?.message?.content ?? "";
-      let json = null;
-      try {
-        json = JSON.parse(text);
-      } catch {
-        json = null;
-      }
-
+      const out = result.parsed || {};
       return res.status(200).json({
-        stage: 2,
-        text,
-        json,
+        ai_reply_jp: out.ai_reply_jp || "",
+        feedback_jp: out.feedback_jp || "",
+        suggested_reply_jp: out.suggested_reply_jp || "",
         trace: { persona, scene }
       });
     }
 
-    return res
-      .status(400)
-      .json({ error: "Invalid stage", message: "stage must be 1 or 2" });
+    // ------------------------------------------------------------
+    // STAGE 2: JP -> Romaji + Indonesian
+    // ------------------------------------------------------------
+    if (stage === 2) {
+      if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+
+      const system = [
+        "You are a careful Japanese language assistant.",
+        "Task: convert Japanese caregiver reply into Romaji and Indonesian translation.",
+        "Return ONLY valid JSON (no markdown, no extra text).",
+        "Schema:",
+        "{",
+        '  "romaji": "Japanese in romaji (Hepburn-like, readable)",',
+        '  "indonesian": "Natural Indonesian, polite, caregiver tone"',
+        "}",
+        "Rules:",
+        "- Keep the meaning faithful.",
+        "- Keep it concise.",
+        "- Do not add extra fields."
+      ].join("\n");
+
+      const userContent =
+        `Japanese caregiver reply:\n${prompt}\n\n` +
+        "Convert it to romaji and Indonesian.";
+
+      const result = await callOpenAI({ system, user: userContent, temperature: 0.2, max_output_tokens: 350 });
+
+      if (!result.ok) {
+        return res.status(502).json({
+          error: "Upstream error",
+          message: "OpenAI request failed",
+          details: result.body
+        });
+      }
+
+      const out = result.parsed || {};
+      return res.status(200).json({
+        romaji: out.romaji || "",
+        indonesian: out.indonesian || "",
+        trace: { persona, scene }
+      });
+    }
+
+    return res.status(400).json({ error: "Invalid stage", message: "stage must be 1 or 2" });
   } catch (e) {
     return res.status(500).json({
       error: "Server error",

@@ -3,48 +3,100 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（カテゴリ例文デモ）</title>
+  <title>介護ロールプレイAI（カテゴリ例文 × 分割生成）</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    select, textarea, button { font-size: 16px; }
-    textarea { width: 100%; min-height: 110px; padding: 10px; }
-    button { padding: 10px 14px; cursor: pointer; }
-    .muted { color: #666; font-size: 14px; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
+    h1 { font-size: 20px; margin: 0 0 10px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    label { display:flex; gap:6px; align-items:center; }
+    select, textarea, button, input { font-size: 15px; }
+    button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
+    button.primary { border-color:#111; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    textarea { width: 100%; min-height: 110px; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
+    .muted { color: #666; font-size: 13px; }
     .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
+    .card { border: 1px solid #e1e1e1; border-radius: 14px; padding: 12px; margin-top: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
+    pre { white-space: pre-wrap; word-break: break-word; margin: 0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .sep { height:1px; background:#eee; margin: 10px 0; }
   </style>
 </head>
 <body>
-  <h2>カテゴリ例文デモ（入浴/食事/排泄/夜間/クレーム）</h2>
-  <div class="muted"><span class="badge">例文を入れる</span> を押すたびに、選択中の <span class="badge">scene×カテゴリ×persona</span> でローテーションします。</div>
+  <h1>介護ロールプレイAI <span class="badge">カテゴリ例文</span> × <span class="badge">分割生成</span></h1>
+  <div class="muted">流れ：①例文投入 → ②送信（Stage1：JP）→ ③自動でStage2（ローマ字＋インドネシア語）</div>
 
   <div class="row" style="margin-top:12px;">
-    <label>scene:
+    <label>scene
       <select id="scene"></select>
     </label>
 
-    <label>persona:
+    <label>persona
       <select id="persona"></select>
     </label>
 
-    <label>カテゴリ:
+    <label>カテゴリ
       <select id="category"></select>
     </label>
 
     <button id="fillExample" type="button">例文を入れる</button>
+    <button id="send" class="primary" type="button">送信</button>
+    <label class="muted" style="gap:8px;">
+      <input id="autoStage2" type="checkbox" checked />
+      Stage2を自動実行
+    </label>
     <span id="status" class="muted"></span>
   </div>
 
   <div style="margin-top:12px;">
     <div class="muted">介護士（あなた）の発話（日本語）</div>
-    <textarea id="prompt" placeholder="例文ボタンで自動入力されます。"></textarea>
+    <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="muted">Stage1（日本語のみ）</div>
+      <div class="sep"></div>
+      <div><b>相手（AI側）の返答</b></div>
+      <pre id="aiReply" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>あなたへのフィードバック</b></div>
+      <pre id="feedback" class="mono"></pre>
+      <div class="sep"></div>
+      <div class="row" style="justify-content:space-between; align-items:flex-end;">
+        <div>
+          <b>推奨返答（日本語）</b>
+          <div class="muted">ここを Stage2 でローマ字＋インドネシア語にします</div>
+        </div>
+        <button id="runStage2" type="button">Stage2だけ実行</button>
+      </div>
+      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="muted">Stage2（ローマ字＋インドネシア語）</div>
+      <div class="sep"></div>
+      <div><b>ローマ字</b></div>
+      <pre id="romaji" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>インドネシア語</b></div>
+      <pre id="indonesian" class="mono"></pre>
+    </div>
   </div>
 
 <script>
   const $ = (id) => document.getElementById(id);
   const setStatus = (msg) => $("status").textContent = msg || "";
+  const setBusy = (busy) => {
+    $("fillExample").disabled = busy;
+    $("send").disabled = busy;
+    $("runStage2").disabled = busy;
+  };
+
   let DB = null;
-  const counters = {}; // counters[scene][persona][category]
+  const counters = {}; // counters[scene][persona][category] = next index
 
   function initCounter(scene, persona, cat){
     if(!counters[scene]) counters[scene]={};
@@ -62,25 +114,37 @@
     });
   }
 
-  async function load(){
+  function populateSceneSelect(sceneKeys){
+    const sel = $("scene");
+    sel.innerHTML="";
+    sceneKeys.forEach(k=>{
+      const opt=document.createElement("option");
+      opt.value=k;
+      // JP表示はキーそのまま。必要ならここでマップ化できます
+      opt.textContent=k;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function loadDB(){
     if(DB) return DB;
     setStatus("例文読み込み中…");
     const r = await fetch("/examples.json", { cache: "no-store" });
     DB = await r.json();
-    populateSelect($("scene"), Object.keys(DB.scenes).map(k=>({key:k,label: k})));
-    populateSelect($("persona"), DB.personas);
+    populateSceneSelect(Object.keys(DB.scenes || {}));
+    populateSelect($("persona"), DB.personas || []);
     refreshCategories();
     setStatus("例文OK");
     return DB;
   }
 
   function refreshCategories(){
-    const scene=$("scene").value;
+    const scene = $("scene").value;
     const cats = DB?.scenes?.[scene] || [];
     populateSelect($("category"), cats);
   }
 
-  function getNext(){
+  function getNextExample(){
     const scene=$("scene").value;
     const persona=$("persona").value;
     const cat=$("category").value;
@@ -92,20 +156,103 @@
     return list[i];
   }
 
-  async function fill(){
-    await load();
-    const ex = getNext();
-    if(!ex){ setStatus("例文なし（examples.json確認）"); return; }
+  async function fillExample(){
+    await loadDB();
+    const ex = getNextExample();
+    if(!ex){
+      $("prompt").value="";
+      setStatus("例文なし（examples.json を確認）");
+      return;
+    }
     $("prompt").value = ex.jp;
-    setStatus("例文を入力しました");
+    setStatus("例文を入力しました（押すたびに切替）");
   }
 
-  $("fillExample").addEventListener("click", ()=>fill().catch(e=>setStatus("エラー: "+e.message)));
-  $("scene").addEventListener("change", ()=>{ refreshCategories(); if(!$("prompt").value.trim()) fill().catch(()=>{}); });
-  $("persona").addEventListener("change", ()=>{ if(!$("prompt").value.trim()) fill().catch(()=>{}); });
-  $("category").addEventListener("change", ()=>{ if(!$("prompt").value.trim()) fill().catch(()=>{}); });
+  function clearOutputs(){
+    $("aiReply").textContent="";
+    $("feedback").textContent="";
+    $("suggestedJp").value="";
+    $("romaji").textContent="";
+    $("indonesian").textContent="";
+  }
 
-  load().catch(e=>setStatus("読込失敗: "+e.message));
+  async function postChat(payload){
+    const r = await fetch("/api/chat", {
+      method:"POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+    const j = await r.json().catch(()=> ({}));
+    if(!r.ok) {
+      const msg = j?.message || j?.error || "API error";
+      throw new Error(msg);
+    }
+    return j;
+  }
+
+  async function runStage1(){
+    await loadDB();
+    clearOutputs();
+
+    const prompt = $("prompt").value.trim();
+    if(!prompt) { setStatus("入力が空です"); return; }
+
+    const meta = {
+      stage: 1,
+      scene: $("scene").value,
+      persona: $("persona").value
+    };
+
+    setBusy(true);
+    setStatus("Stage1 実行中…");
+    try{
+      const j = await postChat({ prompt, meta });
+      $("aiReply").textContent = j.ai_reply_jp || "";
+      $("feedback").textContent = j.feedback_jp || "";
+      $("suggestedJp").value = j.suggested_reply_jp || "";
+      setStatus("Stage1 完了");
+      if($("autoStage2").checked){
+        await runStage2();
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runStage2(){
+    await loadDB();
+
+    const suggested = $("suggestedJp").value.trim();
+    if(!suggested) { setStatus("Stage2: 推奨返答（JP）が空です"); return; }
+
+    const meta = {
+      stage: 2,
+      scene: $("scene").value,
+      persona: $("persona").value
+    };
+
+    setBusy(true);
+    setStatus("Stage2 実行中…");
+    try{
+      const j = await postChat({ prompt: suggested, meta });
+      $("romaji").textContent = j.romaji || "";
+      $("indonesian").textContent = j.indonesian || "";
+      setStatus("Stage2 完了");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // events
+  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+  $("send").addEventListener("click", ()=>runStage1().catch(e=>setStatus("送信エラー: "+e.message)));
+  $("runStage2").addEventListener("click", ()=>runStage2().catch(e=>setStatus("Stage2エラー: "+e.message)));
+
+  $("scene").addEventListener("change", async ()=>{ await loadDB(); refreshCategories(); });
+  $("persona").addEventListener("change", ()=>{});
+  $("category").addEventListener("change", ()=>{});
+
+  loadDB().catch(e=>setStatus("例文読込失敗: "+e.message));
 </script>
 </body>
 </html>
