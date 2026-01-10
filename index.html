@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（例文復活FIX：scenes辞書対応）</title>
+  <title>介護ロールプレイAI（カテゴリ絞り込み：persona対応）</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
@@ -26,7 +26,12 @@
   </style>
 </head>
 <body>
-  <h1>介護ロールプレイAI <span class="badge">例文復活FIX</span> <span class="badge">カテゴリ</span> <span class="badge">Persona/Scene</span> <span class="badge">介護士ローマ字</span></h1>
+  <h1>介護ロールプレイAI
+    <span class="badge">例文復活FIX</span>
+    <span class="badge">カテゴリ</span>
+    <span class="badge">persona絞り込み</span>
+    <span class="badge">介護士ローマ字</span>
+  </h1>
   <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
   <div class="row">
@@ -152,7 +157,7 @@
   }
 
   // -----------------------
-  // Examples loader (FIX)
+  // Examples loader
   // -----------------------
   let EX = null;
   const counters = {}; // counters[scene][persona][cat] = next index
@@ -187,7 +192,6 @@
   }
 
   async function fetchJSONWithFallbacks(){
-    // Absolute first, then relative: /examples.json -> ./examples.json
     const urls = ["/examples.json", "./examples.json"];
     let lastErr = null;
     for(const u of urls){
@@ -212,8 +216,7 @@
       const root = db.examples || db.data || db.dataset || db.items || null;
       if(!root) throw new Error("examples root not found (need examples/data/dataset)");
 
-      // ✅ FIX: db.scenes may be dict: { bath:[{key,label}...], ... }
-      // If dict, scene options come from its keys; labels map to JP when available.
+      // scenes (dict or array)
       const sceneOptions = [];
       if(Array.isArray(db.scenes)){
         db.scenes.forEach(v=>{
@@ -222,8 +225,6 @@
         });
       } else if(db.scenes && typeof db.scenes === "object"){
         Object.keys(db.scenes).forEach(k=>{
-          // Try to use Japanese label if present in db.scenes[k] items? Not necessary; keep key (bath) displayed in UI as-is.
-          // We'll still show key; if you want JP labels, add db.scene_labels in json.
           const labelMap = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
           sceneOptions.push({ key:k, label: (labelMap[k] || k) });
         });
@@ -243,7 +244,6 @@
           }
         });
       } else {
-        // infer from first scene
         const first = sceneOptions[0]?.key;
         Object.keys((root && root[first]) || {}).forEach(p=>personaOptions.push({key:p,label:p}));
       }
@@ -258,7 +258,6 @@
     } catch(e){
       EX = null;
       setStatus("例文なし（examples.json 未設定/読込失敗）");
-      // fallback options
       populateSelect($("scene"), [
         {key:"bath",label:"入浴"},
         {key:"meal",label:"食事"},
@@ -278,6 +277,8 @@
     }
   }
 
+  // ✅ ここが今回の実装ポイント：
+  // scene×persona で「実際に例文が存在するカテゴリだけ」表示する
   function refreshCategories(){
     if(!EX){
       populateSelect($("category"), [{key:"free",label:"自由入力"}]);
@@ -287,21 +288,29 @@
     const scene = $("scene").value;
     const persona = $("persona").value;
 
-    // ✅ Prefer db.scenes dict labels when available
-    const catOptions = [];
+    // A) まず「sceneに定義されたカテゴリ一覧（key/label）」を作る
+    let definedCats = [];
     if(db.scenes && typeof db.scenes === "object" && !Array.isArray(db.scenes) && Array.isArray(db.scenes[scene])){
-      db.scenes[scene].forEach(it=>{
-        const key = it.key ?? it.value ?? it.id;
-        const label = it.label ?? it.name ?? key;
-        if(key) catOptions.push({key, label});
-      });
+      definedCats = db.scenes[scene]
+        .map(it => ({ key: (it.key ?? it.value ?? it.id), label: (it.label ?? it.name ?? (it.key ?? it.value ?? it.id) ?? "") }))
+        .filter(x=>x.key);
     } else {
-      // fallback: infer from examples root keys
-      const cats = Object.keys((root && root[scene] && root[scene][persona]) || {});
-      cats.forEach(c=>catOptions.push({key:c,label:c}));
+      // fallback: infer by keys in examples root
+      definedCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
     }
 
-    populateSelect($("category"), catOptions.length ? catOptions : [{key:"free",label:"自由入力"}]);
+    // B) 次に「このscene×personaで例文があるカテゴリ」だけに絞る
+    const availableKeys = new Set(Object.keys((root && root[scene] && root[scene][persona]) || {}));
+    const filtered = definedCats.filter(c => availableKeys.has(c.key));
+
+    // C) filteredが空なら、例文のキーをそのまま使う（保険）
+    const fallbackCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
+    const finalCats = (filtered.length ? filtered : (fallbackCats.length ? fallbackCats : [{key:"free",label:"自由入力"}]));
+
+    // selection維持（可能なら）
+    const prev = $("category").value;
+    populateSelect($("category"), finalCats);
+    if(prev && finalCats.some(x=>x.key===prev)) $("category").value = prev;
   }
 
   function getNextExample(){
@@ -347,20 +356,17 @@
     try{
       clearOutputs();
 
-      // Caregiver romaji (reuse stage2)
       const r0 = await postChat({ prompt: jp, meta: meta(2) });
       $("caregiverRomaji").textContent = r0.romaji || "";
 
-      // Stage1
       setStatus("Stage1 実行中…");
       const s1 = await postChat({ prompt: jp, meta: meta(1) });
       $("aiReply").textContent = s1.ai_reply_jp || "";
       $("feedback").textContent = s1.feedback_jp || "";
       $("suggestedJp").value = s1.suggested_reply_jp || "";
 
-      // Stage2 auto
       if($("autoStage2").checked){
-        await runStage2Only(true);
+        await runStage2Only();
       } else {
         setStatus("Stage1 完了（Stage2は手動）");
       }
