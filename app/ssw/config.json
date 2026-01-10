@@ -1,0 +1,9 @@
+{
+  "variant": "ssw",
+  "title": "介護ロールプレイAI（特定技能）",
+  "default_scene": "night",
+  "default_persona": "family_complaint",
+  "default_level": "field",
+  "trial_limit": 3,
+  "stripe_price_id": "PRICE_ID_SSW_HERE"
+}
