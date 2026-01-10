@@ -5,10 +5,6 @@
   "default_persona": "family_complaint",
   "default_level": "field",
   "trial_limit": 3,
-  "stripe_price_id": "PRICE_ID_SSW_HERE"
-}
-{
-  "variant": "ssw",
-  "trial_limit": 3,
+  "stripe_price_id": "PRICE_ID_SSW_HERE",
   "unlock_code": "SSW-2026"
 }
