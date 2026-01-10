@@ -7,3 +7,8 @@
   "trial_limit": 3,
   "stripe_price_id": "PRICE_ID_TRAINEE_HERE"
 }
+{
+  "variant": "trainee",
+  "trial_limit": 3,
+  "unlock_code": "TRN-2026"
+}
