@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（カテゴリ例文 × 分割生成）</title>
+  <title>介護ロールプレイAI（介護士発話ローマ字対応）</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
@@ -25,288 +25,92 @@
   </style>
 </head>
 <body>
-  <h1>介護ロールプレイAI <span class="badge">カテゴリ例文</span> × <span class="badge">分割生成</span></h1>
-  <div class="muted">流れ：①例文投入 → ②送信（Stage1：JP）→ ③自動でStage2（ローマ字＋インドネシア語）</div>
+<h1>介護ロールプレイAI <span class="badge">介護士ローマ字対応</span></h1>
 
-  <div class="row" style="margin-top:12px;">
-    <label>scene
-      <select id="scene"></select>
-    </label>
+<div class="muted">①介護士発話 → ローマ字表示 → ②Stage1 → ③Stage2</div>
 
-    <label>persona
-      <select id="persona"></select>
-    </label>
+<div style="margin-top:12px;">
+  <div class="muted">介護士（あなた）の発話（日本語）</div>
+  <textarea id="prompt" placeholder="例：こんばんは。今日はどのようにお過ごしでしたか？"></textarea>
+</div>
 
-    <label>カテゴリ
-      <select id="category"></select>
-    </label>
+<div class="card">
+  <div><b>介護士発話（ローマ字）</b></div>
+  <pre id="caregiverRomaji" class="mono"></pre>
+</div>
 
-    <button id="fillExample" type="button">例文を入れる</button>
-    <button id="send" class="primary" type="button">送信</button>
-    <label class="muted" style="gap:8px;">
-      <input id="autoStage2" type="checkbox" checked />
-      Stage2を自動実行
-    </label>
-    <span id="status" class="muted"></span>
+<button id="send" class="primary">送信</button>
+<span id="status" class="muted"></span>
+
+<div class="grid">
+  <div class="card">
+    <div class="muted">Stage1（日本語）</div>
+    <pre id="aiReply" class="mono"></pre>
+    <div class="sep"></div>
+    <pre id="feedback" class="mono"></pre>
+    <div class="sep"></div>
+    <textarea id="suggestedJp" placeholder="推奨返答（日本語）"></textarea>
   </div>
 
-  <div style="margin-top:12px;">
-    <div class="muted">介護士（あなた）の発話（日本語）</div>
-    <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
+  <div class="card">
+    <div class="muted">Stage2（翻訳）</div>
+    <div><b>ローマ字</b></div>
+    <pre id="romaji" class="mono"></pre>
+    <div class="sep"></div>
+    <div><b>インドネシア語</b></div>
+    <pre id="indonesian" class="mono"></pre>
   </div>
-
-  <div class="grid">
-    <div class="card">
-      <div class="muted">Stage1（日本語のみ）</div>
-      <div class="sep"></div>
-      <div><b>相手（AI側）の返答</b></div>
-      <pre id="aiReply" class="mono"></pre>
-      <div class="sep"></div>
-      <div><b>あなたへのフィードバック</b></div>
-      <pre id="feedback" class="mono"></pre>
-      <div class="sep"></div>
-      <div class="row" style="justify-content:space-between; align-items:flex-end;">
-        <div>
-          <b>推奨返答（日本語）</b>
-          <div class="muted">ここを Stage2 でローマ字＋インドネシア語にします</div>
-        </div>
-        <button id="runStage2" type="button">Stage2だけ実行</button>
-      </div>
-      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
-    </div>
-
-    <div class="card">
-      <div class="muted">Stage2（ローマ字＋インドネシア語）</div>
-      <div class="sep"></div>
-      <div><b>ローマ字</b></div>
-      <pre id="romaji" class="mono"></pre>
-      <div class="sep"></div>
-      <div><b>インドネシア語</b></div>
-      <pre id="indonesian" class="mono"></pre>
-    </div>
-  </div>
+</div>
 
 <script>
-  const $ = (id) => document.getElementById(id);
-  const setStatus = (msg) => $("status").textContent = msg || "";
-  const setBusy = (busy) => {
-    $("fillExample").disabled = busy;
-    $("send").disabled = busy;
-    $("runStage2").disabled = busy;
-  };
+const $ = id => document.getElementById(id);
 
-  // --- Fetch optimization state ---
-  let inFlight = null; // AbortController
-  let busy = false;
+async function postChat(payload){
+  const r = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+  const j = await r.json();
+  if(!r.ok) throw new Error(j.error || j.message || "API error");
+  return j;
+}
 
-  let DB = null;
-  const counters = {}; // counters[scene][persona][category] = next index
+async function run(){
+  const jp = $("prompt").value.trim();
+  if(!jp) return;
 
-  function initCounter(scene, persona, cat){
-    if(!counters[scene]) counters[scene]={};
-    if(!counters[scene][persona]) counters[scene][persona]={};
-    if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat]=0;
-  }
+  $("status").textContent = "介護士発話をローマ字化…";
 
-  function populateSelect(sel, items){
-    sel.innerHTML="";
-    items.forEach(it=>{
-      const opt=document.createElement("option");
-      opt.value=it.key;
-      opt.textContent=it.label;
-      sel.appendChild(opt);
-    });
-  }
+  const romajiRes = await postChat({
+    prompt: jp,
+    meta: { stage: 2, persona: "user_calm", scene: "bath" }
+  });
+  $("caregiverRomaji").textContent = romajiRes.romaji || "";
 
-  function populateSceneSelect(sceneKeys){
-    const sel = $("scene");
-    sel.innerHTML="";
-    sceneKeys.forEach(k=>{
-      const opt=document.createElement("option");
-      opt.value=k;
-      opt.textContent=k;
-      sel.appendChild(opt);
-    });
-  }
+  $("status").textContent = "Stage1 実行中…";
+  const s1 = await postChat({
+    prompt: jp,
+    meta: { stage: 1, persona: "user_calm", scene: "bath" }
+  });
 
-  async function loadDB(){
-    if(DB) return DB;
-    setStatus("例文読み込み中…");
-    const r = await fetch("/examples.json", { cache: "no-store" });
-    DB = await r.json();
-    populateSceneSelect(Object.keys(DB.scenes || {}));
-    populateSelect($("persona"), DB.personas || []);
-    refreshCategories();
-    setStatus("例文OK");
-    return DB;
-  }
+  $("aiReply").textContent = s1.ai_reply_jp || "";
+  $("feedback").textContent = s1.feedback_jp || "";
+  $("suggestedJp").value = s1.suggested_reply_jp || "";
 
-  function refreshCategories(){
-    const scene = $("scene").value;
-    const cats = DB?.scenes?.[scene] || [];
-    populateSelect($("category"), cats);
-  }
+  $("status").textContent = "Stage2 実行中…";
+  const s2 = await postChat({
+    prompt: s1.suggested_reply_jp,
+    meta: { stage: 2, persona: "user_calm", scene: "bath" }
+  });
 
-  function getNextExample(){
-    const scene=$("scene").value;
-    const persona=$("persona").value;
-    const cat=$("category").value;
-    const list = DB?.examples?.[scene]?.[persona]?.[cat] || [];
-    if(!list.length) return null;
-    initCounter(scene, persona, cat);
-    const i = counters[scene][persona][cat] % list.length;
-    counters[scene][persona][cat] = counters[scene][persona][cat] + 1;
-    return list[i];
-  }
+  $("romaji").textContent = s2.romaji || "";
+  $("indonesian").textContent = s2.indonesian || "";
 
-  async function fillExample(){
-    await loadDB();
-    const ex = getNextExample();
-    if(!ex){
-      $("prompt").value="";
-      setStatus("例文なし（examples.json を確認）");
-      return;
-    }
-    $("prompt").value = ex.jp;
-    setStatus("例文を入力しました（押すたびに切替）");
-  }
+  $("status").textContent = "完了";
+}
 
-  function clearOutputs(){
-    $("aiReply").textContent="";
-    $("feedback").textContent="";
-    $("suggestedJp").value="";
-    $("romaji").textContent="";
-    $("indonesian").textContent="";
-  }
-
-  function abortInFlight(){
-    if(inFlight){
-      try { inFlight.abort(); } catch(_){}
-      inFlight = null;
-    }
-  }
-
-  async function postChat(payload, { timeoutMs = 15000, retry = 1 } = {}){
-    // Abort previous request to avoid out-of-order UI updates
-    abortInFlight();
-    inFlight = new AbortController();
-
-    const tryOnce = async () => {
-      const timer = setTimeout(() => inFlight?.abort(), timeoutMs);
-      try{
-        const r = await fetch("/api/chat", {
-          method:"POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify(payload),
-          signal: inFlight.signal
-        });
-        const j = await r.json().catch(()=> ({}));
-        if(!r.ok){
-          const msg = j?.message || j?.error || (j?.details ? String(j.details) : "") || ("HTTP " + r.status);
-          const err = new Error(msg);
-          err.status = r.status;
-          throw err;
-        }
-        return j;
-      } finally {
-        clearTimeout(timer);
-      }
-    };
-
-    let lastErr = null;
-    for(let attempt=0; attempt<=retry; attempt++){
-      try{
-        return await tryOnce();
-      } catch(e){
-        lastErr = e;
-        if(e?.name === "AbortError") throw e;
-        const retriable = [502,503,504].includes(e.status);
-        if(retriable && attempt < retry) continue;
-        throw lastErr;
-      }
-    }
-    throw lastErr || new Error("API error");
-  }
-
-  async function runStage1(){
-    await loadDB();
-    clearOutputs();
-
-    const prompt = $("prompt").value.trim();
-    if(!prompt) { setStatus("入力が空です"); return; }
-
-    const meta = {
-      stage: 1,
-      scene: $("scene").value,
-      persona: $("persona").value
-    };
-
-    if(busy) return;
-    busy = true;
-    setBusy(true);
-    setStatus("Stage1 実行中…");
-    try{
-      const j = await postChat({ prompt, meta }, { timeoutMs: 15000, retry: 1 });
-      $("aiReply").textContent = j.ai_reply_jp || "";
-      $("feedback").textContent = j.feedback_jp || "";
-      $("suggestedJp").value = j.suggested_reply_jp || "";
-      setStatus("Stage1 完了");
-
-      if($("autoStage2").checked){
-        await runStage2(true);
-      }
-    } catch(e){
-      if(e?.name === "AbortError") return;
-      setStatus("送信エラー: " + (e?.message || e));
-    } finally {
-      busy = false;
-      setBusy(false);
-    }
-  }
-
-  async function runStage2(fromAuto=false){
-    await loadDB();
-
-    const suggested = $("suggestedJp").value.trim();
-    if(!suggested) {
-      setStatus("Stage2: 推奨返答（JP）が空です（Stage2は実行しません）");
-      return;
-    }
-
-    const meta = {
-      stage: 2,
-      scene: $("scene").value,
-      persona: $("persona").value
-    };
-
-    if(busy) return;
-    busy = true;
-    setBusy(true);
-    setStatus("Stage2 実行中…");
-    try{
-      const j = await postChat({ prompt: suggested, meta }, { timeoutMs: 15000, retry: 1 });
-      $("romaji").textContent = j.romaji || "";
-      $("indonesian").textContent = j.indonesian || "";
-      setStatus("Stage2 完了");
-    } catch(e){
-      if(e?.name === "AbortError") return;
-      setStatus("Stage2エラー: " + (e?.message || e));
-    } finally {
-      busy = false;
-      setBusy(false);
-    }
-  }
-
-  // events
-  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("send").addEventListener("click", ()=>runStage1());
-  $("runStage2").addEventListener("click", ()=>runStage2(false));
-
-  $("scene").addEventListener("change", async ()=>{ await loadDB(); refreshCategories(); });
-  $("persona").addEventListener("change", ()=>{});
-  $("category").addEventListener("change", ()=>{});
-
-  loadDB().catch(e=>setStatus("例文読込失敗: "+e.message));
+$("send").addEventListener("click", ()=>run().catch(e=>$("status").textContent="エラー: "+e.message));
 </script>
 </body>
 </html>
