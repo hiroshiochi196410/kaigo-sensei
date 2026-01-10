@@ -168,6 +168,13 @@
     if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat] = 0;
   }
 
+
+  function resetCounter(scene, persona, cat){
+    if(!scene || !persona || !cat) return;
+    if(counters[scene] && counters[scene][persona] && typeof counters[scene][persona][cat] === "number"){
+      counters[scene][persona][cat] = 0;
+    }
+  }
   function populateSelect(sel, options){
     sel.innerHTML = "";
     options.forEach(o=>{
@@ -398,9 +405,8 @@
 
   $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Scene変更：例文or入力→送信"); });
   $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Persona変更：例文or入力→送信"); });
-  $("category").addEventListener("change", ()=>{ clearOutputs(); setStatus("カテゴリ変更：例文ボタンで投入"); });
-
-  loadExamples().then(()=>{ if(EX) refreshCategories(); });
+  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value); clearOutputs(); setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
+loadExamples().then(()=>{ if(EX) refreshCategories(); });
 </script>
 </body>
 </html>
