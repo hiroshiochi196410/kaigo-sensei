@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>介護ロールプレイAI <span id="variantBadge" class="badge" style="display:none;"></span> （カテゴリ絞り込み：persona対応）</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
+    h1 { font-size: 20px; margin: 0 0 10px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 8px 0 12px; }
+    label { display:flex; gap:6px; align-items:center; font-size: 14px; }
+    select, textarea, button, input { font-size: 15px; }
+    button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
+    button.primary { border-color:#111; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    textarea { width:100%; min-height:110px; padding:10px; border-radius: 12px; border:1px solid #ddd; }
+    .muted { color:#666; font-size:13px; }
+    .badge { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; color:#333; }
+    .card { border:1px solid #e1e1e1; border-radius:14px; padding:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:10px; }
+    @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
+    pre { white-space: pre-wrap; word-break: break-word; margin:0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .sep { height:1px; background:#eee; margin:10px 0; }
+    .hint { font-size: 12px; color:#777; }
+  </style>
+</head>
+<body>
+  <h1>介護ロールプレイAI
+    <span class="badge">例文復活FIX</span>
+    <span class="badge">カテゴリ</span>
+    <span class="badge">persona絞り込み</span>
+    <span class="badge">介護士ローマ字</span>
+  </h1>
+  <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
+
+  <div class="row">
+    <label>Scene <select id="scene"></select></label>
+    <label>Persona <select id="persona"></select></label>
+    <label>カテゴリ <select id="category"></select></label>
+    <label>レベル <select id="level"></select></label>
+
+    <button id="fillExample" type="button">例文を入れる</button>
+
+    <label class="muted" style="gap:8px;">
+      <input id="autoStage2" type="checkbox" checked />
+      Stage2を自動実行
+    </label>
+
+    <span id="status" class="muted"></span>
+  </div>
+
+  <div>
+    <div class="muted">介護士（あなた）の発話（日本語）</div>
+    <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
+    <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
+    <div id="noExampleHint" class="hint" style="display:none; margin-top:6px;">この条件の例文はまだありません。自由入力で続けましょう。</div>
+  </div>
+
+  <div class="card">
+    <div><b>介護士発話（ローマ字）</b></div>
+    <pre id="caregiverRomaji" class="mono"></pre>
+  </div>
+
+  <div class="row">
+    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
+    <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="muted">Stage1（日本語）</div>
+      <div class="sep"></div>
+      <div><b>相手（AI側）の返答</b></div>
+      <pre id="aiReply" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>あなたへのフィードバック</b></div>
+      <pre id="feedback" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>推奨返答（日本語）</b></div>
+      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="muted">Stage2（翻訳：推奨返答）</div>
+      <div class="sep"></div>
+      <div><b>ローマ字（推奨返答）</b></div>
+      <pre id="romaji" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>インドネシア語（推奨返答）</b></div>
+      <pre id="indonesian" class="mono"></pre>
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const setStatus = (m) => $("status").textContent = m || "";
+  const showNoExampleHint = (show) => {
+    const el = $("noExampleHint");
+    if(!el) return;
+    el.style.display = show ? "block" : "none";
+  };
+
+
+  
+  // -----------------------
+  // App config (variant)
+  // Each sub-app should place ./config.json and ./examples.json
+  // -----------------------
+  let APP = {
+    variant: "default",
+    title: document.title,
+    default_scene: "bath",
+    default_persona: "user_calm",
+    default_level: "all",
+    trial_limit: 3,
+    stripe_price_id: "",
+    stripe_checkout_url: "" // optional (if you already have a hosted payment page)
+  };
+
+  async function loadConfig(){
+    // Prefer relative config (e.g., /app/trainee/config.json). Fallback to /app/config.json.
+    const urls = ["./config.json", "/app/config.json"];
+    for(const u of urls){
+      try{
+        const r = await fetch(u, { cache:"no-store" });
+        if(!r.ok) continue;
+        const cfg = await r.json();
+        APP = { ...APP, ...cfg };
+        // Title
+        if(APP.title){
+          document.title = APP.title;
+          // Also adjust H1 text without breaking badges
+          const h1 = document.querySelector("h1");
+          if(h1){
+            // keep existing HTML, just prepend title text
+            // We'll set first text node if exists
+          }
+        }
+        const badge = $("variantBadge");
+        if(badge && APP.variant){
+          badge.textContent = APP.variant;
+          badge.style.display = "inline-block";
+        }
+        return APP;
+      } catch(e){
+        // ignore and try next
+      }
+    }
+    return APP;
+  }
+
+  // -----------------------
+  // Trial gating (per variant)
+  // - counts successful Stage1 calls
+  // - stored in localStorage per variant
+  // -----------------------
+  const trialKey = () => `kaigo_trial_${APP.variant || "default"}`;
+  const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (Stripe/Webhook)
+  const isPaid = () => localStorage.getItem(paidKey()) === "1";
+
+  const getTrialCount = () => Number(localStorage.getItem(trialKey()) || "0");
+  const setTrialCount = (n) => localStorage.setItem(trialKey(), String(Math.max(0, Number(n)||0)));
+
+  const remainingTrials = () => {
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()) return Infinity;
+    return Math.max(0, limit - getTrialCount());
+  };
+
+  const updateTrialUI = () => {
+    const el = $("trialInfo");
+    if(!el) return;
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()){
+      el.textContent = "✅ 本格利用：有効（決済済み）";
+      togglePurchasePanel(false);
+      enableActions(true);
+      return;
+    }
+    const used = getTrialCount();
+    const left = Math.max(0, limit - used);
+    el.textContent = `試用：${used}/${limit} 回（残り ${left} 回）`;
+    togglePurchasePanel(left === 0);
+    enableActions(left > 0);
+    if(left === 0){
+      setStatus("試用回数に達しました。自由入力はできますが、AI応答には決済が必要です。");
+      showNoExampleHint(false);
+    }
+  };
+
+  
+  const togglePurchasePanel = (show) => {
+    const panel = $("purchasePanel");
+    if(!panel) return;
+    panel.style.display = show ? "block" : "none";
+
+    // If you already have a hosted checkout URL, set it in config.json as stripe_checkout_url
+    const link = $("purchaseLink");
+    const desc = $("purchaseDesc");
+    if(link){
+      const url = (APP.stripe_checkout_url || "").trim();
+      if(url){
+        link.href = url;
+        link.style.opacity = "1";
+        link.style.pointerEvents = "auto";
+        if(desc) desc.textContent = "試用回数に達しました。こちらから本格利用を開始できます。";
+      } else {
+        link.href = "#";
+        link.style.opacity = "0.6";
+        link.style.pointerEvents = "none";
+        if(desc) desc.textContent = "試用回数に達しました。決済は準備中です。";
+      }
+    }
+  };
+
+const enableActions = (enabled) => {
+    // Disable API-consuming buttons when trial exhausted
+    const sendBtn = $("sendBtn");
+    const stage2Btn = $("stage2Btn");
+    if(sendBtn) sendBtn.disabled = !enabled;
+    if(stage2Btn) stage2Btn.disabled = !enabled;
+  };
+
+  const consumeTrial = () => {
+    if(isPaid()) return true;
+    const left = remainingTrials();
+    if(left <= 0) return false;
+    setTrialCount(getTrialCount() + 1);
+    updateTrialUI();
+    return true;
+  };
+let busy = false;
+  let inFlight = null; // AbortController
+
+  const setBusy = (b) => {
+    busy = b;
+    $("fillExample").disabled = b;
+    $("send").disabled = b;
+    $("runStage2").disabled = b;
+    $("scene").disabled = b;
+    $("persona").disabled = b;
+    $("category").disabled = b;
+  };
+
+  function abortInFlight(){
+    if(inFlight){
+      try { inFlight.abort(); } catch(_){}
+      inFlight = null;
+    }
+  }
+
+  async function postChat(payload, { timeoutMs = 15000 } = {}){
+    abortInFlight();
+    inFlight = new AbortController();
+
+    const timer = setTimeout(() => inFlight?.abort(), timeoutMs);
+    try{
+      const r = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify(payload),
+        signal: inFlight.signal
+      });
+      const j = await r.json().catch(()=> ({}));
+      if(!r.ok){
+        const msg = j?.message || j?.error || (j?.details ? String(j.details) : "") || ("HTTP " + r.status);
+        const e = new Error(msg);
+        e.status = r.status;
+        throw e;
+      }
+      return j;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function meta(stage){
+    return {
+      stage,
+      persona: $("persona").value || "user_calm",
+      scene: $("scene").value || "bath"
+    };
+  }
+
+  function clearOutputs(){
+    $("caregiverRomaji").textContent = "";
+    $("aiReply").textContent = "";
+    $("feedback").textContent = "";
+    $("suggestedJp").value = "";
+    $("romaji").textContent = "";
+    $("indonesian").textContent = "";
+  }
+
+  // -----------------------
+  // Examples loader
+  // -----------------------
+  let EX = null;
+  const counters = {}; // counters[scene][persona][cat] = next index
+
+  function ensureCounter(scene, persona, cat){
+    if(!counters[scene]) counters[scene] = {};
+    if(!counters[scene][persona]) counters[scene][persona] = {};
+    if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat] = 0;
+  }
+
+
+  function resetCounter(scene, persona, cat){
+    if(!scene || !persona || !cat) return;
+    if(counters[scene] && counters[scene][persona] && typeof counters[scene][persona][cat] === "number"){
+      counters[scene][persona][cat] = 0;
+    }
+  }
+  function populateSelect(sel, options){
+    sel.innerHTML = "";
+    options.forEach(o=>{
+      const opt = document.createElement("option");
+      opt.value = o.key;
+      opt.textContent = o.label;
+      sel.appendChild(opt);
+    });
+  }
+
+  function normalizeExampleItem(x){
+    if(typeof x === "string") return { jp: x, level: "beginner" };
+    if(x && typeof x === "object"){
+      return {
+        jp: x.jp || x.text || x.prompt || "",
+        level: x.level || x.lv || x.difficulty || "beginner"
+      };
+    }
+    return { jp: "", level: "beginner" };
+  }
+
+  function getExampleList(root, scene, persona, cat){
+    const list = (root && root[scene] && root[scene][persona] && root[scene][persona][cat]) || [];
+    const level = ($("level") && $("level").value) ? $("level").value : "all";
+    return (Array.isArray(list) ? list : [])
+      .map(normalizeExampleItem)
+      .filter(it => it.jp)
+      .filter(it => (level === "all") ? true : (it.level === level));
+  }
+
+  async function fetchJSONWithFallbacks(){
+    const urls = ["./examples.json", "/examples.json", "/app/examples.json"];
+    let lastErr = null;
+    for(const u of urls){
+      try{
+        const r = await fetch(u, { cache:"no-store" });
+        if(!r.ok) throw new Error(u + " HTTP " + r.status);
+        return await r.json();
+      } catch(e){
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("examples.json not found");
+  }
+
+  async function loadExamples(){
+    if(EX) return EX;
+
+    try{
+      setStatus("examples.json 読み込み中…");
+      const db = await fetchJSONWithFallbacks();
+
+      const root = db.examples || db.data || db.dataset || db.items || null;
+      if(!root) throw new Error("examples root not found (need examples/data/dataset)");
+
+      // scenes (dict or array)
+      const sceneOptions = [];
+      if(Array.isArray(db.scenes)){
+        db.scenes.forEach(v=>{
+          if(typeof v === "string") sceneOptions.push({key:v,label:v});
+          else if(v && typeof v === "object") sceneOptions.push({key:(v.key??v.value), label:(v.label??v.name??v.key??v.value)});
+        });
+      } else if(db.scenes && typeof db.scenes === "object"){
+        Object.keys(db.scenes).forEach(k=>{
+          const labelMap = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
+          sceneOptions.push({ key:k, label: (labelMap[k] || k) });
+        });
+      } else {
+        Object.keys(root||{}).forEach(k=>sceneOptions.push({key:k,label:k}));
+      }
+
+      // personas
+      const personaOptions = [];
+      if(Array.isArray(db.personas)){
+        db.personas.forEach(v=>{
+          if(typeof v === "string") personaOptions.push({key:v,label:v});
+          else if(v && typeof v === "object"){
+            const key = v.key ?? v.value ?? v.id;
+            const label = v.label ?? v.name ?? key;
+            if(key) personaOptions.push({key, label});
+          }
+        });
+      } else {
+        const first = sceneOptions[0]?.key;
+        Object.keys((root && root[first]) || {}).forEach(p=>personaOptions.push({key:p,label:p}));
+      }
+
+      EX = { db, root, sceneOptions, personaOptions };
+      populateSelect($("scene"), sceneOptions);
+      populateSelect($("persona"), personaOptions);
+      // Level options (UI only)
+      const levelOptions = [
+        { key: "all", label: "全て" },
+        { key: "beginner", label: "初級" },
+        { key: "intermediate", label: "中級" },
+        { key: "field", label: "現場即応" }
+      ];
+      populateSelect($("level"), levelOptions);
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
+
+
+      refreshCategories();
+      showNoExampleHint(false);
+      setStatus("examples.json OK");
+      return EX;
+    } catch(e){
+      EX = null;
+      showNoExampleHint(true);
+      setStatus("例文なし（examples.json 未設定/読込失敗）");
+      populateSelect($("scene"), [
+        {key:"bath",label:"入浴"},
+        {key:"meal",label:"食事"},
+        {key:"toilet",label:"排泄"},
+        {key:"night",label:"夜間"},
+        {key:"complaint",label:"クレーム対応"}
+      ]);
+      populateSelect($("persona"), [
+        {key:"user_calm",label:"利用者：穏やか"},
+        {key:"user_angry",label:"利用者：怒り"},
+        {key:"dementia",label:"利用者：少し混乱"},
+        {key:"family_anxious",label:"家族：不安"},
+        {key:"family_complaint",label:"家族：クレーム"}
+      ]);
+      populateSelect($("category"), [{key:"free",label:"自由入力"}]);
+      populateSelect($("level"), [
+        {key:"all",label:"全て"},
+        {key:"beginner",label:"初級"},
+        {key:"intermediate",label:"中級"},
+        {key:"field",label:"現場即応"}
+      ]);
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
+      return null;
+    }
+  }
+
+  // ✅ ここが今回の実装ポイント：
+  // scene×persona で「実際に例文が存在するカテゴリだけ」表示する
+  function refreshCategories(){
+    if(!EX){
+      populateSelect($("category"), [{key:"free",label:"自由入力"}]);
+      populateSelect($("level"), [
+        {key:"all",label:"全て"},
+        {key:"beginner",label:"初級"},
+        {key:"intermediate",label:"中級"},
+        {key:"field",label:"現場即応"}
+      ]);
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
+      return;
+    }
+    const { db, root } = EX;
+    const scene = $("scene").value;
+    const persona = $("persona").value;
+
+    // A) まず「sceneに定義されたカテゴリ一覧（key/label）」を作る
+    let definedCats = [];
+    if(db.scenes && typeof db.scenes === "object" && !Array.isArray(db.scenes) && Array.isArray(db.scenes[scene])){
+      definedCats = db.scenes[scene]
+        .map(it => ({ key: (it.key ?? it.value ?? it.id), label: (it.label ?? it.name ?? (it.key ?? it.value ?? it.id) ?? "") }))
+        .filter(x=>x.key);
+    } else {
+      // fallback: infer by keys in examples root
+      definedCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
+    }
+
+    // B) 次に「このscene×personaで例文があるカテゴリ」だけに絞る
+    const availableKeys = new Set(Object.keys((root && root[scene] && root[scene][persona]) || {}));
+    const filtered = definedCats.filter(c => availableKeys.has(c.key));
+
+    // C) filteredが空なら、例文のキーをそのまま使う（保険）
+    const fallbackCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
+    const finalCats = (filtered.length ? filtered : (fallbackCats.length ? fallbackCats : [{key:"free",label:"自由入力"}]));
+
+    // selection維持（可能なら）
+    const prev = $("category").value;
+    populateSelect($("category"), finalCats);
+    if(prev && finalCats.some(x=>x.key===prev)) $("category").value = prev;
+  }
+
+  function getNextExample(){
+    if(!EX) return null;
+
+    const { root } = EX;
+    const scene = $("scene").value;
+    const persona = $("persona").value;
+    const cat = $("category").value;
+    const level = ($("level") && $("level").value) ? $("level").value : "all";
+    const catKey = cat + "::" + level;
+
+    const list = getExampleList(root, scene, persona, cat);
+    if(!list.length) return null;
+
+    ensureCounter(scene, persona, catKey);
+    const i = counters[scene][persona][catKey] % list.length;
+    counters[scene][persona][catKey] = counters[scene][persona][catKey] + 1;
+    return list[i];
+  }
+
+  async function fillExample(){
+    await loadExamples();
+    const ex = getNextExample();
+    if(!ex){
+      setStatus("この条件の例文はまだありません。自由入力で続けましょう。");
+      showNoExampleHint(true);
+      return;
+    }
+    $("prompt").value = ex.jp;
+    showNoExampleHint(false);
+    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
+    const lv = ex.level || (($("level")&&$("level").value) ? $("level").value : "beginner");
+    setStatus("例文を入力しました（押すたび切替） / レベル: " + (levelLabelMap[lv] || lv));
+  }
+
+  // -----------------------
+  // Main actions
+  // -----------------------
+  async function runAll(){
+    if(busy) return;
+
+    const jp = $("prompt").value.trim();
+    if(!jp){ setStatus("入力が空です"); return; }
+
+    setBusy(true);
+    setStatus("介護士発話をローマ字化…");
+
+    try{
+      clearOutputs();
+
+      const r0 = await postChat({ prompt: jp, meta: meta(2) });
+      $("caregiverRomaji").textContent = r0.romaji || "";
+
+      setStatus("Stage1 実行中…");
+      const s1 = await postChat({ prompt: jp, meta: meta(1) });
+      $("aiReply").textContent = s1.ai_reply_jp || "";
+      $("feedback").textContent = s1.feedback_jp || "";
+      $("suggestedJp").value = s1.suggested_reply_jp || "";
+
+      if($("autoStage2").checked){
+        await runStage2Only();
+      } else {
+        setStatus("Stage1 完了（Stage2は手動）");
+      }
+    } catch(e){
+      if(e?.name === "AbortError") return;
+      setStatus("エラー: " + (e?.message || e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runStage2Only(){
+    const suggested = $("suggestedJp").value.trim();
+    if(!suggested){
+      setStatus("Stage2: 推奨返答（日本語）が空です");
+      return;
+    }
+    setStatus("Stage2 実行中…");
+    const s2 = await postChat({ prompt: suggested, meta: meta(2) });
+    $("romaji").textContent = s2.romaji || "";
+    $("indonesian").textContent = s2.indonesian || "";
+    setStatus("完了");
+  }
+
+  // Events
+  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+  $("send").addEventListener("click", runAll);
+  $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
+
+  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+    setStatus("Scene変更：例文or入力→送信"); });
+  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+    setStatus("Persona変更：例文or入力→送信"); });
+  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
+    setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
+
+  $("level").addEventListener("change", ()=>{
+    // Level change resets cycling within that level
+    resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all"));
+    clearOutputs();
+    showNoExampleHint(false);
+    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
+    setStatus("レベル変更： " + (levelLabelMap[$("level").value] || $("level").value) + "（例文は最初から）");
+  });
+loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); updateTrialUI(); });
+</script>
+</body>
+</html>
