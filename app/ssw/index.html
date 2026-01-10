@@ -170,18 +170,38 @@
 
   const updateTrialUI = () => {
     const el = $("trialInfo");
+    const pw = $("paywall");
+    const pwBtn = $("paywallBtn");
+    const pwNote = $("paywallNote");
     if(!el) return;
     const limit = Number(APP.trial_limit ?? 3);
     if(isPaid()){
       el.textContent = "✅ 本格利用：有効（決済済み）";
       enableActions(true);
+      if(pw) pw.style.display = "none";
       return;
     }
     const used = getTrialCount();
     const left = Math.max(0, limit - used);
     el.textContent = `試用：${used}/${limit} 回（残り ${left} 回）`;
     enableActions(left > 0);
-    if(left === 0){
+    if(pw) pw.style.display = (left === 0 ? "block" : "none");
+    if(pwBtn){
+      const url = APP.stripe_checkout_url || "";
+      pwBtn.href = url || "#";
+      pwBtn.style.pointerEvents = url ? "auto" : "none";
+      pwBtn.style.opacity = url ? "1" : "0.5";
+    }
+    if(pwNote){
+      if(APP.stripe_checkout_url){
+        pwNote.textContent = "";
+      } else if(APP.stripe_price_id){
+        pwNote.textContent = `（Stripe Price ID: ${APP.stripe_price_id}）※次のステップでCheckoutリンクを接続します`;
+      } else {
+        pwNote.textContent = "※次のステップでStripeの購入リンクを接続します";
+      }
+    }
+if(left === 0){
       setStatus("試用回数に達しました。自由入力はできますが、AI応答には決済が必要です。");
       showNoExampleHint(false);
     }
