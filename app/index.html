@@ -38,6 +38,7 @@
     <label>Scene <select id="scene"></select></label>
     <label>Persona <select id="persona"></select></label>
     <label>カテゴリ <select id="category"></select></label>
+    <label>レベル <select id="level"></select></label>
 
     <button id="fillExample" type="button">例文を入れる</button>
 
@@ -193,16 +194,23 @@
   }
 
   function normalizeExampleItem(x){
-    if(typeof x === "string") return { jp: x };
+    if(typeof x === "string") return { jp: x, level: "beginner" };
     if(x && typeof x === "object"){
-      return { jp: x.jp || x.text || x.prompt || "" };
+      return {
+        jp: x.jp || x.text || x.prompt || "",
+        level: x.level || x.lv || x.difficulty || "beginner"
+      };
     }
-    return { jp: "" };
+    return { jp: "", level: "beginner" };
   }
 
   function getExampleList(root, scene, persona, cat){
     const list = (root && root[scene] && root[scene][persona] && root[scene][persona][cat]) || [];
-    return (Array.isArray(list) ? list : []).map(normalizeExampleItem).filter(it=>it.jp);
+    const level = ($("level") && $("level").value) ? $("level").value : "all";
+    return (Array.isArray(list) ? list : [])
+      .map(normalizeExampleItem)
+      .filter(it => it.jp)
+      .filter(it => (level === "all") ? true : (it.level === level));
   }
 
   async function fetchJSONWithFallbacks(){
@@ -265,6 +273,16 @@
       EX = { db, root, sceneOptions, personaOptions };
       populateSelect($("scene"), sceneOptions);
       populateSelect($("persona"), personaOptions);
+      // Level options (UI only)
+      const levelOptions = [
+        { key: "all", label: "全て" },
+        { key: "beginner", label: "初級" },
+        { key: "intermediate", label: "中級" },
+        { key: "field", label: "現場即応" }
+      ];
+      populateSelect($("level"), levelOptions);
+      $("level").value = "all";
+
 
       refreshCategories();
       showNoExampleHint(false);
@@ -289,6 +307,13 @@
         {key:"family_complaint",label:"家族：クレーム"}
       ]);
       populateSelect($("category"), [{key:"free",label:"自由入力"}]);
+      populateSelect($("level"), [
+        {key:"all",label:"全て"},
+        {key:"beginner",label:"初級"},
+        {key:"intermediate",label:"中級"},
+        {key:"field",label:"現場即応"}
+      ]);
+      $("level").value = "all";
       return null;
     }
   }
@@ -298,6 +323,13 @@
   function refreshCategories(){
     if(!EX){
       populateSelect($("category"), [{key:"free",label:"自由入力"}]);
+      populateSelect($("level"), [
+        {key:"all",label:"全て"},
+        {key:"beginner",label:"初級"},
+        {key:"intermediate",label:"中級"},
+        {key:"field",label:"現場即応"}
+      ]);
+      $("level").value = "all";
       return;
     }
     const { db, root } = EX;
@@ -336,13 +368,15 @@
     const scene = $("scene").value;
     const persona = $("persona").value;
     const cat = $("category").value;
+    const level = ($("level") && $("level").value) ? $("level").value : "all";
+    const catKey = cat + "::" + level;
 
     const list = getExampleList(root, scene, persona, cat);
     if(!list.length) return null;
 
-    ensureCounter(scene, persona, cat);
-    const i = counters[scene][persona][cat] % list.length;
-    counters[scene][persona][cat] = counters[scene][persona][cat] + 1;
+    ensureCounter(scene, persona, catKey);
+    const i = counters[scene][persona][catKey] % list.length;
+    counters[scene][persona][catKey] = counters[scene][persona][catKey] + 1;
     return list[i];
   }
 
@@ -356,7 +390,9 @@
     }
     $("prompt").value = ex.jp;
     showNoExampleHint(false);
-    setStatus("例文を入力しました（押すたび切替）");
+    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
+    const lv = ex.level || (($("level")&&$("level").value) ? $("level").value : "beginner");
+    setStatus("例文を入力しました（押すたび切替） / レベル: " + (levelLabelMap[lv] || lv));
   }
 
   // -----------------------
@@ -418,8 +454,17 @@
     setStatus("Scene変更：例文or入力→送信"); });
   $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
     setStatus("Persona変更：例文or入力→送信"); });
-  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value); clearOutputs(); showNoExampleHint(false);
+  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
     setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
+
+  $("level").addEventListener("change", ()=>{
+    // Level change resets cycling within that level
+    resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all"));
+    clearOutputs();
+    showNoExampleHint(false);
+    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
+    setStatus("レベル変更： " + (levelLabelMap[$("level").value] || $("level").value) + "（例文は最初から）");
+  });
 loadExamples().then(()=>{ if(EX) refreshCategories(); });
 </script>
 </body>
