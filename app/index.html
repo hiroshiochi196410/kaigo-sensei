@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（カテゴリ絞り込み：persona対応）</title>
+  <title>介護ロールプレイAI <span id="variantBadge" class="badge" style="display:none;"></span> （カテゴリ絞り込み：persona対応）</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
@@ -63,8 +63,8 @@
   </div>
 
   <div class="row">
-    <button id="send" class="primary" type="button">送信</button>
-    <button id="runStage2" type="button">Stage2だけ実行</button>
+    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
+    <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
   <div class="grid">
@@ -102,7 +102,108 @@
   };
 
 
-  let busy = false;
+  
+  // -----------------------
+  // App config (variant)
+  // Each sub-app should place ./config.json and ./examples.json
+  // -----------------------
+  let APP = {
+    variant: "default",
+    title: document.title,
+    default_scene: "bath",
+    default_persona: "user_calm",
+    default_level: "all",
+    trial_limit: 3,
+    stripe_price_id: "",
+    stripe_checkout_url: "" // optional (if you already have a hosted payment page)
+  };
+
+  async function loadConfig(){
+    // Prefer relative config (e.g., /app/trainee/config.json). Fallback to /app/config.json.
+    const urls = ["./config.json", "/app/config.json"];
+    for(const u of urls){
+      try{
+        const r = await fetch(u, { cache:"no-store" });
+        if(!r.ok) continue;
+        const cfg = await r.json();
+        APP = { ...APP, ...cfg };
+        // Title
+        if(APP.title){
+          document.title = APP.title;
+          // Also adjust H1 text without breaking badges
+          const h1 = document.querySelector("h1");
+          if(h1){
+            // keep existing HTML, just prepend title text
+            // We'll set first text node if exists
+          }
+        }
+        const badge = $("variantBadge");
+        if(badge && APP.variant){
+          badge.textContent = APP.variant;
+          badge.style.display = "inline-block";
+        }
+        return APP;
+      } catch(e){
+        // ignore and try next
+      }
+    }
+    return APP;
+  }
+
+  // -----------------------
+  // Trial gating (per variant)
+  // - counts successful Stage1 calls
+  // - stored in localStorage per variant
+  // -----------------------
+  const trialKey = () => `kaigo_trial_${APP.variant || "default"}`;
+  const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (Stripe/Webhook)
+  const isPaid = () => localStorage.getItem(paidKey()) === "1";
+
+  const getTrialCount = () => Number(localStorage.getItem(trialKey()) || "0");
+  const setTrialCount = (n) => localStorage.setItem(trialKey(), String(Math.max(0, Number(n)||0)));
+
+  const remainingTrials = () => {
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()) return Infinity;
+    return Math.max(0, limit - getTrialCount());
+  };
+
+  const updateTrialUI = () => {
+    const el = $("trialInfo");
+    if(!el) return;
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()){
+      el.textContent = "✅ 本格利用：有効（決済済み）";
+      enableActions(true);
+      return;
+    }
+    const used = getTrialCount();
+    const left = Math.max(0, limit - used);
+    el.textContent = `試用：${used}/${limit} 回（残り ${left} 回）`;
+    enableActions(left > 0);
+    if(left === 0){
+      setStatus("試用回数に達しました。自由入力はできますが、AI応答には決済が必要です。");
+      showNoExampleHint(false);
+    }
+  };
+
+  const enableActions = (enabled) => {
+    // Disable API-consuming buttons when trial exhausted
+    const sendBtn = $("sendBtn");
+    const stage2Btn = $("stage2Btn");
+    if(sendBtn) sendBtn.disabled = !enabled;
+    if(stage2Btn) stage2Btn.disabled = !enabled;
+  };
+
+  const consumeTrial = () => {
+    if(isPaid()) return true;
+    const left = remainingTrials();
+    if(left <= 0) return false;
+    setTrialCount(getTrialCount() + 1);
+    updateTrialUI();
+    return true;
+  };
+let busy = false;
   let inFlight = null; // AbortController
 
   const setBusy = (b) => {
@@ -214,7 +315,7 @@
   }
 
   async function fetchJSONWithFallbacks(){
-    const urls = ["/examples.json", "./examples.json"];
+    const urls = ["./examples.json", "/examples.json", "/app/examples.json"];
     let lastErr = null;
     for(const u of urls){
       try{
@@ -281,7 +382,11 @@
         { key: "field", label: "現場即応" }
       ];
       populateSelect($("level"), levelOptions);
-      $("level").value = "all";
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
 
 
       refreshCategories();
@@ -313,7 +418,11 @@
         {key:"intermediate",label:"中級"},
         {key:"field",label:"現場即応"}
       ]);
-      $("level").value = "all";
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
       return null;
     }
   }
@@ -329,7 +438,11 @@
         {key:"intermediate",label:"中級"},
         {key:"field",label:"現場即応"}
       ]);
-      $("level").value = "all";
+      $("level").value = (APP.default_level || "all");
+      // Apply defaults for scene/persona (if options contain them)
+      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
+      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
+      
       return;
     }
     const { db, root } = EX;
@@ -465,7 +578,7 @@
     const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
     setStatus("レベル変更： " + (levelLabelMap[$("level").value] || $("level").value) + "（例文は最初から）");
   });
-loadExamples().then(()=>{ if(EX) refreshCategories(); });
+loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); updateTrialUI(); });
 </script>
 </body>
 </html>
