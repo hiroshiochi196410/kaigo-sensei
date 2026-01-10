@@ -3,114 +3,228 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（介護士発話ローマ字対応）</title>
+  <title>介護ロールプレイAI（介護士ローマ字＋Persona/Scene切替）</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    label { display:flex; gap:6px; align-items:center; }
-    select, textarea, button, input { font-size: 15px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 8px 0 12px; }
+    label { display:flex; gap:6px; align-items:center; font-size: 14px; }
+    select, textarea, button { font-size: 15px; }
     button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
     button.primary { border-color:#111; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    textarea { width: 100%; min-height: 110px; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
-    .muted { color: #666; font-size: 13px; }
-    .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
-    .card { border: 1px solid #e1e1e1; border-radius: 14px; padding: 12px; margin-top: 12px; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    textarea { width:100%; min-height:110px; padding:10px; border-radius: 12px; border:1px solid #ddd; }
+    .muted { color:#666; font-size:13px; }
+    .badge { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; color:#333; }
+    .card { border:1px solid #e1e1e1; border-radius:14px; padding:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:10px; }
     @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
-    pre { white-space: pre-wrap; word-break: break-word; margin: 0; }
+    pre { white-space: pre-wrap; word-break: break-word; margin:0; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .sep { height:1px; background:#eee; margin: 10px 0; }
+    .sep { height:1px; background:#eee; margin:10px 0; }
   </style>
 </head>
 <body>
-<h1>介護ロールプレイAI <span class="badge">介護士ローマ字対応</span></h1>
+  <h1>介護ロールプレイAI <span class="badge">介護士ローマ字</span> <span class="badge">Persona/Scene切替</span></h1>
+  <div class="muted">①介護士発話 → ローマ字表示 → ②Stage1 → ③Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
-<div class="muted">①介護士発話 → ローマ字表示 → ②Stage1 → ③Stage2</div>
+  <div class="row">
+    <label>Persona
+      <select id="persona">
+        <option value="user_calm">利用者：穏やか</option>
+        <option value="user_angry">利用者：怒り</option>
+        <option value="dementia">利用者：少し混乱</option>
+        <option value="family_anxious">家族：不安</option>
+        <option value="family_complaint">家族：クレーム</option>
+      </select>
+    </label>
 
-<div style="margin-top:12px;">
-  <div class="muted">介護士（あなた）の発話（日本語）</div>
-  <textarea id="prompt" placeholder="例：こんばんは。今日はどのようにお過ごしでしたか？"></textarea>
-</div>
+    <label>Scene
+      <select id="scene">
+        <option value="bath">入浴</option>
+        <option value="meal">食事</option>
+        <option value="toilet">排泄</option>
+        <option value="night">夜間</option>
+        <option value="complaint">クレーム対応</option>
+      </select>
+    </label>
 
-<div class="card">
-  <div><b>介護士発話（ローマ字）</b></div>
-  <pre id="caregiverRomaji" class="mono"></pre>
-</div>
+    <label class="muted" style="gap:8px;">
+      <input id="autoStage2" type="checkbox" checked />
+      Stage2を自動実行
+    </label>
 
-<button id="send" class="primary">送信</button>
-<span id="status" class="muted"></span>
+    <span id="status" class="muted"></span>
+  </div>
 
-<div class="grid">
-  <div class="card">
-    <div class="muted">Stage1（日本語）</div>
-    <pre id="aiReply" class="mono"></pre>
-    <div class="sep"></div>
-    <pre id="feedback" class="mono"></pre>
-    <div class="sep"></div>
-    <textarea id="suggestedJp" placeholder="推奨返答（日本語）"></textarea>
+  <div>
+    <div class="muted">介護士（あなた）の発話（日本語）</div>
+    <textarea id="prompt" placeholder="例：こんばんは。今日はどのようにお過ごしでしたか？"></textarea>
   </div>
 
   <div class="card">
-    <div class="muted">Stage2（翻訳）</div>
-    <div><b>ローマ字</b></div>
-    <pre id="romaji" class="mono"></pre>
-    <div class="sep"></div>
-    <div><b>インドネシア語</b></div>
-    <pre id="indonesian" class="mono"></pre>
+    <div><b>介護士発話（ローマ字）</b></div>
+    <pre id="caregiverRomaji" class="mono"></pre>
   </div>
-</div>
+
+  <div class="row">
+    <button id="send" class="primary" type="button">送信</button>
+    <button id="runStage2" type="button">Stage2だけ実行</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="muted">Stage1（日本語）</div>
+      <div class="sep"></div>
+      <div><b>相手（AI側）の返答</b></div>
+      <pre id="aiReply" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>あなたへのフィードバック</b></div>
+      <pre id="feedback" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>推奨返答（日本語）</b></div>
+      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="muted">Stage2（翻訳）</div>
+      <div class="sep"></div>
+      <div><b>ローマ字（推奨返答）</b></div>
+      <pre id="romaji" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>インドネシア語（推奨返答）</b></div>
+      <pre id="indonesian" class="mono"></pre>
+    </div>
+  </div>
 
 <script>
-const $ = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-async function postChat(payload){
-  const r = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type":"application/json" },
-    body: JSON.stringify(payload)
-  });
-  const j = await r.json();
-  if(!r.ok) throw new Error(j.error || j.message || "API error");
-  return j;
-}
+  let busy = false;
+  let inFlight = null; // AbortController
 
-async function run(){
-  const jp = $("prompt").value.trim();
-  if(!jp) return;
+  const setBusy = (b) => {
+    busy = b;
+    $("send").disabled = b;
+    $("runStage2").disabled = b;
+  };
 
-  $("status").textContent = "介護士発話をローマ字化…";
+  const setStatus = (m) => $("status").textContent = m || "";
 
-  const romajiRes = await postChat({
-    prompt: jp,
-    meta: { stage: 2, persona: "user_calm", scene: "bath" }
-  });
-  $("caregiverRomaji").textContent = romajiRes.romaji || "";
+  function abortInFlight(){
+    if(inFlight){
+      try { inFlight.abort(); } catch(_){}
+      inFlight = null;
+    }
+  }
 
-  $("status").textContent = "Stage1 実行中…";
-  const s1 = await postChat({
-    prompt: jp,
-    meta: { stage: 1, persona: "user_calm", scene: "bath" }
-  });
+  async function postChat(payload, { timeoutMs = 15000 } = {}){
+    abortInFlight();
+    inFlight = new AbortController();
 
-  $("aiReply").textContent = s1.ai_reply_jp || "";
-  $("feedback").textContent = s1.feedback_jp || "";
-  $("suggestedJp").value = s1.suggested_reply_jp || "";
+    const timer = setTimeout(() => inFlight?.abort(), timeoutMs);
+    try{
+      const r = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: inFlight.signal
+      });
+      const j = await r.json().catch(()=> ({}));
+      if(!r.ok){
+        const msg = j?.message || j?.error || (j?.details ? String(j.details) : "") || ("HTTP " + r.status);
+        const e = new Error(msg);
+        e.status = r.status;
+        throw e;
+      }
+      return j;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
 
-  $("status").textContent = "Stage2 実行中…";
-  const s2 = await postChat({
-    prompt: s1.suggested_reply_jp,
-    meta: { stage: 2, persona: "user_calm", scene: "bath" }
-  });
+  function currentMeta(stage){
+    return {
+      stage,
+      persona: $("persona").value,
+      scene: $("scene").value
+    };
+  }
 
-  $("romaji").textContent = s2.romaji || "";
-  $("indonesian").textContent = s2.indonesian || "";
+  function clearOutputs(){
+    $("caregiverRomaji").textContent = "";
+    $("aiReply").textContent = "";
+    $("feedback").textContent = "";
+    $("suggestedJp").value = "";
+    $("romaji").textContent = "";
+    $("indonesian").textContent = "";
+  }
 
-  $("status").textContent = "完了";
-}
+  async function runAll(){
+    if(busy) return;
 
-$("send").addEventListener("click", ()=>run().catch(e=>$("status").textContent="エラー: "+e.message));
+    const jp = $("prompt").value.trim();
+    if(!jp){ setStatus("入力が空です"); return; }
+
+    setBusy(true);
+    setStatus("介護士発話をローマ字化…");
+
+    try{
+      // 介護士発話ローマ字（stage2を流用）
+      const r0 = await postChat({ prompt: jp, meta: currentMeta(2) });
+      $("caregiverRomaji").textContent = r0.romaji || "";
+
+      // Stage1
+      setStatus("Stage1 実行中…");
+      const s1 = await postChat({ prompt: jp, meta: currentMeta(1) });
+      $("aiReply").textContent = s1.ai_reply_jp || "";
+      $("feedback").textContent = s1.feedback_jp || "";
+      $("suggestedJp").value = s1.suggested_reply_jp || "";
+
+      if($("autoStage2").checked){
+        await runStage2Only(true);
+      } else {
+        setStatus("Stage1 完了（Stage2は手動）");
+      }
+    } catch(e){
+      if(e?.name === "AbortError") return;
+      setStatus("エラー: " + (e?.message || e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runStage2Only(fromAuto=false){
+    if(busy) return;
+
+    const suggested = $("suggestedJp").value.trim();
+    if(!suggested){
+      setStatus("Stage2: 推奨返答（日本語）が空です");
+      return;
+    }
+
+    setBusy(true);
+    setStatus("Stage2 実行中…");
+
+    try{
+      const s2 = await postChat({ prompt: suggested, meta: currentMeta(2) });
+      $("romaji").textContent = s2.romaji || "";
+      $("indonesian").textContent = s2.indonesian || "";
+      setStatus("完了");
+    } catch(e){
+      if(e?.name === "AbortError") return;
+      setStatus("Stage2エラー: " + (e?.message || e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  $("send").addEventListener("click", runAll);
+  $("runStage2").addEventListener("click", ()=>runStage2Only(false));
+
+  // Persona/Sceneを変えたら出力をクリア（混乱防止）
+  $("persona").addEventListener("change", ()=>{ clearOutputs(); setStatus("Persona変更：入力して送信してください"); });
+  $("scene").addEventListener("change", ()=>{ clearOutputs(); setStatus("Scene変更：入力して送信してください"); });
 </script>
 </body>
 </html>
