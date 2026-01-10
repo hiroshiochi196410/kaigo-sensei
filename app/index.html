@@ -3,346 +3,310 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kaigo Sensei /app（例文3言語・ボタン修正版）</title>
+  <title>介護ロールプレイAI（カテゴリ例文 × 分割生成）</title>
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:#f5f7fb;color:#111}
-    header{background:#4f46e5;color:#fff;padding:18px 20px}
-    header h1{margin:0;font-size:18px}
-    main{max-width:1050px;margin:0 auto;padding:16px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .card{background:#fff;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.06);padding:14px;flex:1;min-width:320px}
-    label{font-size:12px;color:#444;display:block;margin:8px 0 6px}
-    select,textarea{width:100%;border:1px solid #d7dbe7;border-radius:10px;padding:10px;font-size:14px;box-sizing:border-box}
-    textarea{min-height:110px;resize:vertical}
-    .btn{appearance:none;border:0;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:13px}
-    .btn.primary{background:#4f46e5;color:#fff}
-    .btn.secondary{background:#eef2ff;color:#1e1b4b}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    .pill{display:inline-flex;align-items:center;gap:8px;background:#eef2ff;color:#1e1b4b;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
-    .muted{color:#666;font-size:12px}
-    .exBox{border:1px solid #e5e7f2;border-radius:12px;padding:12px;background:#fafbff}
-    .exLine{margin:0 0 8px}
-    .exTag{display:inline-block;font-size:11px;background:#e0e7ff;color:#3730a3;border-radius:999px;padding:2px 8px;margin-right:8px;font-weight:700}
-    .exJp{font-size:14px}
-    .exRm,.exId{font-size:13px;color:#333}
-    .exHint{font-size:12px;color:#666;margin-top:8px}
-    .hr{height:1px;background:#eef0f7;margin:12px 0}
-    .grid2{display:grid;grid-template-columns:1fr;gap:10px}
-    @media(min-width:900px){.grid2{grid-template-columns:1fr 1fr}}
-    .warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:10px;border-radius:12px;font-size:12px}
-    .ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:10px;border-radius:12px;font-size:12px}
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
+    h1 { font-size: 20px; margin: 0 0 10px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    label { display:flex; gap:6px; align-items:center; }
+    select, textarea, button, input { font-size: 15px; }
+    button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
+    button.primary { border-color:#111; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    textarea { width: 100%; min-height: 110px; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
+    .muted { color: #666; font-size: 13px; }
+    .badge { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; color:#333; }
+    .card { border: 1px solid #e1e1e1; border-radius: 14px; padding: 12px; margin-top: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
+    pre { white-space: pre-wrap; word-break: break-word; margin: 0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .sep { height:1px; background:#eee; margin: 10px 0; }
   </style>
 </head>
 <body>
-<header>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-    <div>
-      <h1>Kaigo Sensei（/app）</h1>
-      <div class="muted">例文：日本語＋ローマ字＋インドネシア語（ボタンで入力へ）</div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <button class="btn secondary" style="padding:10px 14px" type="button" id="btnToLP" onclick="location.href='/'">LPへ</button>
-      <button class="btn secondary" style="padding:10px 14px" type="button" id="btnReload" onclick="location.reload()">再読み込み</button>
-    </div>
+  <h1>介護ロールプレイAI <span class="badge">カテゴリ例文</span> × <span class="badge">分割生成</span></h1>
+  <div class="muted">流れ：①例文投入 → ②送信（Stage1：JP）→ ③自動でStage2（ローマ字＋インドネシア語）</div>
+
+  <div class="row" style="margin-top:12px;">
+    <label>scene
+      <select id="scene"></select>
+    </label>
+
+    <label>persona
+      <select id="persona"></select>
+    </label>
+
+    <label>カテゴリ
+      <select id="category"></select>
+    </label>
+
+    <button id="fillExample" type="button">例文を入れる</button>
+    <button id="send" class="primary" type="button">送信</button>
+    <label class="muted" style="gap:8px;">
+      <input id="autoStage2" type="checkbox" checked />
+      Stage2を自動実行
+    </label>
+    <span id="status" class="muted"></span>
   </div>
-</header>
 
-<main>
-  <div class="row">
+  <div style="margin-top:12px;">
+    <div class="muted">介護士（あなた）の発話（日本語）</div>
+    <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
+  </div>
+
+  <div class="grid">
     <div class="card">
-      <div class="row" style="align-items:center;justify-content:space-between">
-        <div class="pill">🆓 無料体験 残り <span id="trialLeft">3</span> 回</div>
-        <div class="muted">AI呼出：/api/chat</div>
+      <div class="muted">Stage1（日本語のみ）</div>
+      <div class="sep"></div>
+      <div><b>相手（AI側）の返答</b></div>
+      <pre id="aiReply" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>あなたへのフィードバック</b></div>
+      <pre id="feedback" class="mono"></pre>
+      <div class="sep"></div>
+      <div class="row" style="justify-content:space-between; align-items:flex-end;">
+        <div>
+          <b>推奨返答（日本語）</b>
+          <div class="muted">ここを Stage2 でローマ字＋インドネシア語にします</div>
+        </div>
+        <button id="runStage2" type="button">Stage2だけ実行</button>
       </div>
-
-      <label for="personaSelect">相手（AI側）</label>
-      <select id="personaSelect">
-        <option value="resident_calm">利用者：穏やか</option>
-        <option value="resident_angry">利用者：怒り</option>
-        <option value="resident_confused">利用者：少し混乱（認知症の入口）</option>
-        <option value="family_anxious">家族：不安・質問が多い</option>
-        <option value="family_complaint">家族：クレーム</option>
-      </select>
-
-      <label for="sceneSelect">状況（シーン）</label>
-      <select id="sceneSelect">
-        <option value="meal">食事介助</option>
-        <option value="bath">入浴介助</option>
-        <option value="toilet">排泄介助</option>
-        <option value="transfer">移乗・移動</option>
-        <option value="meds">服薬</option>
-        <option value="night">夜間対応</option>
-      </select>
-
-      <div class="hr"></div>
-
-      <label for="userInput">あなた（介護職）の発言（日本語）</label>
-      <textarea id="userInput" placeholder="例：『お食事の時間です。ゆっくり一口ずついきましょう。』"></textarea>
-
-      <div class="row" style="margin-top:10px">
-        <button class="btn secondary" id="exampleBtn" type="button">📌 例文を入れる</button>
-        <button class="btn primary" id="sendBtn" type="button">▶ 送信（Roleplay）</button>
-        <button class="btn secondary" id="resetBtn" type="button">↺ リセット</button>
-      </div>
-
-      <div id="payBox" class="warn" style="margin-top:10px;display:none">
-        無料体験は終了しました。<br/>
-        本稼働に切り替える場合は、LPの「本稼働に切り替える」導線をご利用ください。
-      </div>
-
-      <div id="netStatus" class="muted" style="margin-top:10px"></div>
+      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
     </div>
 
     <div class="card">
-      <div class="grid2">
-        <div>
-          <div class="muted" style="font-weight:700;margin-bottom:6px">例文（選択中の相手×状況）</div>
-          <div class="exBox" id="exampleBox">
-            <p class="exLine"><span class="exTag">JP</span><span class="exJp" id="exJp">—</span></p>
-            <p class="exLine"><span class="exTag">ROMAJI</span><span class="exRm" id="exRm">—</span></p>
-            <p class="exLine" style="margin-bottom:0"><span class="exTag">ID</span><span class="exId" id="exId">—</span></p>
-            <div class="exHint">※「例文を入れる」を押すと、左の入力欄にJPが入ります。</div>
-          </div>
-        </div>
-
-        <div>
-          <div class="muted" style="font-weight:700;margin-bottom:6px">AIの返答（結果）</div>
-          <div class="exBox" id="resultBox">
-            <p class="exLine"><span class="exTag">JP</span><span class="exJp" id="aiJp">—</span></p>
-            <p class="exLine"><span class="exTag">ROMAJI</span><span class="exRm" id="aiRm">—</span></p>
-            <p class="exLine" style="margin-bottom:0"><span class="exTag">ID</span><span class="exId" id="aiId">—</span></p>
-            <div class="exHint" id="aiFb">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ok" style="margin-top:12px">
-        ✅ 例文が変わらない／ボタンが効かない場合は、まずこのページを<strong>強制再読み込み</strong>（Windows: Ctrl+F5 / Mac: Cmd+Shift+R）してください。
-      </div>
+      <div class="muted">Stage2（ローマ字＋インドネシア語）</div>
+      <div class="sep"></div>
+      <div><b>ローマ字</b></div>
+      <pre id="romaji" class="mono"></pre>
+      <div class="sep"></div>
+      <div><b>インドネシア語</b></div>
+      <pre id="indonesian" class="mono"></pre>
     </div>
   </div>
-</main>
 
 <script>
-const EXAMPLES = {
-  resident_calm: {
-    meal: { jp: "お食事の時間です。ゆっくり一口ずついきましょう。むせそうなら止めますね。",
-            romaji: "Oshokuji no jikan desu. Yukkuri hitokuchi zutsu ikimashou. Muse-sou nara tomemasu ne.",
-            id: "Sekarang waktunya makan. Mari pelan-pelan satu suap saja. Kalau hampir tersedak, kita berhenti dulu ya." },
-    bath: { jp: "今からお風呂に入りましょう。寒くないように、ゆっくり温めますね。",
-            romaji: "Ima kara ofuro ni hairimashou. Samukunai you ni, yukkuri atatamemasu ne.",
-            id: "Sekarang kita mandi ya. Saya hangatkan pelan-pelan supaya tidak kedinginan." },
-    toilet:{ jp: "トイレに行きましょうか。あわてなくて大丈夫です。ゆっくりでいいですよ。",
-            romaji: "Toire ni ikimashou ka. Awatenaku te daijoubu desu. Yukkuri de ii desu yo.",
-            id: "Ayo kita ke toilet. Tidak perlu terburu-buru. Pelan-pelan saja." }
-  },
-  resident_angry: {
-    meal: { jp: "ご不快にさせてしまい申し訳ありません。どこが嫌だったか教えてください。",
-            romaji: "Gofukai ni sasete shimai moushiwake arimasen. Doko ga iya datta ka oshiete kudasai.",
-            id: "Maaf sudah membuat Anda tidak nyaman. Bagian mana yang Anda tidak suka, bisa beri tahu?" },
-    bath: { jp: "すみません。入浴は今はやめて、別の方法にしますか？",
-            romaji: "Sumimasen. Nyuuyoku wa ima wa yamete, betsu no houhou ni shimasu ka?",
-            id: "Maaf. Mandinya kita hentikan dulu, mau cara lain?" },
-    toilet:{ jp: "失礼しました。少し距離をとります。必要な時に呼んでください。",
-            romaji: "Shitsurei shimashita. Sukoshi kyori o torimasu. Hitsuyou na toki ni yonde kudasai.",
-            id: "Maaf. Saya akan menjaga jarak dulu. Panggil saya saat butuh." }
-  },
-  resident_confused: {
-    meal: { jp: "ここは食堂です。いまはお昼ごはんの時間ですよ。いっしょに食べましょう。",
-            romaji: "Koko wa shokudou desu. Ima wa ohirugohan no jikan desu yo. Issho ni tabemashou.",
-            id: "Ini ruang makan. Sekarang waktunya makan siang. Mari makan bersama." },
-    bath: { jp: "ここはお風呂場です。いまからお風呂に入りましょう。私はそばにいますよ。",
-            romaji: "Koko wa ofuroba desu. Ima kara ofuro ni hairimashou. Watashi wa soba ni imasu yo.",
-            id: "Ini kamar mandi. Sekarang kita mandi ya. Saya ada di samping Anda." },
-    toilet:{ jp: "大丈夫です。いまトイレに行きましょう。私が案内します。",
-            romaji: "Daijoubu desu. Ima toire ni ikimashou. Watashi ga annai shimasu.",
-            id: "Tidak apa-apa. Sekarang kita ke toilet ya. Saya akan menemani." }
-  },
-  family_anxious: {
-    meal: { jp: "ご心配ですよね。食事量とむせの有無を記録で確認し、あとでご説明します。",
-            romaji: "Goshinpai desu yo ne. Shokujiryou to muse no umu o kiroku de kakunin shi, ato de gosetsumei shimasu.",
-            id: "Wajar kalau Anda khawatir. Saya cek catatan jumlah makan dan apakah tersedak, lalu jelaskan nanti." },
-    bath: { jp: "入浴前に体調と血圧を確認し、転倒しないよう見守ります。",
-            romaji: "Nyuuyoku mae ni taichou to ketsuatsu o kakunin shi, tentou shinai you mimamorimasu.",
-            id: "Sebelum mandi kami cek kondisi dan tekanan darah, dan mengawasi agar tidak jatuh." },
-    toilet:{ jp: "排泄の状況は記録しており、異常があればすぐに看護師へ共有します。",
-            romaji: "Haisetsu no joukyou wa kiroku shite ori, ijou ga areba sugu ni kangoshi e kyouyuu shimasu.",
-            id: "Kondisi BAB/BAK kami catat. Kalau ada masalah, kami segera berbagi ke perawat." }
-  },
-  family_complaint: {
-    meal: { jp: "ご不快な思いをさせてしまい申し訳ありません。事実を確認し、対応をお伝えします。",
-            romaji: "Gofukai na omoi o sasete shimai moushiwake arimasen. Jijitsu o kakunin shi, taiou o otsutae shimasu.",
-            id: "Maaf sudah membuat Anda tidak nyaman. Saya akan cek faktanya dan menyampaikan tindak lanjut." },
-    bath: { jp: "ご指摘ありがとうございます。状況を確認し、再発防止策を本日中に共有します。",
-            romaji: "Goshiteki arigatou gozaimasu. Joukyou o kakunin shi, saihatsu boushi saku o honjitsu-chuu ni kyouyuu shimasu.",
-            id: "Terima kasih atas masukannya. Saya akan cek situasinya dan membagikan pencegahan hari ini." },
-    toilet:{ jp: "申し訳ありません。まず状態を確認し、必要なら責任者へすぐに繋ぎます。",
-            romaji: "Moushiwake arimasen. Mazu joutai o kakunin shi, hitsuyou nara sekininsha e sugu ni tsunagimasu.",
-            id: "Maaf. Saya cek kondisinya dulu, dan jika perlu segera hubungkan ke penanggung jawab." }
-  }
-};
-
-const SCENE_LABEL = { meal:"食事介助", bath:"入浴介助", toilet:"排泄介助", transfer:"移乗・移動", meds:"服薬", night:"夜間対応" };
-function fallbackExample(personaKey, sceneKey){
-  const label = SCENE_LABEL[sceneKey] || "対応";
-  return {
-    jp: `${label}の例文を準備中です。まずは丁寧な声かけから始めましょう。`,
-    romaji: `${label} no reibun o junbi-chuu desu. Mazu wa teinei na koekake kara hajimemashou.`,
-    id: `Contoh untuk ${label} sedang disiapkan. Mari mulai dengan sapaan yang sopan.`
+  const $ = (id) => document.getElementById(id);
+  const setStatus = (msg) => $("status").textContent = msg || "";
+  const setBusy = (busy) => {
+    $("fillExample").disabled = busy;
+    $("send").disabled = busy;
+    $("runStage2").disabled = busy;
   };
-}
-function getExample(personaKey, sceneKey){
-  const p = EXAMPLES[personaKey] || {};
-  return p[sceneKey] || fallbackExample(personaKey, sceneKey);
-}
 
-// trial UI
-const TRIAL_LIMIT = 3;
-const trialKey = "kaigo_trial_used_v1";
-const getUsed = () => Number(localStorage.getItem(trialKey) || 0);
-const setUsed = (n) => localStorage.setItem(trialKey, String(n));
+  // --- Fetch optimization state ---
+  let inFlight = null; // AbortController
+  let busy = false;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const personaSelect = document.getElementById("personaSelect");
-  const sceneSelect   = document.getElementById("sceneSelect");
-  const userInput     = document.getElementById("userInput");
-  const exampleBtn    = document.getElementById("exampleBtn");
-  const sendBtn       = document.getElementById("sendBtn");
-  const resetBtn      = document.getElementById("resetBtn");
+  let DB = null;
+  const counters = {}; // counters[scene][persona][category] = next index
 
-  const exJp = document.getElementById("exJp");
-  const exRm = document.getElementById("exRm");
-  const exId = document.getElementById("exId");
-
-  const aiJp = document.getElementById("aiJp");
-  const aiRm = document.getElementById("aiRm");
-  const aiId = document.getElementById("aiId");
-  const aiFb = document.getElementById("aiFb");
-
-  const trialLeftEl = document.getElementById("trialLeft");
-  const payBox = document.getElementById("payBox");
-  const netStatus = document.getElementById("netStatus");
-
-  // 体感フリーズ対策：送信中はボタンを無効化し、UI更新を先に描画させる
-  let isSending = false;
-
-  function renderExample(){
-    const ex = getExample(personaSelect.value, sceneSelect.value);
-    exJp.textContent = ex.jp;
-    exRm.textContent = ex.romaji;
-    exId.textContent = ex.id;
-    // ボタンが効かない原因対策：最新JPをdata属性に必ず入れる
-    exampleBtn.dataset.jp = ex.jp;
+  function initCounter(scene, persona, cat){
+    if(!counters[scene]) counters[scene]={};
+    if(!counters[scene][persona]) counters[scene][persona]={};
+    if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat]=0;
   }
 
-  function refreshTrialUI(){
-    const used = getUsed();
-    const left = Math.max(0, TRIAL_LIMIT - used);
-    trialLeftEl.textContent = String(left);
-    const blocked = left <= 0;
-    payBox.style.display = blocked ? "block" : "none";
-    sendBtn.disabled = blocked;
-  }
-
-  personaSelect.addEventListener("change", () => {
-    renderExample();
-    netStatus.textContent = "相手（AI側）を変更 → 例文を更新しました。";
-  });
-  sceneSelect.addEventListener("change", () => {
-    renderExample();
-    netStatus.textContent = "状況（シーン）を変更 → 例文を更新しました。";
-  });
-
-  exampleBtn.addEventListener("click", () => {
-    if (isSending) {
-      netStatus.textContent = "送信処理中のため、例文の挿入は少し待ってください。";
-      return;
-    }
-    // 選択状態に合わせて先に例文パネルを更新（体感の遅さ対策）
-    renderExample();
-    const jp = getExample(personaSelect.value, sceneSelect.value).jp;
-    netStatus.textContent = "例文を入力欄に入れました。";
-    // UIを一度描画してから入力欄へ反映（ブラウザが重い時のフリーズ感を減らす）
-    requestAnimationFrame(() => {
-      userInput.value = jp;
-      userInput.focus();
+  function populateSelect(sel, items){
+    sel.innerHTML="";
+    items.forEach(it=>{
+      const opt=document.createElement("option");
+      opt.value=it.key;
+      opt.textContent=it.label;
+      sel.appendChild(opt);
     });
-  });
+  }
 
-  resetBtn.addEventListener("click", () => {
-    userInput.value = "";
-    aiJp.textContent = "—"; aiRm.textContent = "—"; aiId.textContent = "—"; aiFb.textContent = "—";
-    netStatus.textContent = "入力と結果をリセットしました。";
-  });
+  function populateSceneSelect(sceneKeys){
+    const sel = $("scene");
+    sel.innerHTML="";
+    sceneKeys.forEach(k=>{
+      const opt=document.createElement("option");
+      opt.value=k;
+      opt.textContent=k;
+      sel.appendChild(opt);
+    });
+  }
 
-  sendBtn.addEventListener("click", async () => {
-    if (isSending) return;
-    const used = getUsed();
-    const left = Math.max(0, TRIAL_LIMIT - used);
-    if (left <= 0){
-      netStatus.textContent = "無料体験は終了しています（送信は停止中）。";
+  async function loadDB(){
+    if(DB) return DB;
+    setStatus("例文読み込み中…");
+    const r = await fetch("/examples.json", { cache: "no-store" });
+    DB = await r.json();
+    populateSceneSelect(Object.keys(DB.scenes || {}));
+    populateSelect($("persona"), DB.personas || []);
+    refreshCategories();
+    setStatus("例文OK");
+    return DB;
+  }
+
+  function refreshCategories(){
+    const scene = $("scene").value;
+    const cats = DB?.scenes?.[scene] || [];
+    populateSelect($("category"), cats);
+  }
+
+  function getNextExample(){
+    const scene=$("scene").value;
+    const persona=$("persona").value;
+    const cat=$("category").value;
+    const list = DB?.examples?.[scene]?.[persona]?.[cat] || [];
+    if(!list.length) return null;
+    initCounter(scene, persona, cat);
+    const i = counters[scene][persona][cat] % list.length;
+    counters[scene][persona][cat] = counters[scene][persona][cat] + 1;
+    return list[i];
+  }
+
+  async function fillExample(){
+    await loadDB();
+    const ex = getNextExample();
+    if(!ex){
+      $("prompt").value="";
+      setStatus("例文なし（examples.json を確認）");
       return;
     }
-    const prompt = (userInput.value || "").trim();
-    if (!prompt){
-      netStatus.textContent = "日本語の発言を入力してください。";
-      return;
+    $("prompt").value = ex.jp;
+    setStatus("例文を入力しました（押すたびに切替）");
+  }
+
+  function clearOutputs(){
+    $("aiReply").textContent="";
+    $("feedback").textContent="";
+    $("suggestedJp").value="";
+    $("romaji").textContent="";
+    $("indonesian").textContent="";
+  }
+
+  function abortInFlight(){
+    if(inFlight){
+      try { inFlight.abort(); } catch(_){}
+      inFlight = null;
     }
+  }
 
-    const payload = { prompt, persona: personaSelect.value, scene: sceneSelect.value, scene_label: SCENE_LABEL[sceneSelect.value] || "" };
-    // UIを先に描画させてから送信開始（体感フリーズ対策）
-    isSending = true;
-    sendBtn.disabled = true;
-    exampleBtn.disabled = true;
-    netStatus.textContent = "送信中…（/api/chat）";
+  async function postChat(payload, { timeoutMs = 15000, retry = 1 } = {}){
+    // Abort previous request to avoid out-of-order UI updates
+    abortInFlight();
+    inFlight = new AbortController();
 
-    try{
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok){
-        netStatus.textContent = `APIエラー: ${res.status} ${data?.error || ""}`;
-        console.error("API error:", res.status, data);
-        return;
+    const tryOnce = async () => {
+      const timer = setTimeout(() => inFlight?.abort(), timeoutMs);
+      try{
+        const r = await fetch("/api/chat", {
+          method:"POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload),
+          signal: inFlight.signal
+        });
+        const j = await r.json().catch(()=> ({}));
+        if(!r.ok){
+          const msg = j?.message || j?.error || (j?.details ? String(j.details) : "") || ("HTTP " + r.status);
+          const err = new Error(msg);
+          err.status = r.status;
+          throw err;
+        }
+        return j;
+      } finally {
+        clearTimeout(timer);
       }
+    };
 
-      const jp = data?.ai_reply_jp || data?.jp || data?.text || data?.content?.[0]?.text || "";
-      const rm = data?.romaji || data?.ai_reply_romaji || "";
-      const id = data?.indonesian || data?.ai_reply_id || "";
-      const fb = data?.feedback || data?.note || "";
-
-      aiJp.textContent = jp || "（空）";
-      aiRm.textContent = rm || "—";
-      aiId.textContent = id || "—";
-      aiFb.textContent = fb ? `💡 フィードバック：${fb}` : "—";
-
-      setUsed(used + 1);
-      refreshTrialUI();
-      netStatus.textContent = "受信しました。";
-    }catch(e){
-      console.error(e);
-      netStatus.textContent = (e?.name === "AbortError")
-        ? "タイムアウトしました（15秒）。もう一度お試しください。"
-        : "通信に失敗しました（ネットワーク/設定を確認）";
-    }finally{
-      isSending = false;
-      sendBtn.disabled = false;
-      exampleBtn.disabled = false;
+    let lastErr = null;
+    for(let attempt=0; attempt<=retry; attempt++){
+      try{
+        return await tryOnce();
+      } catch(e){
+        lastErr = e;
+        if(e?.name === "AbortError") throw e;
+        const retriable = [502,503,504].includes(e.status);
+        if(retriable && attempt < retry) continue;
+        throw lastErr;
+      }
     }
-  });
+    throw lastErr || new Error("API error");
+  }
 
-  // initial render
-  renderExample();
-  refreshTrialUI();
-});
+  async function runStage1(){
+    await loadDB();
+    clearOutputs();
+
+    const prompt = $("prompt").value.trim();
+    if(!prompt) { setStatus("入力が空です"); return; }
+
+    const meta = {
+      stage: 1,
+      scene: $("scene").value,
+      persona: $("persona").value
+    };
+
+    if(busy) return;
+    busy = true;
+    setBusy(true);
+    setStatus("Stage1 実行中…");
+    try{
+      const j = await postChat({ prompt, meta }, { timeoutMs: 15000, retry: 1 });
+      $("aiReply").textContent = j.ai_reply_jp || "";
+      $("feedback").textContent = j.feedback_jp || "";
+      $("suggestedJp").value = j.suggested_reply_jp || "";
+      setStatus("Stage1 完了");
+
+      if($("autoStage2").checked){
+        await runStage2(true);
+      }
+    } catch(e){
+      if(e?.name === "AbortError") return;
+      setStatus("送信エラー: " + (e?.message || e));
+    } finally {
+      busy = false;
+      setBusy(false);
+    }
+  }
+
+  async function runStage2(fromAuto=false){
+    await loadDB();
+
+    const suggested = $("suggestedJp").value.trim();
+    if(!suggested) {
+      setStatus("Stage2: 推奨返答（JP）が空です（Stage2は実行しません）");
+      return;
+    }
+
+    const meta = {
+      stage: 2,
+      scene: $("scene").value,
+      persona: $("persona").value
+    };
+
+    if(busy) return;
+    busy = true;
+    setBusy(true);
+    setStatus("Stage2 実行中…");
+    try{
+      const j = await postChat({ prompt: suggested, meta }, { timeoutMs: 15000, retry: 1 });
+      $("romaji").textContent = j.romaji || "";
+      $("indonesian").textContent = j.indonesian || "";
+      setStatus("Stage2 完了");
+    } catch(e){
+      if(e?.name === "AbortError") return;
+      setStatus("Stage2エラー: " + (e?.message || e));
+    } finally {
+      busy = false;
+      setBusy(false);
+    }
+  }
+
+  // events
+  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+  $("send").addEventListener("click", ()=>runStage1());
+  $("runStage2").addEventListener("click", ()=>runStage2(false));
+
+  $("scene").addEventListener("change", async ()=>{ await loadDB(); refreshCategories(); });
+  $("persona").addEventListener("change", ()=>{});
+  $("category").addEventListener("change", ()=>{});
+
+  loadDB().catch(e=>setStatus("例文読込失敗: "+e.message));
 </script>
 </body>
 </html>
