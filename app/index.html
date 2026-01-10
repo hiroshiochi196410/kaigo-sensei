@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI（例文復活：カテゴリ×Persona/Scene×ローマ字）</title>
+  <title>介護ロールプレイAI（例文復活FIX：scenes辞書対応）</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
@@ -26,21 +26,13 @@
   </style>
 </head>
 <body>
-  <h1>介護ロールプレイAI <span class="badge">例文復活</span> <span class="badge">カテゴリ</span> <span class="badge">Persona/Scene</span> <span class="badge">介護士ローマ字</span></h1>
+  <h1>介護ロールプレイAI <span class="badge">例文復活FIX</span> <span class="badge">カテゴリ</span> <span class="badge">Persona/Scene</span> <span class="badge">介護士ローマ字</span></h1>
   <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
   <div class="row">
-    <label>Scene
-      <select id="scene"></select>
-    </label>
-
-    <label>Persona
-      <select id="persona"></select>
-    </label>
-
-    <label>カテゴリ
-      <select id="category"></select>
-    </label>
+    <label>Scene <select id="scene"></select></label>
+    <label>Persona <select id="persona"></select></label>
+    <label>カテゴリ <select id="category"></select></label>
 
     <button id="fillExample" type="button">例文を入れる</button>
 
@@ -97,7 +89,6 @@
   const $ = (id) => document.getElementById(id);
   const setStatus = (m) => $("status").textContent = m || "";
 
-  // --- Busy / Abort ---
   let busy = false;
   let inFlight = null; // AbortController
 
@@ -161,7 +152,7 @@
   }
 
   // -----------------------
-  // Examples loader (robust)
+  // Examples loader (FIX)
   // -----------------------
   let EX = null;
   const counters = {}; // counters[scene][persona][cat] = next index
@@ -172,16 +163,6 @@
     if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat] = 0;
   }
 
-  function asOptionsFromArray(arr){
-    // supports: ["bath", ...] or [{key,label}, ...] or [{value,label}, ...]
-    return (arr || []).map(v=>{
-      if(typeof v === "string") return { key: v, label: v };
-      const key = v.key ?? v.value ?? v.id ?? "";
-      const label = v.label ?? v.name ?? key;
-      return { key, label };
-    }).filter(o=>o.key);
-  }
-
   function populateSelect(sel, options){
     sel.innerHTML = "";
     options.forEach(o=>{
@@ -190,26 +171,6 @@
       opt.textContent = o.label;
       sel.appendChild(opt);
     });
-  }
-
-  function inferStructure(db){
-    // Try to find examples root:
-    // - db.examples[scene][persona][category] = [string|{jp:""}...]
-    // - db.data or db.dataset similarly
-    const root = db.examples || db.data || db.dataset || db.items || null;
-    return root;
-  }
-
-  function extractScenes(root){
-    return Object.keys(root || {});
-  }
-
-  function extractPersonas(root, scene){
-    return Object.keys((root && root[scene]) || {});
-  }
-
-  function extractCategories(root, scene, persona){
-    return Object.keys((root && root[scene] && root[scene][persona]) || {});
   }
 
   function normalizeExampleItem(x){
@@ -225,45 +186,79 @@
     return (Array.isArray(list) ? list : []).map(normalizeExampleItem).filter(it=>it.jp);
   }
 
+  async function fetchJSONWithFallbacks(){
+    // Absolute first, then relative: /examples.json -> ./examples.json
+    const urls = ["/examples.json", "./examples.json"];
+    let lastErr = null;
+    for(const u of urls){
+      try{
+        const r = await fetch(u, { cache:"no-store" });
+        if(!r.ok) throw new Error(u + " HTTP " + r.status);
+        return await r.json();
+      } catch(e){
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("examples.json not found");
+  }
+
   async function loadExamples(){
     if(EX) return EX;
 
     try{
       setStatus("examples.json 読み込み中…");
-      const r = await fetch("/examples.json", { cache: "no-store" });
-      if(!r.ok) throw new Error("examples.json not found");
-      const db = await r.json();
-      const root = inferStructure(db);
+      const db = await fetchJSONWithFallbacks();
 
-      if(!root){
-        throw new Error("examples root not found (need examples/data/dataset)");
+      const root = db.examples || db.data || db.dataset || db.items || null;
+      if(!root) throw new Error("examples root not found (need examples/data/dataset)");
+
+      // ✅ FIX: db.scenes may be dict: { bath:[{key,label}...], ... }
+      // If dict, scene options come from its keys; labels map to JP when available.
+      const sceneOptions = [];
+      if(Array.isArray(db.scenes)){
+        db.scenes.forEach(v=>{
+          if(typeof v === "string") sceneOptions.push({key:v,label:v});
+          else if(v && typeof v === "object") sceneOptions.push({key:(v.key??v.value), label:(v.label??v.name??v.key??v.value)});
+        });
+      } else if(db.scenes && typeof db.scenes === "object"){
+        Object.keys(db.scenes).forEach(k=>{
+          // Try to use Japanese label if present in db.scenes[k] items? Not necessary; keep key (bath) displayed in UI as-is.
+          // We'll still show key; if you want JP labels, add db.scene_labels in json.
+          const labelMap = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
+          sceneOptions.push({ key:k, label: (labelMap[k] || k) });
+        });
+      } else {
+        Object.keys(root||{}).forEach(k=>sceneOptions.push({key:k,label:k}));
       }
 
-      // Prefer explicit lists if present, else infer from root keys
-      const sceneOptions =
-        asOptionsFromArray(db.scenes) ||
-        [];
-      const scenes = sceneOptions.length ? sceneOptions.map(o=>o.key) : extractScenes(root);
-      const sceneOptFinal = sceneOptions.length ? sceneOptions : scenes.map(s=>({key:s,label:s}));
+      // personas
+      const personaOptions = [];
+      if(Array.isArray(db.personas)){
+        db.personas.forEach(v=>{
+          if(typeof v === "string") personaOptions.push({key:v,label:v});
+          else if(v && typeof v === "object"){
+            const key = v.key ?? v.value ?? v.id;
+            const label = v.label ?? v.name ?? key;
+            if(key) personaOptions.push({key, label});
+          }
+        });
+      } else {
+        // infer from first scene
+        const first = sceneOptions[0]?.key;
+        Object.keys((root && root[first]) || {}).forEach(p=>personaOptions.push({key:p,label:p}));
+      }
 
-      // personas list
-      const personaOptions = asOptionsFromArray(db.personas);
-      // if no personas list, infer from first scene
-      let personas = personaOptions.length ? personaOptions.map(o=>o.key) : extractPersonas(root, scenes[0]);
-      const personaOptFinal = personaOptions.length ? personaOptions : personas.map(p=>({key:p,label:p}));
+      EX = { db, root, sceneOptions, personaOptions };
+      populateSelect($("scene"), sceneOptions);
+      populateSelect($("persona"), personaOptions);
 
-      EX = { db, root, sceneOptFinal, personaOptFinal };
-      populateSelect($("scene"), sceneOptFinal);
-      populateSelect($("persona"), personaOptFinal);
-
-      refreshCategories(); // based on current selection
+      refreshCategories();
       setStatus("examples.json OK");
       return EX;
     } catch(e){
-      // No examples.json is OK; fallback to manual only
       EX = null;
-      setStatus("例文なし（examples.json 未設定）");
-      // Provide default Scene/Persona options anyway
+      setStatus("例文なし（examples.json 未設定/読込失敗）");
+      // fallback options
       populateSelect($("scene"), [
         {key:"bath",label:"入浴"},
         {key:"meal",label:"食事"},
@@ -288,13 +283,25 @@
       populateSelect($("category"), [{key:"free",label:"自由入力"}]);
       return;
     }
-    const { root } = EX;
+    const { db, root } = EX;
     const scene = $("scene").value;
     const persona = $("persona").value;
 
-    const cats = extractCategories(root, scene, persona);
-    const catOptions = cats.length ? cats.map(c=>({key:c,label:c})) : [{key:"free",label:"自由入力"}];
-    populateSelect($("category"), catOptions);
+    // ✅ Prefer db.scenes dict labels when available
+    const catOptions = [];
+    if(db.scenes && typeof db.scenes === "object" && !Array.isArray(db.scenes) && Array.isArray(db.scenes[scene])){
+      db.scenes[scene].forEach(it=>{
+        const key = it.key ?? it.value ?? it.id;
+        const label = it.label ?? it.name ?? key;
+        if(key) catOptions.push({key, label});
+      });
+    } else {
+      // fallback: infer from examples root keys
+      const cats = Object.keys((root && root[scene] && root[scene][persona]) || {});
+      cats.forEach(c=>catOptions.push({key:c,label:c}));
+    }
+
+    populateSelect($("category"), catOptions.length ? catOptions : [{key:"free",label:"自由入力"}]);
   }
 
   function getNextExample(){
@@ -351,7 +358,7 @@
       $("feedback").textContent = s1.feedback_jp || "";
       $("suggestedJp").value = s1.suggested_reply_jp || "";
 
-      // Stage2 auto (on suggested reply)
+      // Stage2 auto
       if($("autoStage2").checked){
         await runStage2Only(true);
       } else {
@@ -365,13 +372,12 @@
     }
   }
 
-  async function runStage2Only(fromAuto){
+  async function runStage2Only(){
     const suggested = $("suggestedJp").value.trim();
     if(!suggested){
       setStatus("Stage2: 推奨返答（日本語）が空です");
       return;
     }
-
     setStatus("Stage2 実行中…");
     const s2 = await postChat({ prompt: suggested, meta: meta(2) });
     $("romaji").textContent = s2.romaji || "";
@@ -382,13 +388,13 @@
   // Events
   $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
   $("send").addEventListener("click", runAll);
-  $("runStage2").addEventListener("click", ()=>runStage2Only(false).catch(e=>setStatus("Stage2エラー: "+e.message)));
+  $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
-  $("scene").addEventListener("change", ()=>{ refreshCategories(); clearOutputs(); setStatus("Scene変更：例文or入力→送信"); });
-  $("persona").addEventListener("change", ()=>{ refreshCategories(); clearOutputs(); setStatus("Persona変更：例文or入力→送信"); });
+  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Scene変更：例文or入力→送信"); });
+  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Persona変更：例文or入力→送信"); });
   $("category").addEventListener("change", ()=>{ clearOutputs(); setStatus("カテゴリ変更：例文ボタンで投入"); });
 
-  loadExamples().then(()=>refreshCategories());
+  loadExamples().then(()=>{ if(EX) refreshCategories(); });
 </script>
 </body>
 </html>
