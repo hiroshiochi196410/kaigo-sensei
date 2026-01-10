@@ -53,6 +53,7 @@
     <div class="muted">介護士（あなた）の発話（日本語）</div>
     <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
     <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
+    <div id="noExampleHint" class="hint" style="display:none; margin-top:6px;">この条件の例文はまだありません。自由入力で続けましょう。</div>
   </div>
 
   <div class="card">
@@ -93,6 +94,12 @@
 <script>
   const $ = (id) => document.getElementById(id);
   const setStatus = (m) => $("status").textContent = m || "";
+  const showNoExampleHint = (show) => {
+    const el = $("noExampleHint");
+    if(!el) return;
+    el.style.display = show ? "block" : "none";
+  };
+
 
   let busy = false;
   let inFlight = null; // AbortController
@@ -260,10 +267,12 @@
       populateSelect($("persona"), personaOptions);
 
       refreshCategories();
+      showNoExampleHint(false);
       setStatus("examples.json OK");
       return EX;
     } catch(e){
       EX = null;
+      showNoExampleHint(true);
       setStatus("例文なし（examples.json 未設定/読込失敗）");
       populateSelect($("scene"), [
         {key:"bath",label:"入浴"},
@@ -341,10 +350,12 @@
     await loadExamples();
     const ex = getNextExample();
     if(!ex){
-      setStatus("例文が見つかりません（scene/persona/category を確認）");
+      setStatus("この条件の例文はまだありません。自由入力で続けましょう。");
+      showNoExampleHint(true);
       return;
     }
     $("prompt").value = ex.jp;
+    showNoExampleHint(false);
     setStatus("例文を入力しました（押すたび切替）");
   }
 
@@ -403,9 +414,12 @@
   $("send").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
-  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Scene変更：例文or入力→送信"); });
-  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); setStatus("Persona変更：例文or入力→送信"); });
-  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value); clearOutputs(); setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
+  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+    setStatus("Scene変更：例文or入力→送信"); });
+  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+    setStatus("Persona変更：例文or入力→送信"); });
+  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value); clearOutputs(); showNoExampleHint(false);
+    setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
 loadExamples().then(()=>{ if(EX) refreshCategories(); });
 </script>
 </body>
