@@ -111,6 +111,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -127,6 +132,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -143,6 +153,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -159,6 +174,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -175,6 +195,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -191,6 +216,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -207,6 +237,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -223,6 +258,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -239,6 +279,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -255,6 +300,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -271,6 +321,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -287,6 +342,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -303,6 +363,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -319,6 +384,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -335,6 +405,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -351,6 +426,11 @@
         "ja": "meal に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -367,6 +447,11 @@
         "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -383,6 +468,11 @@
         "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -399,6 +489,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -415,6 +510,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -431,6 +531,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -447,6 +552,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -463,6 +573,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -479,6 +594,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -495,6 +615,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -511,6 +636,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -527,6 +657,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -543,6 +678,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -559,6 +699,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -575,6 +720,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -591,6 +741,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -607,6 +762,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -623,6 +783,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -639,6 +804,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -655,6 +825,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
       }
     },
     {
@@ -671,6 +846,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -687,6 +867,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -703,6 +888,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -719,6 +909,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -735,6 +930,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -751,6 +951,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -767,6 +972,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -783,6 +993,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -799,6 +1014,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
       }
     },
     {
@@ -815,6 +1035,11 @@
         "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
+      },
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
       }
     },
     {
@@ -836,7 +1061,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.voice.user_calm.0001",
@@ -857,7 +1087,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.voice.user_calm.0001",
@@ -878,7 +1113,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.temperature.user_calm.0002",
@@ -899,7 +1139,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.temperature.user_calm.0002",
@@ -920,7 +1165,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.temperature.user_calm.0002",
@@ -941,7 +1191,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.safety.user_calm.0003",
@@ -962,7 +1217,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.safety.user_calm.0003",
@@ -983,7 +1243,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.safety.user_calm.0003",
@@ -1004,7 +1269,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.privacy.user_calm.0004",
@@ -1025,7 +1295,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.privacy.user_calm.0004",
@@ -1046,7 +1321,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.privacy.user_calm.0004",
@@ -1067,7 +1347,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.after.user_calm.0005",
@@ -1088,7 +1373,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.after.user_calm.0005",
@@ -1109,7 +1399,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.after.user_calm.0005",
@@ -1130,7 +1425,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.voice.user_angry.0006",
@@ -1151,7 +1451,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.voice.user_angry.0006",
@@ -1172,7 +1477,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.voice.user_angry.0006",
@@ -1193,7 +1503,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.temperature.user_angry.0007",
@@ -1214,7 +1529,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.temperature.user_angry.0007",
@@ -1235,7 +1555,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.temperature.user_angry.0007",
@@ -1256,7 +1581,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.safety.user_angry.0008",
@@ -1277,7 +1607,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.safety.user_angry.0008",
@@ -1298,7 +1633,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.safety.user_angry.0008",
@@ -1319,7 +1659,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.privacy.user_angry.0009",
@@ -1340,7 +1685,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.privacy.user_angry.0009",
@@ -1361,7 +1711,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.privacy.user_angry.0009",
@@ -1382,7 +1737,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.after.user_angry.0010",
@@ -1403,7 +1763,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.after.user_angry.0010",
@@ -1424,7 +1789,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "bath.after.user_angry.0010",
@@ -1445,7 +1815,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.voice.dementia.0011",
@@ -1466,7 +1841,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.voice.dementia.0011",
@@ -1487,7 +1867,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.voice.dementia.0011",
@@ -1508,7 +1893,12 @@
         "ssw",
         "bath",
         "voice"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.temperature.dementia.0012",
@@ -1529,7 +1919,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.temperature.dementia.0012",
@@ -1550,7 +1945,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.temperature.dementia.0012",
@@ -1571,7 +1971,12 @@
         "ssw",
         "bath",
         "temperature"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.safety.dementia.0013",
@@ -1592,7 +1997,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.safety.dementia.0013",
@@ -1613,7 +2023,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.safety.dementia.0013",
@@ -1634,7 +2049,12 @@
         "ssw",
         "bath",
         "safety"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.privacy.dementia.0014",
@@ -1655,7 +2075,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.privacy.dementia.0014",
@@ -1676,7 +2101,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.privacy.dementia.0014",
@@ -1697,7 +2127,12 @@
         "ssw",
         "bath",
         "privacy"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "bath.after.dementia.0015",
@@ -1718,7 +2153,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.after.dementia.0015",
@@ -1739,7 +2179,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "bath.after.dementia.0015",
@@ -1760,7 +2205,12 @@
         "ssw",
         "bath",
         "after"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety01",
@@ -1783,7 +2233,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety01",
@@ -1806,7 +2261,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety01",
@@ -1829,7 +2289,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety02",
@@ -1852,7 +2317,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety02",
@@ -1875,7 +2345,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety02",
@@ -1898,7 +2373,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety03",
@@ -1921,7 +2401,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety03",
@@ -1944,7 +2429,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety03",
@@ -1967,7 +2457,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety04",
@@ -1990,7 +2485,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety04",
@@ -2013,7 +2513,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "meal.swallow.user_calm.safety04",
@@ -2036,7 +2541,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.dementia.safety05",
@@ -2059,7 +2569,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety05",
@@ -2082,7 +2597,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety05",
@@ -2105,7 +2625,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.dementia.safety06",
@@ -2128,7 +2653,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety06",
@@ -2151,7 +2681,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety06",
@@ -2174,7 +2709,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.dementia.safety07",
@@ -2197,7 +2737,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety07",
@@ -2220,7 +2765,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety07",
@@ -2243,7 +2793,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.swallow.dementia.safety08",
@@ -2266,7 +2821,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety08",
@@ -2289,7 +2849,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.swallow.dementia.safety08",
@@ -2312,7 +2877,12 @@
         "meal",
         "safety",
         "swallow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.refusal.user_calm.flow01",
@@ -2334,7 +2904,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.refusal.user_calm.basic.flow01",
@@ -2356,7 +2931,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.refusal.user_calm.intermediate.flow01",
@@ -2378,7 +2958,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.pace.user_calm.flow02",
@@ -2400,7 +2985,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.pace.user_calm.basic.flow02",
@@ -2422,7 +3012,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.pace.user_calm.intermediate.flow02",
@@ -2444,7 +3039,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.reoffer_soft.user_calm.flow03",
@@ -2466,7 +3066,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.reoffer_soft.user_calm.basic.flow03",
@@ -2488,7 +3093,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "meal.reoffer_soft.user_calm.intermediate.flow03",
@@ -2510,7 +3120,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.refusal.dementia.flow04",
@@ -2532,7 +3147,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.refusal.dementia.basic.flow04",
@@ -2554,7 +3174,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.refusal.dementia.intermediate.flow04",
@@ -2576,7 +3201,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.pace.dementia.flow05",
@@ -2598,7 +3228,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.pace.dementia.basic.flow05",
@@ -2620,7 +3255,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.pace.dementia.intermediate.flow05",
@@ -2642,7 +3282,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "meal.reoffer_soft.dementia.flow06",
@@ -2664,7 +3309,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.reoffer_soft.dementia.basic.flow06",
@@ -2686,7 +3336,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "meal.reoffer_soft.dementia.intermediate.flow06",
@@ -2708,7 +3363,12 @@
         "ssw",
         "meal",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.accident.user_calm.flow01",
@@ -2732,7 +3392,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "toilet.accident.user_calm.basic.flow01",
@@ -2756,7 +3421,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "toilet.accident.user_calm.intermediate.flow01",
@@ -2780,7 +3450,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.process_clean.user_calm.flow02",
@@ -2803,7 +3478,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.process_clean.user_calm.basic.flow02",
@@ -2826,7 +3506,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.process_clean.user_calm.intermediate.flow02",
@@ -2849,7 +3534,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.reassure_end.user_calm.flow03",
@@ -2872,7 +3562,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.reassure_end.user_calm.basic.flow03",
@@ -2895,7 +3590,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.reassure_end.user_calm.intermediate.flow03",
@@ -2918,7 +3618,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.accident.dementia.flow04",
@@ -2942,7 +3647,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.accident.dementia.basic.flow04",
@@ -2966,7 +3676,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.accident.dementia.intermediate.flow04",
@@ -2990,7 +3705,12 @@
         "ssw",
         "accident",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.process_clean.dementia.flow05",
@@ -3013,7 +3733,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.process_clean.dementia.basic.flow05",
@@ -3036,7 +3761,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.process_clean.dementia.intermediate.flow05",
@@ -3059,7 +3789,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.reassure_end.dementia.flow06",
@@ -3082,7 +3817,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.reassure_end.dementia.basic.flow06",
@@ -3105,7 +3845,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.reassure_end.dementia.intermediate.flow06",
@@ -3128,7 +3873,12 @@
         "toilet",
         "flow",
         "accident"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.transfer.user_calm.flow01",
@@ -3153,7 +3903,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "toilet.transfer.user_calm.basic.flow01",
@@ -3178,7 +3933,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "toilet.transfer.user_calm.intermediate.flow01",
@@ -3203,7 +3963,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.check_balance.user_calm.flow02",
@@ -3227,7 +3992,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.check_balance.user_calm.basic.flow02",
@@ -3251,7 +4021,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.check_balance.user_calm.intermediate.flow02",
@@ -3275,7 +4050,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.move_step.user_calm.flow03",
@@ -3299,7 +4079,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.move_step.user_calm.basic.flow03",
@@ -3323,7 +4108,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "toilet.move_step.user_calm.intermediate.flow03",
@@ -3347,7 +4137,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.transfer.dementia.flow04",
@@ -3372,7 +4167,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.transfer.dementia.basic.flow04",
@@ -3397,7 +4197,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.transfer.dementia.intermediate.flow04",
@@ -3422,7 +4227,12 @@
         "ssw",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.check_balance.dementia.flow05",
@@ -3446,7 +4256,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.check_balance.dementia.basic.flow05",
@@ -3470,7 +4285,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.check_balance.dementia.intermediate.flow05",
@@ -3494,7 +4314,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "toilet.move_step.dementia.flow06",
@@ -3518,7 +4343,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.move_step.dementia.basic.flow06",
@@ -3542,7 +4372,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "toilet.move_step.dementia.intermediate.flow06",
@@ -3566,7 +4401,12 @@
         "transfer",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.check_anxiety.user_calm.flow01",
@@ -3590,7 +4430,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "night.check_anxiety.user_calm.basic.flow01",
@@ -3614,7 +4459,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "night.check_anxiety.user_calm.intermediate.flow01",
@@ -3638,7 +4488,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.environment.user_calm.flow02",
@@ -3662,7 +4517,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "night.environment.user_calm.basic.flow02",
@@ -3686,7 +4546,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "night.environment.user_calm.intermediate.flow02",
@@ -3710,7 +4575,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.toilet_offer.user_calm.flow03",
@@ -3733,7 +4603,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "night.toilet_offer.user_calm.basic.flow03",
@@ -3756,7 +4631,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "night.toilet_offer.user_calm.intermediate.flow03",
@@ -3779,7 +4659,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.check_anxiety.dementia.flow04",
@@ -3803,7 +4688,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.check_anxiety.dementia.basic.flow04",
@@ -3827,7 +4717,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.check_anxiety.dementia.intermediate.flow04",
@@ -3851,7 +4746,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.environment.dementia.flow05",
@@ -3875,7 +4775,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.environment.dementia.basic.flow05",
@@ -3899,7 +4804,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.environment.dementia.intermediate.flow05",
@@ -3923,7 +4833,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "night.toilet_offer.dementia.flow06",
@@ -3946,7 +4861,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.toilet_offer.dementia.basic.flow06",
@@ -3969,7 +4889,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 0.8,
+        "pause_ms": 700
+      }
     },
     {
       "id": "night.toilet_offer.dementia.intermediate.flow06",
@@ -3992,7 +4917,12 @@
         "night",
         "safety",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.05,
+        "pause_ms": 250
+      }
     },
     {
       "id": "complaint.apology.family_complaint.flow01",
@@ -4015,7 +4945,12 @@
         "complaint",
         "flow",
         "risk_high"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "complaint.fact.family_complaint.flow02",
@@ -4038,7 +4973,12 @@
         "complaint",
         "flow",
         "risk_high"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "complaint.plan.family_complaint.flow03",
@@ -4060,7 +5000,12 @@
         "ssw",
         "complaint",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "complaint.followup.family_complaint.flow04",
@@ -4082,7 +5027,12 @@
         "ssw",
         "complaint",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "complaint.apology.family_anxious.flow05",
@@ -4105,7 +5055,12 @@
         "complaint",
         "flow",
         "risk_high"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "complaint.fact.family_anxious.flow06",
@@ -4128,7 +5083,12 @@
         "complaint",
         "flow",
         "risk_high"
-      ]
+      ],
+      "tts": {
+        "priority": "high",
+        "speech_rate": 0.85,
+        "pause_ms": 600
+      }
     },
     {
       "id": "complaint.plan.family_anxious.flow07",
@@ -4150,7 +5110,12 @@
         "ssw",
         "complaint",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     },
     {
       "id": "complaint.followup.family_anxious.flow08",
@@ -4172,7 +5137,12 @@
         "ssw",
         "complaint",
         "flow"
-      ]
+      ],
+      "tts": {
+        "priority": "normal",
+        "speech_rate": 1.0,
+        "pause_ms": 300
+      }
     }
   ]
 }
