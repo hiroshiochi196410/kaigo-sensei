@@ -338,246 +338,6 @@
       }
     },
     {
-      "id": "complaint.apology.user_calm.0031",
-      "category": "complaint",
-      "subscene": "apology",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "apology",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.fact.user_calm.0032",
-      "category": "complaint",
-      "subscene": "fact",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.plan.user_calm.0033",
-      "category": "complaint",
-      "subscene": "plan",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.escalate.user_calm.0034",
-      "category": "complaint",
-      "subscene": "escalate",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.followup.user_calm.0035",
-      "category": "complaint",
-      "subscene": "followup",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.apology.dementia.0036",
-      "category": "complaint",
-      "subscene": "apology",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "apology",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.fact.dementia.0037",
-      "category": "complaint",
-      "subscene": "fact",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.plan.dementia.0038",
-      "category": "complaint",
-      "subscene": "plan",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.escalate.dementia.0039",
-      "category": "complaint",
-      "subscene": "escalate",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.followup.dementia.0040",
-      "category": "complaint",
-      "subscene": "followup",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.apology.family_complaint.0041",
-      "category": "complaint",
-      "subscene": "apology",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "apology",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.fact.family_complaint.0042",
-      "category": "complaint",
-      "subscene": "fact",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.plan.family_complaint.0043",
-      "category": "complaint",
-      "subscene": "plan",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.escalate.family_complaint.0044",
-      "category": "complaint",
-      "subscene": "escalate",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "complaint.followup.family_complaint.0045",
-      "category": "complaint",
-      "subscene": "followup",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "family",
-      "intent": "confirm",
-      "text": {
-        "ja": "complaint に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "bath.voice.user_calm.0001",
       "category": "bath",
       "subscene": "voice",
@@ -1633,6 +1393,186 @@
         "ssw",
         "night",
         "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "complaint.apology.family_complaint.flow01",
+      "category": "complaint",
+      "subscene": "apology",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "apology",
+      "text": {
+        "ja": "ご心配をおかけして申し訳ありません。まずお話を伺わせてください。",
+        "romaji": "Goshinpai o okake shite moushiwake arimasen. Mazu ohanashi o ukagawasete kudasai.",
+        "id": "Mohon maaf telah membuat Anda khawatir. Izinkan saya mendengarkan terlebih dahulu."
+      },
+      "flow_next": "fact",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow",
+        "risk_high"
+      ]
+    },
+    {
+      "id": "complaint.fact.family_complaint.flow02",
+      "category": "complaint",
+      "subscene": "fact",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "確認いたします。いつ、どのような状況でしたか。",
+        "romaji": "Kakunin itashimasu. Itsu, dono youna joukyou deshita ka.",
+        "id": "Saya akan memastikan. Kapan dan dalam situasi seperti apa kejadiannya?"
+      },
+      "flow_next": "plan",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow",
+        "risk_high"
+      ]
+    },
+    {
+      "id": "complaint.plan.family_complaint.flow03",
+      "category": "complaint",
+      "subscene": "plan",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "explain",
+      "text": {
+        "ja": "事実を確認のうえ、再発防止の対応を行います。",
+        "romaji": "Jijitsu o kakunin no ue, saihatsuboushi no taiou o okonaimasu.",
+        "id": "Kami akan memeriksa fakta dan melakukan langkah pencegahan agar tidak terulang."
+      },
+      "flow_next": "followup",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow"
+      ]
+    },
+    {
+      "id": "complaint.followup.family_complaint.flow04",
+      "category": "complaint",
+      "subscene": "followup",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "explain",
+      "text": {
+        "ja": "対応結果は改めてご報告いたします。",
+        "romaji": "Taiou kekka wa aratamete gohoukoku itashimasu.",
+        "id": "Hasil tindak lanjut akan kami laporkan kembali."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow"
+      ]
+    },
+    {
+      "id": "complaint.apology.family_anxious.flow05",
+      "category": "complaint",
+      "subscene": "apology",
+      "persona": "family_anxious",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "apology",
+      "text": {
+        "ja": "ご心配をおかけして申し訳ありません。まずお話を伺わせてください。",
+        "romaji": "Goshinpai o okake shite moushiwake arimasen. Mazu ohanashi o ukagawasete kudasai.",
+        "id": "Mohon maaf telah membuat Anda khawatir. Izinkan saya mendengarkan terlebih dahulu."
+      },
+      "flow_next": "fact",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow",
+        "risk_high"
+      ]
+    },
+    {
+      "id": "complaint.fact.family_anxious.flow06",
+      "category": "complaint",
+      "subscene": "fact",
+      "persona": "family_anxious",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "確認いたします。いつ、どのような状況でしたか。",
+        "romaji": "Kakunin itashimasu. Itsu, dono youna joukyou deshita ka.",
+        "id": "Saya akan memastikan. Kapan dan dalam situasi seperti apa kejadiannya?"
+      },
+      "flow_next": "plan",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow",
+        "risk_high"
+      ]
+    },
+    {
+      "id": "complaint.plan.family_anxious.flow07",
+      "category": "complaint",
+      "subscene": "plan",
+      "persona": "family_anxious",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "explain",
+      "text": {
+        "ja": "事実を確認のうえ、再発防止の対応を行います。",
+        "romaji": "Jijitsu o kakunin no ue, saihatsuboushi no taiou o okonaimasu.",
+        "id": "Kami akan memeriksa fakta dan melakukan langkah pencegahan agar tidak terulang."
+      },
+      "flow_next": "followup",
+      "tags": [
+        "ssw",
+        "complaint",
+        "flow"
+      ]
+    },
+    {
+      "id": "complaint.followup.family_anxious.flow08",
+      "category": "complaint",
+      "subscene": "followup",
+      "persona": "family_anxious",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "explain",
+      "text": {
+        "ja": "対応結果は改めてご報告いたします。",
+        "romaji": "Taiou kekka wa aratamete gohoukoku itashimasu.",
+        "id": "Hasil tindak lanjut akan kami laporkan kembali."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "complaint",
         "flow"
       ]
     }
