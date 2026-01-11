@@ -33,6 +33,7 @@
     <span class="badge">介護士ローマ字</span>
   </h1>
   <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
+  <div class="row"><span id="trialMsg" class="badge"></span><span id="trialCount" class="badge"></span></div>
 
   <div class="row">
     <label>Scene <select id="scene"></select></label>
@@ -73,7 +74,7 @@
   </div>
 
   <div class="row">
-    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
+    <button id="sendBtn" class="primary" type="button">送信</button>
     <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
@@ -231,7 +232,7 @@ const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (S
 
   const updateTrialUI = () => {
     const el = $("trialInfo");
-    const pw = $("paywall");
+    const pw = $("paywallBox");
     const pwBtn = $("paywallBtn");
     const pwNote = $("paywallNote");
     const um = $("unlockMsg");
@@ -292,7 +293,7 @@ let busy = false;
   const setBusy = (b) => {
     busy = b;
     $("fillExample").disabled = b;
-    $("send").disabled = b;
+    $("sendBtn").disabled = b;
     $("runStage2").disabled = b;
     $("scene").disabled = b;
     $("persona").disabled = b;
@@ -643,7 +644,7 @@ let busy = false;
 
   // Events
   $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("send").addEventListener("click", runAll);
+  $("sendBtn").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
   $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
