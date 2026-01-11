@@ -54,6 +54,16 @@
     <div class="muted">介護士（あなた）の発話（日本語）</div>
     <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
     <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
+<div class="card" id="paywallBox" style="display:none; margin-top:10px;">
+  <b>無料体験</b>
+  <div id="trialInfo" class="hint" style="margin-top:6px;"></div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+    <button class="primary" id="paywallBtn" type="button">Stripeで決済して本格利用</button>
+    <span id="paywallNote" class="hint"></span>
+  </div>
+  <div id="unlockMsg" class="hint" style="margin-top:6px;"></div>
+</div>
+
     <div id="noExampleHint" class="hint" style="display:none; margin-top:6px;">この条件の例文はまだありません。自由入力で続けましょう。</div>
   </div>
 
@@ -63,8 +73,8 @@
   </div>
 
   <div class="row">
-    <button id="send" class="primary" type="button">送信</button>
-    <button id="runStage2" type="button">Stage2だけ実行</button>
+    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
+    <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
   <div class="grid">
@@ -149,6 +159,133 @@
     }
     return APP;
   }
+
+  // -----------------------
+  // Trial gating (per variant)
+  // - counts successful Stage1 calls
+  // - stored in localStorage per variant
+  // -----------------------
+  const trialKey = () => `kaigo_trial_${APP.variant || "default"}`;
+  
+  // -----------------------
+  // Simple unlock (manual code) for MVP
+  // config.json:
+  //   "unlock_code": "XXXX-YYYY" or "unlock_codes": ["...","..."]
+  // When correct, sets localStorage kaigo_paid_<variant> = "1"
+  // -----------------------
+  const normalizeCode = (s) => (s||"").toString().trim().replace(/\s+/g,"").toUpperCase();
+
+  const getAllowedUnlockCodes = () => {
+    const codes = [];
+    if (APP.unlock_code) codes.push(APP.unlock_code);
+    if (Array.isArray(APP.unlock_codes)) codes.push(...APP.unlock_codes);
+    // variant-specific (optional)
+    if (APP.variant && APP[`unlock_code_${APP.variant}`]) codes.push(APP[`unlock_code_${APP.variant}`]);
+    if (APP.variant && Array.isArray(APP[`unlock_codes_${APP.variant}`])) codes.push(...APP[`unlock_codes_${APP.variant}`]);
+    return codes.map(normalizeCode).filter(Boolean);
+  };
+
+  const tryUnlock = () => {
+    const input = $("unlockCode");
+    const msg = $("unlockMsg");
+    const code = normalizeCode(input?.value || "");
+    const allowed = getAllowedUnlockCodes();
+
+    if (!code) {
+      if (msg) { msg.textContent = "解除コードを入力してください。"; msg.style.color = "#b45309"; }
+      return false;
+    }
+    if (allowed.length === 0) {
+      if (msg) { msg.textContent = "（解除コードが未登録です：config.json を確認してください）"; msg.style.color = "#b45309"; }
+      return false;
+    }
+    const ok = allowed.includes(code);
+    if (ok) {
+      localStorage.setItem(paidKey(), "1");
+      if (msg) { msg.textContent = "✅ 解除しました。本格利用が可能です。"; msg.style.color = "#065f46"; }
+      updateTrialUI();
+      return true;
+    }
+    if (msg) { msg.textContent = "解除コードが違います。"; msg.style.color = "#b91c1c"; }
+    return false;
+  };
+
+  const resetUnlock = () => {
+    localStorage.removeItem(paidKey());
+    updateTrialUI();
+    const msg = $("unlockMsg");
+    if (msg) { msg.textContent = "解除状態をリセットしました。"; msg.style.color = "#374151"; }
+  };
+
+const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (Stripe/Webhook)
+  const isPaid = () => localStorage.getItem(paidKey()) === "1";
+
+  const getTrialCount = () => Number(localStorage.getItem(trialKey()) || "0");
+  const setTrialCount = (n) => localStorage.setItem(trialKey(), String(Math.max(0, Number(n)||0)));
+
+  const remainingTrials = () => {
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()) return Infinity;
+    return Math.max(0, limit - getTrialCount());
+  };
+
+  const updateTrialUI = () => {
+    const el = $("trialInfo");
+    const pw = $("paywall");
+    const pwBtn = $("paywallBtn");
+    const pwNote = $("paywallNote");
+    const um = $("unlockMsg");
+    if(!el) return;
+    const limit = Number(APP.trial_limit ?? 3);
+    if(isPaid()){
+      el.textContent = "✅ 本格利用：有効（決済済み）";
+      enableActions(true);
+      if(pw) pw.style.display = "none";
+      if(um) um.textContent = "";
+      return;
+    }
+    const used = getTrialCount();
+    const left = Math.max(0, limit - used);
+    el.textContent = `試用：${used}/${limit} 回（残り ${left} 回）`;
+    enableActions(left > 0);
+    if(pw) pw.style.display = (left === 0 ? "block" : "none");
+    if(pwBtn){
+      const url = APP.stripe_checkout_url || "";
+      pwBtn.href = url || "#";
+      pwBtn.style.pointerEvents = url ? "auto" : "none";
+      pwBtn.style.opacity = url ? "1" : "0.5";
+    }
+    if(pwNote){
+      if(APP.stripe_checkout_url){
+        pwNote.textContent = "";
+      } else if(APP.stripe_price_id){
+        pwNote.textContent = `（Stripe Price ID: ${APP.stripe_price_id}）※次のステップでCheckoutリンクを接続します`;
+      } else {
+        pwNote.textContent = "※次のステップでStripeの購入リンクを接続します";
+      }
+    }
+if(left === 0){
+      setStatus("試用回数に達しました。自由入力はできますが、AI応答には決済が必要です。");
+      showNoExampleHint(false);
+    }
+  };
+
+  const enableActions = (enabled) => {
+    // Disable API-consuming buttons when trial exhausted
+    const sendBtn = $("sendBtn");
+    const stage2Btn = $("stage2Btn");
+    if(sendBtn) sendBtn.disabled = !enabled;
+    if(stage2Btn) stage2Btn.disabled = !enabled;
+  };
+
+  const consumeTrial = () => {
+    if(isPaid()) return true;
+    const left = remainingTrials();
+    if(left <= 0) return false;
+    setTrialCount(getTrialCount() + 1);
+    updateTrialUI();
+    return true;
+  };
 let busy = false;
   let inFlight = null; // AbortController
 
@@ -524,7 +661,77 @@ let busy = false;
     const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
     setStatus("レベル変更： " + (levelLabelMap[$("level").value] || $("level").value) + "（例文は最初から）");
   });
-loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); });
+loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); updateTrialUI(); });
+
+  // Unlock code UI
+  $("unlockBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); tryUnlock(); });
+  $("unlockClearBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); resetUnlock(); });
+// --- Stripe checkout (A: 自動解除) ---
+async function startStripeCheckout(){
+  try{
+    if(!APP || !APP.variant){ alert("variantが未設定です"); return; }
+    const btn = document.getElementById("paywallBtn");
+    const note = document.getElementById("paywallNote");
+    if(btn){ btn.disabled = true; btn.textContent = "Stripeへ移動中..."; }
+    if(note){ note.textContent = ""; }
+    const resp = await fetch("/api/create-checkout-session",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ variant: APP.variant })
+    });
+    const data = await resp.json().catch(()=> ({}));
+    if(!resp.ok || !data.url){
+      const msg = data.error || "checkoutの作成に失敗しました";
+      if(note){ note.textContent = msg; }
+      if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
+      return;
+    }
+    location.href = data.url;
+  }catch(e){
+    console.error(e);
+    const note = document.getElementById("paywallNote");
+    const btn = document.getElementById("paywallBtn");
+    if(note){ note.textContent = "Stripe連携でエラーが発生しました"; }
+    if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
+  }
+}
+
+async function checkStripeSuccessOnLoad(){
+  try{
+    const qs = new URLSearchParams(location.search);
+    const success = qs.get("success");
+    const sessionId = qs.get("session_id");
+    if(success !== "1" || !sessionId) return;
+
+    const msg = document.getElementById("unlockMsg");
+    if(msg){ msg.textContent = "決済を確認しています..."; }
+
+    const v = (APP && APP.variant) ? APP.variant : "";
+    const resp = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}&variant=${encodeURIComponent(v)}`);
+    const data = await resp.json().catch(()=> ({}));
+
+    if(resp.ok && data.paid){
+      // paidフラグ（variant別）
+      localStorage.setItem(`kaigo_paid_${v}`, "1");
+      if(msg){ msg.textContent = "決済確認OK：本格利用が有効になりました。"; }
+      // URLを綺麗に
+      history.replaceState({}, "", location.pathname);
+      // UI更新
+      if(typeof updateTrialUI === "function") updateTrialUI();
+    }else{
+      if(msg){ msg.textContent = "決済の確認ができませんでした。しばらくして再読み込みしてください。"; }
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+
+// paywallボタンを接続
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = document.getElementById("paywallBtn");
+  if(btn) btn.addEventListener("click", startStripeCheckout);
+  checkStripeSuccessOnLoad();
+});
 </script>
 </body>
 </html>
