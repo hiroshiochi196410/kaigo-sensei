@@ -331,6 +331,65 @@ let busy = false;
     }
   }
 
+
+  // --- helpers: generate romaji / Indonesian via API when backend doesn't return them ---
+  const _romajiCache = new Map();
+  const _indoCache = new Map();
+
+  function hasJapaneseChars(text){
+    return /[\u3040-\u30FF\u4E00-\u9FFF]/.test(text || "");
+  }
+
+  async function getRomajiViaAPI(jpText){
+    const key = (jpText || "").trim();
+    if(!key) return "";
+    if(_romajiCache.has(key)) return _romajiCache.get(key);
+
+    const prompt =
+`次の日本語を、学習者向けに「自然な発音に近い」ローマ字（ヘボン式寄り）にしてください。
+- 助詞は発音に合わせて：は→wa、へ→e、を→o
+- 句読点は残してOK
+- 出力はローマ字のみ（1行）でお願いします
+
+日本語：
+${key}`;
+    try{
+      const res = await postChat({ prompt, meta: { stage: "romaji" } }, { timeoutMs: 20000 });
+      const out = (res?.text || res?.romaji || res?.romaji_reply || res?.result || "").toString().trim();
+      _romajiCache.set(key, out);
+      return out;
+    }catch(e){
+      console.warn("romaji api failed:", e);
+      _romajiCache.set(key, "");
+      return "";
+    }
+  }
+
+  async function getIndonesianViaAPI(jpText){
+    const key = (jpText || "").trim();
+    if(!key) return "";
+    if(_indoCache.has(key)) return _indoCache.get(key);
+
+    const prompt =
+`次の日本語を、丁寧で自然なインドネシア語に翻訳してください。
+- 余計な説明は不要
+- 出力はインドネシア語のみ（1〜2文）
+
+日本語：
+${key}`;
+    try{
+      const res = await postChat({ prompt, meta: { stage: "id" } }, { timeoutMs: 20000 });
+      const out = (res?.text || res?.indonesian || res?.indonesian_reply || res?.result || "").toString().trim();
+      _indoCache.set(key, out);
+      return out;
+    }catch(e){
+      console.warn("indo api failed:", e);
+      _indoCache.set(key, "");
+      return "";
+    }
+  }
+
+
   function meta(stage){
     return {
       stage,
@@ -630,30 +689,28 @@ let busy = false;
     }
   }
 
-  async async function runStage2Only(){
-    const suggested = $("suggestedJp").value.trim();
-    if(!suggested){
-      setStatus("Stage2: 推奨返答（日本語）が空です");
-      return;
-    }
-    setStatus("Stage2 実行中…");
-    const s2 = await postChat({ prompt: suggested, meta: meta(2) });
-    // Stage2 response may be either {romaji, indonesian} or the Stage1-style {suggested_reply_jp, ...}
-    const romajiText = (s2.romaji ?? s2.romaji_reply ?? s2.romaji_jp ?? s2.suggested_reply_romaji ?? s2.suggested_reply_jp ?? "").toString();
-    const indoText = (s2.indonesian ?? s2.indonesian_reply ?? s2.suggested_reply_id ?? s2.id_reply ?? "").toString();
+  async function runStage2Only(){
+    // Stage2-only: convert 推奨返答（日本語） -> ローマ字 + インドネシア語
+    const jpText = ($("suggestedReplyJp")?.value || "").trim();
+    if(!jpText){ setStatus("Stage2用の推奨返答（日本語）が空です"); return; }
 
-    $("romaji").textContent = romajiText;
-    $("indonesian").textContent = indoText;
+    setStatus("Stage2（ローマ字/ID）生成中…");
+    const romaji = await getRomajiViaAPI(jpText);
+    const indo = await getIndonesianViaAPI(jpText);
 
-    // If the "romaji" box actually contains Japanese, fix the label so it doesn't look broken
-    const hasJP = /[\u3040-\u30ff\u3400-\u9fff]/.test(romajiText);
-    const lbl = $("stage2LabelRomaji");
-    if(lbl) lbl.textContent = hasJP ? "推奨返答（日本語）" : "ローマ字（推奨返答）";
-    setStatus("完了");
+    $("stage2Romaji").textContent = romaji || "(ローマ字生成に失敗)";
+    $("stage2Id").textContent = indo || "(ID生成に失敗)";
+
+    // 音声：ローマ字ボタンは日本語を読み上げ（自然）、IDボタンはインドネシア語
+    const btnR = $("speakStage2Romaji");
+    const btnI = $("speakStage2Id");
+    if(btnR){ btnR.dataset.lang="ja-JP"; btnR.dataset.text=jpText; }
+    if(btnI){ btnI.dataset.lang="id-ID"; btnI.dataset.text=indo || ""; }
+
+    setStatus("Stage2完了");
   }
 
-  // Events
-  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
   $("send").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
