@@ -1,0 +1,1136 @@
+{
+  "meta": {
+    "schema": "ssw-examples/v2",
+    "langs": [
+      "ja",
+      "romaji",
+      "id"
+    ],
+    "updated_at": "2026-01-12",
+    "note": "SSW横展開 v2 完全版（配置するだけで利用可）"
+  },
+  "personas": [
+    {
+      "key": "user_calm",
+      "label": "利用者：穏やか"
+    },
+    {
+      "key": "user_angry",
+      "label": "利用者：怒り"
+    },
+    {
+      "key": "dementia",
+      "label": "利用者：少し混乱"
+    },
+    {
+      "key": "family_anxious",
+      "label": "家族：不安"
+    },
+    {
+      "key": "family_complaint",
+      "label": "家族：クレーム"
+    }
+  ],
+  "roles": [
+    {
+      "key": "caregiver",
+      "label": "介護職"
+    },
+    {
+      "key": "patient",
+      "label": "利用者"
+    },
+    {
+      "key": "family",
+      "label": "家族"
+    }
+  ],
+  "levels": [
+    "beginner",
+    "basic",
+    "intermediate"
+  ],
+  "intents": [
+    {
+      "key": "confirm",
+      "label": "確認"
+    },
+    {
+      "key": "request",
+      "label": "依頼"
+    },
+    {
+      "key": "safety",
+      "label": "安全配慮"
+    },
+    {
+      "key": "empathy",
+      "label": "共感・安心"
+    },
+    {
+      "key": "explain",
+      "label": "説明"
+    },
+    {
+      "key": "apology",
+      "label": "謝罪"
+    }
+  ],
+  "menu": {
+    "categories": [
+      {
+        "key": "bath",
+        "label": "入浴"
+      },
+      {
+        "key": "meal",
+        "label": "食事"
+      },
+      {
+        "key": "toilet",
+        "label": "排泄"
+      },
+      {
+        "key": "complaint",
+        "label": "家族対応/クレーム"
+      }
+    ]
+  },
+  "examples": [
+    {
+      "id": "meal.start.user_calm.0001",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.swallow.user_calm.0002",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.pace.user_calm.0003",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.refusal.user_calm.0004",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.user_calm.0005",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.start.dementia.0006",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.swallow.dementia.0007",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.pace.dementia.0008",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.refusal.dementia.0009",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.dementia.0010",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.start.family_complaint.0011",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.swallow.family_complaint.0012",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.pace.family_complaint.0013",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.refusal.family_complaint.0014",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.family_complaint.0015",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.user_calm.0016",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.transfer.user_calm.0017",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.user_calm.0018",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.accident.user_calm.0019",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.user_calm.0020",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.dementia.0021",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.transfer.dementia.0022",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.dementia.0023",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.accident.dementia.0024",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.dementia.0025",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.family_complaint.0026",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.transfer.family_complaint.0027",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.family_complaint.0028",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.accident.family_complaint.0029",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.family_complaint.0030",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.apology.user_calm.0031",
+      "category": "complaint",
+      "subscene": "apology",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "apology",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.fact.user_calm.0032",
+      "category": "complaint",
+      "subscene": "fact",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.plan.user_calm.0033",
+      "category": "complaint",
+      "subscene": "plan",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.escalate.user_calm.0034",
+      "category": "complaint",
+      "subscene": "escalate",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.followup.user_calm.0035",
+      "category": "complaint",
+      "subscene": "followup",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.apology.dementia.0036",
+      "category": "complaint",
+      "subscene": "apology",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "apology",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.fact.dementia.0037",
+      "category": "complaint",
+      "subscene": "fact",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.plan.dementia.0038",
+      "category": "complaint",
+      "subscene": "plan",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.escalate.dementia.0039",
+      "category": "complaint",
+      "subscene": "escalate",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.followup.dementia.0040",
+      "category": "complaint",
+      "subscene": "followup",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.apology.family_complaint.0041",
+      "category": "complaint",
+      "subscene": "apology",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "apology",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.fact.family_complaint.0042",
+      "category": "complaint",
+      "subscene": "fact",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.plan.family_complaint.0043",
+      "category": "complaint",
+      "subscene": "plan",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.escalate.family_complaint.0044",
+      "category": "complaint",
+      "subscene": "escalate",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "complaint.followup.family_complaint.0045",
+      "category": "complaint",
+      "subscene": "followup",
+      "persona": "family_complaint",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "family",
+      "intent": "confirm",
+      "text": {
+        "ja": "complaint に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "bath.voice.user_calm.0001",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.temperature.user_calm.0002",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.safety.user_calm.0003",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.privacy.user_calm.0004",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.after.user_calm.0005",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.voice.user_angry.0006",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_angry",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.temperature.user_angry.0007",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_angry",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.safety.user_angry.0008",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_angry",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.privacy.user_angry.0009",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_angry",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.after.user_angry.0010",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_angry",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.voice.dementia.0011",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.temperature.dementia.0012",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.safety.dementia.0013",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.privacy.dementia.0014",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.after.dementia.0015",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    }
+  ]
+}
