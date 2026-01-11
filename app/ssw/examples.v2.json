@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "schema": "ssw-examples/v2",
+    "langs": ["ja", "romaji", "id"],
+    "updated_at": "2026-01-12",
+    "note": "SSW横展開用 v2 初期版（そのまま配置可）"
+  },
+
+  "personas": [
+    { "key": "user_calm", "label": "利用者：穏やか" },
+    { "key": "user_angry", "label": "利用者：怒り" },
+    { "key": "dementia", "label": "利用者：少し混乱" },
+    { "key": "family_anxious", "label": "家族：不安" },
+    { "key": "family_complaint", "label": "家族：クレーム" }
+  ],
+
+  "roles": [
+    { "key": "caregiver", "label": "介護職" },
+    { "key": "patient", "label": "利用者" },
+    { "key": "family", "label": "家族" }
+  ],
+
+  "levels": ["beginner", "basic", "intermediate"],
+
+  "intents": [
+    { "key": "confirm", "label": "確認" },
+    { "key": "request", "label": "依頼" },
+    { "key": "safety", "label": "安全配慮" },
+    { "key": "empathy", "label": "共感・安心" },
+    { "key": "explain", "label": "説明" }
+  ],
+
+  "menu": {
+    "categories": [
+      {
+        "key": "bath",
+        "label": "入浴",
+        "subscenes": [
+          { "key": "voice", "label": "声かけ", "intent_default": "confirm" },
+          { "key": "temperature", "label": "温度確認", "intent_default": "confirm" },
+          { "key": "safety", "label": "安全配慮", "intent_default": "safety" },
+          { "key": "privacy", "label": "羞恥配慮", "intent_default": "empathy" }
+        ]
+      }
+    ]
+  },
+
+  "examples": [
+    {
+      "id": "bath.voice.user_calm.0001",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "今からお風呂に入りましょうか。",
+        "romaji": "Ima kara ofuro ni hairimashou ka?",
+        "id": "Sekarang kita mau mandi, ya?"
+      },
+      "tags": ["ssw", "bath"]
+    },
+
+    {
+      "id": "bath.temperature.user_calm.0001",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は大丈夫ですか。",
+        "romaji": "Oyu no ondo wa daijoubu desu ka?",
+        "id": "Apakah suhu airnya tidak apa-apa?"
+      },
+      "tags": ["temperature"]
+    },
+
+    {
+      "id": "bath.safety.dementia.0001",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "滑りやすいので、ゆっくり立ちましょう。",
+        "romaji": "Suberiyasui node, yukkuri tachimashou.",
+        "id": "Lantainya licin, jadi berdiri pelan-pelan ya."
+      },
+      "tags": ["safety"]
+    },
+
+    {
+      "id": "bath.privacy.user_angry.0001",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "周りから見えないようにしますので、ご安心ください。",
+        "romaji": "Mawari kara mienai you ni shimasu node, goanshin kudasai.",
+        "id": "Saya akan menutup supaya tidak terlihat orang lain, jadi tenang saja."
+      },
+      "tags": ["privacy"]
+    }
+  ]
+}
