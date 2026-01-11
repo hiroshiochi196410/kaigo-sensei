@@ -73,8 +73,8 @@
   </div>
 
   <div class="row">
-    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
-    <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
+    <button id="sendBtn" class="primary" type="button">送信</button>
+    <button id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
   <div class="grid">
@@ -273,7 +273,7 @@ if(left === 0){
   const enableActions = (enabled) => {
     // Disable API-consuming buttons when trial exhausted
     const sendBtn = $("sendBtn");
-    const stage2Btn = $("stage2Btn");
+    const stage2Btn = $("runStage2");
     if(sendBtn) sendBtn.disabled = !enabled;
     if(stage2Btn) stage2Btn.disabled = !enabled;
   };
@@ -292,7 +292,7 @@ let busy = false;
   const setBusy = (b) => {
     busy = b;
     $("fillExample").disabled = b;
-    $("send").disabled = b;
+    $("sendBtn").disabled = b;
     $("runStage2").disabled = b;
     $("scene").disabled = b;
     $("persona").disabled = b;
@@ -643,7 +643,7 @@ let busy = false;
 
   // Events
   $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("send").addEventListener("click", runAll);
+  $("sendBtn").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
   $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
