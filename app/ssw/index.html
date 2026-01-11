@@ -173,14 +173,18 @@ $("fillExample").onclick=async ()=>{
 
 // ===== Stage2生成（API） =====
 async function callStage2(text){
-  const r=await fetch("/api/chat",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ mode:"stage2", text })
+  const r = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      prompt: text,   // ← ★ここが重要
+      mode: "stage2"
+    })
   });
+
   if(!r.ok){
-    const t=await r.text().catch(()=>"(no body)");
-    throw new Error("API error "+r.status+": "+t);
+    const t = await r.text().catch(()=>"(no body)");
+    throw new Error("API error " + r.status + ": " + t);
   }
   return await r.json();
 }
