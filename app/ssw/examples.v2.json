@@ -114,6 +114,38 @@
       }
     },
     {
+      "id": "meal.start.user_calm.0001",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.start.user_calm.0001",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "meal.safety.user_calm.0005",
       "category": "meal",
       "subscene": "safety",
@@ -125,6 +157,38 @@
       "intent": "confirm",
       "text": {
         "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.user_calm.0005",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.user_calm.0005",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -146,6 +210,38 @@
       }
     },
     {
+      "id": "meal.start.dementia.0006",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.start.dementia.0006",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "meal.safety.dementia.0010",
       "category": "meal",
       "subscene": "safety",
@@ -157,6 +253,38 @@
       "intent": "confirm",
       "text": {
         "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.dementia.0010",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.dementia.0010",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -178,6 +306,38 @@
       }
     },
     {
+      "id": "meal.start.family_complaint.0011",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.start.family_complaint.0011",
+      "category": "meal",
+      "subscene": "start",
+      "persona": "family_complaint",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "meal.safety.family_complaint.0015",
       "category": "meal",
       "subscene": "safety",
@@ -189,6 +349,38 @@
       "intent": "confirm",
       "text": {
         "ja": "meal に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.family_complaint.0015",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "meal.safety.family_complaint.0015",
+      "category": "meal",
+      "subscene": "safety",
+      "persona": "family_complaint",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "meal に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -210,6 +402,38 @@
       }
     },
     {
+      "id": "toilet.urge.user_calm.0016",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.user_calm.0016",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "toilet.privacy.user_calm.0018",
       "category": "toilet",
       "subscene": "privacy",
@@ -221,6 +445,38 @@
       "intent": "confirm",
       "text": {
         "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.user_calm.0018",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.user_calm.0018",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -242,6 +498,38 @@
       }
     },
     {
+      "id": "toilet.hygiene.user_calm.0020",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.user_calm.0020",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "toilet.urge.dementia.0021",
       "category": "toilet",
       "subscene": "urge",
@@ -253,6 +541,38 @@
       "intent": "confirm",
       "text": {
         "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.dementia.0021",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.dementia.0021",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -274,6 +594,38 @@
       }
     },
     {
+      "id": "toilet.privacy.dementia.0023",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.dementia.0023",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "toilet.hygiene.dementia.0025",
       "category": "toilet",
       "subscene": "hygiene",
@@ -285,6 +637,38 @@
       "intent": "confirm",
       "text": {
         "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.dementia.0025",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.dementia.0025",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -306,6 +690,38 @@
       }
     },
     {
+      "id": "toilet.urge.family_complaint.0026",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.urge.family_complaint.0026",
+      "category": "toilet",
+      "subscene": "urge",
+      "persona": "family_complaint",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "toilet.privacy.family_complaint.0028",
       "category": "toilet",
       "subscene": "privacy",
@@ -317,6 +733,38 @@
       "intent": "confirm",
       "text": {
         "ja": "toilet に関する基本的な声かけ例文です。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.family_complaint.0028",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.privacy.family_complaint.0028",
+      "category": "toilet",
+      "subscene": "privacy",
+      "persona": "family_complaint",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
         "romaji": "Kihontekina koe kake reibun desu.",
         "id": "Ini contoh kalimat dasar untuk situasi ini."
       }
@@ -338,6 +786,38 @@
       }
     },
     {
+      "id": "toilet.hygiene.family_complaint.0030",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "family_complaint",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。落ち着いて対応します。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
+      "id": "toilet.hygiene.family_complaint.0030",
+      "category": "toilet",
+      "subscene": "hygiene",
+      "persona": "family_complaint",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "toilet に関する基本的な声かけ例文です。 状況に応じて記録を行います。",
+        "romaji": "Kihontekina koe kake reibun desu.",
+        "id": "Ini contoh kalimat dasar untuk situasi ini."
+      }
+    },
+    {
       "id": "bath.voice.user_calm.0001",
       "category": "bath",
       "subscene": "voice",
@@ -349,6 +829,48 @@
       "intent": "confirm",
       "text": {
         "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.voice.user_calm.0001",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.voice.user_calm.0001",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。 状況に応じて記録を行います。",
         "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
         "id": "Sekarang kita akan mandi. Apakah sudah siap?"
       },
@@ -380,6 +902,48 @@
       ]
     },
     {
+      "id": "bath.temperature.user_calm.0002",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.temperature.user_calm.0002",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。 状況に応じて記録を行います。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
       "id": "bath.safety.user_calm.0003",
       "category": "bath",
       "subscene": "safety",
@@ -391,6 +955,48 @@
       "intent": "safety",
       "text": {
         "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.safety.user_calm.0003",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.safety.user_calm.0003",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。 状況に応じて記録を行います。",
         "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
         "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
       },
@@ -422,6 +1028,48 @@
       ]
     },
     {
+      "id": "bath.privacy.user_calm.0004",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.privacy.user_calm.0004",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。 状況に応じて記録を行います。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
       "id": "bath.after.user_calm.0005",
       "category": "bath",
       "subscene": "after",
@@ -433,6 +1081,48 @@
       "intent": "explain",
       "text": {
         "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.after.user_calm.0005",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.after.user_calm.0005",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。 状況に応じて記録を行います。",
         "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
         "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
       },
@@ -464,6 +1154,48 @@
       ]
     },
     {
+      "id": "bath.voice.user_angry.0006",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.voice.user_angry.0006",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "user_angry",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。 状況に応じて記録を行います。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
       "id": "bath.temperature.user_angry.0007",
       "category": "bath",
       "subscene": "temperature",
@@ -475,6 +1207,48 @@
       "intent": "confirm",
       "text": {
         "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.temperature.user_angry.0007",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.temperature.user_angry.0007",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "user_angry",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。 状況に応じて記録を行います。",
         "romaji": "Oyu no ondo wa atsukunai desu ka.",
         "id": "Apakah airnya tidak terlalu panas?"
       },
@@ -506,6 +1280,48 @@
       ]
     },
     {
+      "id": "bath.safety.user_angry.0008",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.safety.user_angry.0008",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "user_angry",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。 状況に応じて記録を行います。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
       "id": "bath.privacy.user_angry.0009",
       "category": "bath",
       "subscene": "privacy",
@@ -517,6 +1333,48 @@
       "intent": "empathy",
       "text": {
         "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.privacy.user_angry.0009",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.privacy.user_angry.0009",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "user_angry",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。 状況に応じて記録を行います。",
         "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
         "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
       },
@@ -548,6 +1406,48 @@
       ]
     },
     {
+      "id": "bath.after.user_angry.0010",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_angry",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.after.user_angry.0010",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "user_angry",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。 状況に応じて記録を行います。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
       "id": "bath.voice.dementia.0011",
       "category": "bath",
       "subscene": "voice",
@@ -559,6 +1459,48 @@
       "intent": "confirm",
       "text": {
         "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.voice.dementia.0011",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。",
+        "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
+        "id": "Sekarang kita akan mandi. Apakah sudah siap?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "voice"
+      ]
+    },
+    {
+      "id": "bath.voice.dementia.0011",
+      "category": "bath",
+      "subscene": "voice",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "これからお風呂に入ります。準備はよろしいですか。 状況に応じて記録を行います。",
         "romaji": "Kore kara ofuro ni hairimasu. Junbi wa yoroshii desu ka.",
         "id": "Sekarang kita akan mandi. Apakah sudah siap?"
       },
@@ -590,6 +1532,48 @@
       ]
     },
     {
+      "id": "bath.temperature.dementia.0012",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
+      "id": "bath.temperature.dementia.0012",
+      "category": "bath",
+      "subscene": "temperature",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お湯の温度は熱くないですか。 状況に応じて記録を行います。",
+        "romaji": "Oyu no ondo wa atsukunai desu ka.",
+        "id": "Apakah airnya tidak terlalu panas?"
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "temperature"
+      ]
+    },
+    {
       "id": "bath.safety.dementia.0013",
       "category": "bath",
       "subscene": "safety",
@@ -601,6 +1585,48 @@
       "intent": "safety",
       "text": {
         "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.safety.dementia.0013",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。",
+        "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
+        "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "safety"
+      ]
+    },
+    {
+      "id": "bath.safety.dementia.0013",
+      "category": "bath",
+      "subscene": "safety",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元が滑りやすいので、ゆっくり動きましょう。 状況に応じて記録を行います。",
         "romaji": "Ashimoto ga suberiyasui node, yukkuri ugokimashou.",
         "id": "Lantainya licin, jadi mari bergerak pelan-pelan."
       },
@@ -632,6 +1658,48 @@
       ]
     },
     {
+      "id": "bath.privacy.dementia.0014",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
+      "id": "bath.privacy.dementia.0014",
+      "category": "bath",
+      "subscene": "privacy",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "体をタオルで隠しますので、安心してください。 状況に応じて記録を行います。",
+        "romaji": "Karada o taoru de kakushimasu node, anshin shite kudasai.",
+        "id": "Saya akan menutup tubuh dengan handuk, jadi tenang saja."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "privacy"
+      ]
+    },
+    {
       "id": "bath.after.dementia.0015",
       "category": "bath",
       "subscene": "after",
@@ -653,6 +1721,48 @@
       ]
     },
     {
+      "id": "bath.after.dementia.0015",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
+      "id": "bath.after.dementia.0015",
+      "category": "bath",
+      "subscene": "after",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "お風呂が終わりました。体を拭いて着替えましょう。 状況に応じて記録を行います。",
+        "romaji": "Ofuro ga owari mashita. Karada o fuite kikaemashou.",
+        "id": "Mandinya sudah selesai. Mari kita keringkan dan ganti baju."
+      },
+      "tags": [
+        "ssw",
+        "bath",
+        "after"
+      ]
+    },
+    {
       "id": "meal.swallow.user_calm.safety01",
       "category": "meal",
       "subscene": "swallow",
@@ -664,6 +1774,52 @@
       "intent": "safety",
       "text": {
         "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。",
+        "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
+        "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety01",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。",
+        "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
+        "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety01",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。 状況に応じて記録を行います。",
         "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
         "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
       },
@@ -699,6 +1855,52 @@
       ]
     },
     {
+      "id": "meal.swallow.user_calm.safety02",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "むせていませんか。少し休みましょう。",
+        "romaji": "Musete imasen ka. Sukoshi yasumimashou.",
+        "id": "Apakah tersedak? Mari istirahat sebentar."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety02",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "むせていませんか。少し休みましょう。 状況に応じて記録を行います。",
+        "romaji": "Musete imasen ka. Sukoshi yasumimashou.",
+        "id": "Apakah tersedak? Mari istirahat sebentar."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
       "id": "meal.swallow.user_calm.safety03",
       "category": "meal",
       "subscene": "swallow",
@@ -710,6 +1912,52 @@
       "intent": "safety",
       "text": {
         "ja": "飲み込みにくそうなので、姿勢を直しますね。",
+        "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
+        "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety03",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "飲み込みにくそうなので、姿勢を直しますね。",
+        "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
+        "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety03",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "飲み込みにくそうなので、姿勢を直しますね。 状況に応じて記録を行います。",
         "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
         "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
       },
@@ -745,6 +1993,52 @@
       ]
     },
     {
+      "id": "meal.swallow.user_calm.safety04",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "無理に食べなくて大丈夫ですよ。",
+        "romaji": "Muri ni tabenakute daijoubu desu yo.",
+        "id": "Tidak apa-apa jika tidak dipaksakan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.user_calm.safety04",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "無理に食べなくて大丈夫ですよ。 状況に応じて記録を行います。",
+        "romaji": "Muri ni tabenakute daijoubu desu yo.",
+        "id": "Tidak apa-apa jika tidak dipaksakan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
       "id": "meal.swallow.dementia.safety05",
       "category": "meal",
       "subscene": "swallow",
@@ -756,6 +2050,52 @@
       "intent": "safety",
       "text": {
         "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。",
+        "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
+        "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety05",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。",
+        "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
+        "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety05",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "一口ずつ、ゆっくり噛んでから飲み込みましょう。 状況に応じて記録を行います。",
         "romaji": "Hitokuchi zutsu, yukkuri kande kara nomikomimashou.",
         "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
       },
@@ -791,6 +2131,52 @@
       ]
     },
     {
+      "id": "meal.swallow.dementia.safety06",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "むせていませんか。少し休みましょう。",
+        "romaji": "Musete imasen ka. Sukoshi yasumimashou.",
+        "id": "Apakah tersedak? Mari istirahat sebentar."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety06",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "むせていませんか。少し休みましょう。 状況に応じて記録を行います。",
+        "romaji": "Musete imasen ka. Sukoshi yasumimashou.",
+        "id": "Apakah tersedak? Mari istirahat sebentar."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
       "id": "meal.swallow.dementia.safety07",
       "category": "meal",
       "subscene": "swallow",
@@ -802,6 +2188,52 @@
       "intent": "safety",
       "text": {
         "ja": "飲み込みにくそうなので、姿勢を直しますね。",
+        "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
+        "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety07",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "飲み込みにくそうなので、姿勢を直しますね。",
+        "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
+        "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety07",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "飲み込みにくそうなので、姿勢を直しますね。 状況に応じて記録を行います。",
         "romaji": "Nomikomini kusasou node, shisei o naoshimasu ne.",
         "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
       },
@@ -837,6 +2269,52 @@
       ]
     },
     {
+      "id": "meal.swallow.dementia.safety08",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "無理に食べなくて大丈夫ですよ。",
+        "romaji": "Muri ni tabenakute daijoubu desu yo.",
+        "id": "Tidak apa-apa jika tidak dipaksakan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
+      "id": "meal.swallow.dementia.safety08",
+      "category": "meal",
+      "subscene": "swallow",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "無理に食べなくて大丈夫ですよ。 状況に応じて記録を行います。",
+        "romaji": "Muri ni tabenakute daijoubu desu yo.",
+        "id": "Tidak apa-apa jika tidak dipaksakan."
+      },
+      "tags": [
+        "risk_high",
+        "ssw",
+        "meal",
+        "safety",
+        "swallow"
+      ]
+    },
+    {
       "id": "meal.refusal.user_calm.flow01",
       "category": "meal",
       "subscene": "refusal",
@@ -848,6 +2326,50 @@
       "intent": "empathy",
       "text": {
         "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.refusal.user_calm.basic.flow01",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.refusal.user_calm.intermediate.flow01",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。 状況に応じて記録を行います。",
         "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
         "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
       },
@@ -881,6 +2403,50 @@
       ]
     },
     {
+      "id": "meal.pace.user_calm.basic.flow02",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。落ち着いて対応します。ゆっくり行きましょう。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.pace.user_calm.intermediate.flow02",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。ゆっくり行きましょう。 状況に応じて記録を行います。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
       "id": "meal.reoffer_soft.user_calm.flow03",
       "category": "meal",
       "subscene": "reoffer_soft",
@@ -892,6 +2458,50 @@
       "intent": "confirm",
       "text": {
         "ja": "では、一口だけ試してみますか。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.reoffer_soft.user_calm.basic.flow03",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.reoffer_soft.user_calm.intermediate.flow03",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。 状況に応じて記録を行います。",
         "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
         "id": "Kalau begitu, mau coba satu suap saja?"
       },
@@ -925,6 +2535,50 @@
       ]
     },
     {
+      "id": "meal.refusal.dementia.basic.flow04",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.refusal.dementia.intermediate.flow04",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。 状況に応じて記録を行います。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
       "id": "meal.pace.dementia.flow05",
       "category": "meal",
       "subscene": "pace",
@@ -936,6 +2590,50 @@
       "intent": "request",
       "text": {
         "ja": "少しずつで大丈夫です。ゆっくり行きましょう。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.pace.dementia.basic.flow05",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。落ち着いて対応します。ゆっくり行きましょう。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.pace.dementia.intermediate.flow05",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。ゆっくり行きましょう。 状況に応じて記録を行います。",
         "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
         "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
       },
@@ -969,6 +2667,50 @@
       ]
     },
     {
+      "id": "meal.reoffer_soft.dementia.basic.flow06",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.reoffer_soft.dementia.intermediate.flow06",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。 状況に応じて記録を行います。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
       "id": "toilet.accident.user_calm.flow01",
       "category": "toilet",
       "subscene": "accident",
@@ -980,6 +2722,54 @@
       "intent": "empathy",
       "text": {
         "ja": "大丈夫ですよ。誰でもあることです。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "risk_high",
+        "toilet",
+        "ssw",
+        "accident",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.accident.user_calm.basic.flow01",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。落ち着いて対応します。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "risk_high",
+        "toilet",
+        "ssw",
+        "accident",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.accident.user_calm.intermediate.flow01",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。 状況に応じて記録を行います。",
         "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
         "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
       },
@@ -1016,6 +2806,52 @@
       ]
     },
     {
+      "id": "toilet.process_clean.user_calm.basic.flow02",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.process_clean.user_calm.intermediate.flow02",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。 状況に応じて記録を行います。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
       "id": "toilet.reassure_end.user_calm.flow03",
       "category": "toilet",
       "subscene": "reassure_end",
@@ -1027,6 +2863,52 @@
       "intent": "empathy",
       "text": {
         "ja": "終わりました。気分はいかがですか。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.reassure_end.user_calm.basic.flow03",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.reassure_end.user_calm.intermediate.flow03",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。 状況に応じて記録を行います。",
         "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
         "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
       },
@@ -1063,6 +2945,54 @@
       ]
     },
     {
+      "id": "toilet.accident.dementia.basic.flow04",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。落ち着いて対応します。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "risk_high",
+        "toilet",
+        "ssw",
+        "accident",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.accident.dementia.intermediate.flow04",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。 状況に応じて記録を行います。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "risk_high",
+        "toilet",
+        "ssw",
+        "accident",
+        "flow"
+      ]
+    },
+    {
       "id": "toilet.process_clean.dementia.flow05",
       "category": "toilet",
       "subscene": "process_clean",
@@ -1074,6 +3004,52 @@
       "intent": "explain",
       "text": {
         "ja": "今からきれいにしますので、少しお待ちください。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.process_clean.dementia.basic.flow05",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.process_clean.dementia.intermediate.flow05",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。 状況に応じて記録を行います。",
         "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
         "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
       },
@@ -1109,6 +3085,52 @@
       ]
     },
     {
+      "id": "toilet.reassure_end.dementia.basic.flow06",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.reassure_end.dementia.intermediate.flow06",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。 状況に応じて記録を行います。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
       "id": "toilet.transfer.user_calm.flow01",
       "category": "toilet",
       "subscene": "transfer",
@@ -1120,6 +3142,56 @@
       "intent": "safety",
       "text": {
         "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.transfer.user_calm.basic.flow01",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.transfer.user_calm.intermediate.flow01",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。 状況に応じて記録を行います。",
         "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
         "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
       },
@@ -1158,6 +3230,54 @@
       ]
     },
     {
+      "id": "toilet.check_balance.user_calm.basic.flow02",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.check_balance.user_calm.intermediate.flow02",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。 状況に応じて記録を行います。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "toilet.move_step.user_calm.flow03",
       "category": "toilet",
       "subscene": "move_step",
@@ -1169,6 +3289,54 @@
       "intent": "request",
       "text": {
         "ja": "では、一歩ずつ前に進みましょう。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.move_step.user_calm.basic.flow03",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.move_step.user_calm.intermediate.flow03",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。 状況に応じて記録を行います。",
         "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
         "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
       },
@@ -1207,6 +3375,56 @@
       ]
     },
     {
+      "id": "toilet.transfer.dementia.basic.flow04",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.transfer.dementia.intermediate.flow04",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。 状況に応じて記録を行います。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "toilet.check_balance.dementia.flow05",
       "category": "toilet",
       "subscene": "check_balance",
@@ -1218,6 +3436,54 @@
       "intent": "confirm",
       "text": {
         "ja": "立てていますか。ふらつきはありませんか。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.check_balance.dementia.basic.flow05",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.check_balance.dementia.intermediate.flow05",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。 状況に応じて記録を行います。",
         "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
         "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
       },
@@ -1255,6 +3521,54 @@
       ]
     },
     {
+      "id": "toilet.move_step.dementia.basic.flow06",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.move_step.dementia.intermediate.flow06",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。 状況に応じて記録を行います。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "night.check_anxiety.user_calm.flow01",
       "category": "night",
       "subscene": "check_anxiety",
@@ -1266,6 +3580,54 @@
       "intent": "empathy",
       "text": {
         "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.check_anxiety.user_calm.basic.flow01",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.check_anxiety.user_calm.intermediate.flow01",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。 状況に応じて記録を行います。",
         "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
         "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
       },
@@ -1303,6 +3665,54 @@
       ]
     },
     {
+      "id": "night.environment.user_calm.basic.flow02",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.environment.user_calm.intermediate.flow02",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。 状況に応じて記録を行います。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "night.toilet_offer.user_calm.flow03",
       "category": "night",
       "subscene": "toilet_offer",
@@ -1326,6 +3736,52 @@
       ]
     },
     {
+      "id": "night.toilet_offer.user_calm.basic.flow03",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "user_calm",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.toilet_offer.user_calm.intermediate.flow03",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "user_calm",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。 状況に応じて記録を行います。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "night.check_anxiety.dementia.flow04",
       "category": "night",
       "subscene": "check_anxiety",
@@ -1337,6 +3793,54 @@
       "intent": "empathy",
       "text": {
         "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.check_anxiety.dementia.basic.flow04",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.check_anxiety.dementia.intermediate.flow04",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。 状況に応じて記録を行います。",
         "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
         "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
       },
@@ -1374,6 +3878,54 @@
       ]
     },
     {
+      "id": "night.environment.dementia.basic.flow05",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.environment.dementia.intermediate.flow05",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。 状況に応じて記録を行います。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "risk_high",
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
       "id": "night.toilet_offer.dementia.flow06",
       "category": "night",
       "subscene": "toilet_offer",
@@ -1385,6 +3937,52 @@
       "intent": "confirm",
       "text": {
         "ja": "お手洗いに行きますか。付き添いますよ。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.toilet_offer.dementia.basic.flow06",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "dementia",
+      "level": "basic",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.toilet_offer.dementia.intermediate.flow06",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "dementia",
+      "level": "intermediate",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。 状況に応じて記録を行います。",
         "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
         "id": "Apakah ingin ke toilet? Saya akan menemani."
       },
