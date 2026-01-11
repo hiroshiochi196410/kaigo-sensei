@@ -73,8 +73,8 @@
   </div>
 
   <div class="row">
-    <button id="send" class="primary" type="button">送信</button>
-    <button id="runStage2" type="button">Stage2だけ実行</button>
+    <button id="sendBtn" class="primary" type="button">送信</button>
+    <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
   <div class="grid">
@@ -272,9 +272,9 @@ if(left === 0){
 
   const enableActions = (enabled) => {
     // Disable API-consuming buttons when trial exhausted
-    const sendBtn = $("send") || $("sendBtn");
-const stage2Btn = $("runStage2") || $("stage2Btn");
-if(sendBtn) sendBtn.disabled = !enabled;
+    const sendBtn = $("sendBtn");
+    const stage2Btn = $("stage2Btn");
+    if(sendBtn) sendBtn.disabled = !enabled;
     if(stage2Btn) stage2Btn.disabled = !enabled;
   };
 
@@ -292,7 +292,7 @@ let busy = false;
   const setBusy = (b) => {
     busy = b;
     $("fillExample").disabled = b;
-    $("send").disabled = b;
+    $("sendBtn").disabled = b;
     $("runStage2").disabled = b;
     $("scene").disabled = b;
     $("persona").disabled = b;
@@ -642,18 +642,18 @@ let busy = false;
   }
 
   // Events
-  if ($("fillExample")) $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  sendBtn && sendBtn.addEventListener("click", runAll);
-  if ($("runStage2")) $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
+  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+  $("sendBtn").addEventListener("click", runAll);
+  $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
-  if ($("scene")) $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
     setStatus("Scene変更：例文or入力→送信"); });
-  if ($("persona")) $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
     setStatus("Persona変更：例文or入力→送信"); });
-  if ($("category")) $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
+  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
     setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
 
-  if ($("level")) $("level").addEventListener("change", ()=>{
+  $("level").addEventListener("change", ()=>{
     // Level change resets cycling within that level
     resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all"));
     clearOutputs();
