@@ -16,7 +16,6 @@
 
 <h2>介護ロールプレイAI</h2>
 
-<!-- controls -->
 <div>
   Scene:
   <select id="scene">
@@ -42,13 +41,13 @@
   </select>
 
   <button type="button" onclick="insertExample()">例文を入れる</button>
+
   <label>
-    <input type="checkbox" id="autoStage2" checked />
+    <input type="checkbox" id="autoStage2" checked>
     Stage2を自動実行
   </label>
 </div>
 
-<!-- input -->
 <h3>介護士（あなた）の発話（日本語）</h3>
 <textarea id="jpInput" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
 
@@ -74,21 +73,17 @@
 </div>
 
 <script>
-/* ---------- 例文 ---------- */
 function insertExample() {
-  console.log("insertExample");
-  const jp = document.getElementById("jpInput");
-  if (!jp) return alert("入力欄が見つかりません");
-
-  jp.value = "ゆっくりで大丈夫ですよ。気持ちよく入りましょう。";
+  document.getElementById("jpInput").value =
+    "ゆっくりで大丈夫ですよ。気持ちよく入りましょう。";
 }
 
-/* ---------- Stage1 ---------- */
 function runStage1() {
-  console.log("runStage1");
-
   const jp = document.getElementById("jpInput").value.trim();
-  if (!jp) return alert("日本語入力が空です");
+  if (!jp) {
+    alert("日本語入力が空です");
+    return;
+  }
 
   document.getElementById("aiReply").innerText =
     "（AI）安心しました。ありがとうございます。";
@@ -104,10 +99,7 @@ function runStage1() {
   }
 }
 
-/* ---------- Stage2 ---------- */
 function runStage2() {
-  console.log("runStage2");
-
   document.getElementById("romaSuggest").innerText =
     "Yukkuri de daijoubu desu yo.";
 
@@ -115,9 +107,7 @@ function runStage2() {
     "Tidak apa-apa, silakan pelan-pelan.";
 }
 
-/* ---------- Stage2 only ---------- */
 function runStage2Only() {
-  console.log("runStage2Only");
   runStage2();
 }
 </script>
