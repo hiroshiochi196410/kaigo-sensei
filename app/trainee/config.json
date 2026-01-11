@@ -5,10 +5,6 @@
   "default_persona": "user_calm",
   "default_level": "beginner",
   "trial_limit": 3,
-  "stripe_price_id": "PRICE_ID_TRAINEE_HERE"
-}
-{
-  "variant": "trainee",
-  "trial_limit": 3,
+  "stripe_price_id": "PRICE_ID_TRAINEE_HERE",
   "unlock_code": "TRN-2026"
 }
