@@ -33,7 +33,6 @@
     <span class="badge">介護士ローマ字</span>
   </h1>
   <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
-  <div class="row"><span id="trialMsg" class="badge"></span><span id="trialCount" class="badge"></span></div>
 
   <div class="row">
     <label>Scene <select id="scene"></select></label>
@@ -232,7 +231,7 @@ const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (S
 
   const updateTrialUI = () => {
     const el = $("trialInfo");
-    const pw = $("paywallBox");
+    const pw = $("paywall");
     const pwBtn = $("paywallBtn");
     const pwNote = $("paywallNote");
     const um = $("unlockMsg");
