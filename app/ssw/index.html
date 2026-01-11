@@ -734,12 +734,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
   checkStripeSuccessOnLoad();
 });
 
-// ===== TTS (Web Speech API) =====
+// ===== TTS (Web Speech API) - linked to examples.v2.json tts_lang =====
 function ttsSupported(){
   return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 }
 function pickVoice(langCode){
   const voices = speechSynthesis.getVoices();
+  // Prefer exact match
   return voices.find(v=>v.lang===langCode) || null;
 }
 function getTextFrom(el){
@@ -747,32 +748,67 @@ function getTextFrom(el){
   if(typeof el.value === "string") return el.value;
   return (el.textContent || "").trim();
 }
-function speakText(text, lang, exForTts){
+function getTtsCfg(ex, lang){
+  // Priority: per-language config -> generic tts -> fallback defaults
+  const cfg = (ex && ex.tts_lang && ex.tts_lang[lang]) ? ex.tts_lang[lang] : null;
+  const base = ex && ex.tts ? ex.tts : null;
+  return {
+    speech_rate: (cfg && cfg.speech_rate != null) ? cfg.speech_rate : (base && base.speech_rate != null ? base.speech_rate : (lang==="id" ? 0.9 : 1.0)),
+    pause_ms: (cfg && cfg.pause_ms != null) ? cfg.pause_ms : (base && base.pause_ms != null ? base.pause_ms : 300),
+    priority: (base && base.priority) ? base.priority : "normal"
+  };
+}
+function splitForPause(text){
+  const t = (text || "").trim();
+  if(!t) return [];
+  // Split into chunks to allow natural pauses (keep punctuation)
+  const parts = t.split(/(?<=[。．.!?？])\s*/);
+  return parts.filter(p=>p && p.trim());
+}
+function speakWithCfg(text, lang, ex){
   if(!ttsSupported()){
     alert("このブラウザは読み上げ（TTS）に対応していません。Chrome/Edgeでお試しください。");
     return;
   }
   const t = (text || "").trim();
   if(!t){
-    alert("読み上げる文章が空です。\\n・先に「例文を入れる」を押す\\n・または Stage2 を実行して文章を表示\\nしてから 🔊 を押してください。");
+    alert("読み上げる文章が空です。\n・先に「例文を入れる」を押す\n・または Stage2 を実行して文章を表示\nしてから 🔊 を押してください。");
     return;
   }
 
-  const u = new SpeechSynthesisUtterance(t);
+  const cfg = getTtsCfg(ex, lang);
   const langCode = (lang==="id") ? "id-ID" : "ja-JP";
-  u.lang = langCode;
+  const voice = pickVoice(langCode);
 
-  // Prefer per-language config from examples.v2.json if available
-  const cfg = exForTts?.tts_lang?.[lang] || exForTts?.tts || null;
-  if(cfg?.speech_rate) u.rate = cfg.speech_rate;
-  else u.rate = (lang==="id") ? 0.9 : 1.0;
-
-  const v = pickVoice(langCode);
-  if(v) u.voice = v;
-
-  // reset any stuck queue
+  // Cancel any running speech to avoid queue pile-up
   speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+
+  const chunks = splitForPause(t);
+  let i = 0;
+
+  const speakNext = () => {
+    if(i >= chunks.length) return;
+    const u = new SpeechSynthesisUtterance(chunks[i]);
+    u.lang = langCode;
+    u.rate = cfg.speech_rate;
+    if(voice) u.voice = voice;
+
+    u.onend = () => {
+      i += 1;
+      if(i < chunks.length){
+        setTimeout(speakNext, cfg.pause_ms);
+      }
+    };
+    u.onerror = () => {
+      i += 1;
+      if(i < chunks.length){
+        setTimeout(speakNext, cfg.pause_ms);
+      }
+    };
+    speechSynthesis.speak(u);
+  };
+
+  speakNext();
 }
 function currentExampleSafe(){
   return window.currentExample || null;
@@ -783,31 +819,29 @@ if (ttsSupported() && speechSynthesis.onvoiceschanged !== undefined) {
 }
 // ===== Button bindings =====
 document.addEventListener("click",(e)=>{
-  const id = e.target?.id;
+  const id = e.target && e.target.id;
   const ex = currentExampleSafe();
 
   if(id==="btnSpeakTest"){
-    speakText("テストです。音が聞こえますか。","ja",ex);
+    speakWithCfg("テストです。音が聞こえますか。","ja",ex);
   }
 
-  // Example speak: if example exists use it, otherwise speak prompt text
   if(id==="btnSpeakExampleJa"){
-    const t = ex?.text?.ja || ex?.jp || getTextFrom(document.getElementById("prompt"));
-    speakText(t,"ja",ex);
+    const t = (ex && ex.text && ex.text.ja) || ex.jp || getTextFrom(document.getElementById("prompt"));
+    speakWithCfg(t,"ja",ex);
   }
   if(id==="btnSpeakExampleId"){
-    const t = ex?.text?.id || ex?.id || getTextFrom(document.getElementById("prompt"));
-    speakText(t,"id",ex);
+    const t = (ex && ex.text && ex.text.id) || ex.id || getTextFrom(document.getElementById("prompt"));
+    speakWithCfg(t,"id",ex);
   }
 
-  // Stage2 speak: speak whatever is displayed (textarea or div)
   if(id==="btnSpeakStage2Romaji"){
     const t = getTextFrom(document.getElementById("romaji"));
-    speakText(t,"ja",ex);
+    speakWithCfg(t,"ja",ex);
   }
   if(id==="btnSpeakStage2Id"){
     const t = getTextFrom(document.getElementById("indonesian"));
-    speakText(t,"id",ex);
+    speakWithCfg(t,"id",ex);
   }
 });
 
