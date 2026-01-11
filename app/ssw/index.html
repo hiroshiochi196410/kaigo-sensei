@@ -151,8 +151,11 @@ function putExample(ex){
   currentExample=ex;
   $("prompt").value = ex?.text?.ja || "";
   // 例文に romaji/id があるなら仮表示（無ければ空）
-  $("romaji").textContent = ex?.romaji || "";
-  $("indonesian").textContent = ex?.text?.id || "";
+  // APIが返している “推奨返答(日本語)” をまず表示
+const jp = out?.suggested_reply_jp || out?.ai_reply_jp || "";
+$("romaji").textContent = jp;       // いったんここに表示（次でローマ字化する）
+$("indonesian").textContent = "";   // 次の段階でIDを入れる
+
 }
 
 // 例文投入（押すたび切替）
