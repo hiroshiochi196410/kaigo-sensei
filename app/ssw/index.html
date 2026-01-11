@@ -1,60 +1,351 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>介護ロールプレイAI</title>
-
-<style>
-body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
-.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-textarea { width: 100%; min-height: 100px; padding: 8px; }
-button { padding: 6px 12px; border-radius: 8px; cursor: pointer; }
-.card { border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-top: 10px; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>介護ロールプレイAI <span id="variantBadge" class="badge" style="display:none;"></span>（カテゴリ絞り込み：persona対応）</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
+    h1 { font-size: 20px; margin: 0 0 10px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 8px 0 12px; }
+    label { display:flex; gap:6px; align-items:center; font-size:14px; }
+    select, textarea, button, input { font-size: 15px; }
+    button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
+    button.primary { border-color:#111; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    textarea { width:100%; min-height:110px; padding:10px; border-radius: 12px; border:1px solid #ddd; }
+    .muted { color:#666; font-size:13px; }
+    .badge { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; color:#333; }
+    .card { border:1px solid #e1e1e1; border-radius:14px; padding:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
+    pre { white-space: pre-wrap; word-break: break-word; margin:0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .sep { height:1px; background:#eee; margin:10px 0; }
+    .hint { font-size:12px; color:#777; }
+    .speakBtn{ padding:6px 10px; border-radius:10px; border:1px solid #ddd; background:#fff; }
+  </style>
 </head>
-
 <body>
+  <h1>介護ロールプレイAI <span class="badge">例文復活FIX</span> <span class="badge">カテゴリ</span> <span class="badge">persona絞り込み</span> <span class="badge">介護士ローマ字</span></h1>
+  <div class="hint">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
-<h2>介護ロールプレイAI</h2>
+  <div class="row">
+    <label>Scene
+      <select id="scene"></select>
+    </label>
+    <label>Persona
+      <select id="persona"></select>
+    </label>
+    <label>カテゴリ
+      <select id="category"></select>
+    </label>
+    <label>レベル
+      <select id="level"></select>
+    </label>
 
-<div class="row">
-  <button id="fillExample">例文を入れる</button>
-  <button id="btnSpeakExampleJa">🔊例文(JA)</button>
-  <button id="btnSpeakExampleId">🔊例文(ID)</button>
-  <button id="btnSpeakTest">🔊テスト</button>
-</div>
+    <button id="fillExample" class="primary" type="button">例文を入れる</button>
 
-<h3>介護士（あなた）の発話（日本語）</h3>
-<textarea id="prompt"></textarea>
+    <button id="btnSpeakExampleJa" class="speakBtn" type="button">🔊例文(JA)</button>
+    <button id="btnSpeakExampleId" class="speakBtn" type="button">🔊例文(ID)</button>
+    <button id="btnSpeakTest" class="speakBtn" type="button">🔊テスト</button>
 
-<div class="row">
-  <button id="sendBtn">送信</button>
-</div>
+    <label><input id="autoStage2" type="checkbox" checked> Stage2を自動実行</label>
+    <span class="muted" id="status">examples.json OK</span>
+  </div>
 
-<div class="card">
-  <h3>Stage2（推奨返答）</h3>
+  <div class="sep"></div>
 
-  <b>ローマ字（推奨返答）</b>
-  <button id="btnSpeakStage2Romaji">🔊</button>
-  <div id="romaji"></div>
+  <div class="muted">介護士（あなた）の発話（日本語）</div>
+  <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
 
-  <br><br>
+  <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
 
-  <b>インドネシア語（推奨返答）</b>
-  <button id="btnSpeakStage2Id">🔊</button>
-  <div id="indonesian"></div>
-</div>
+  <div class="card">
+    <div class="muted"><b>介護士発話（ローマ字）</b></div>
+    <textarea id="caregiverRomaji" class="mono" placeholder="ローマ字がここに表示されます（自動）"></textarea>
+
+    <div class="row">
+      <button id="sendBtn" class="primary" type="button">送信</button>
+      <button id="runStage2" type="button">Stage2だけ実行</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="muted"><b>Stage1（日本語）</b></div>
+        <div class="sep"></div>
+        <div><b>相手（AI側）の返答</b></div>
+        <pre id="aiReply"></pre>
+        <div class="sep"></div>
+        <div><b>あなたへのフィードバック</b></div>
+        <pre id="feedback"></pre>
+        <div class="sep"></div>
+        <div><b>推奨返答（日本語）</b></div>
+        <textarea id="recommendedJa" placeholder="Stage1実行後に入ります"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="muted"><b>Stage2（翻訳：推奨返答）</b></div>
+        <div class="sep"></div>
+
+        <div class="row" style="justify-content:space-between;">
+          <b>ローマ字（推奨返答）</b>
+          <button id="btnSpeakStage2Romaji" class="speakBtn" type="button">🔊</button>
+        </div>
+        <pre id="romaji" class="mono"></pre>
+
+        <div class="sep"></div>
+
+        <div class="row" style="justify-content:space-between;">
+          <b>インドネシア語（推奨返答）</b>
+          <button id="btnSpeakStage2Id" class="speakBtn" type="button">🔊</button>
+        </div>
+        <pre id="indonesian" class="mono"></pre>
+      </div>
+    </div>
+  </div>
 
 <script>
-/* ========= TTS 基本 ========= */
-function ttsOK(){
-  return "speechSynthesis" in window;
+/* =============================
+   Helpers
+============================= */
+const $ = (id)=>document.getElementById(id);
+let busy = false;
+let exampleDb = null;
+let currentList = [];
+let currentIdx = -1;
+window.currentExample = null;
+
+const setBusy = (b) => {
+  busy = b;
+  ["fillExample","sendBtn","runStage2","scene","persona","category","level"].forEach((id)=>{
+    const el = $(id);
+    if(el) el.disabled = b;
+  });
+};
+
+function setStatus(msg){ $("status").textContent = msg; }
+
+/* =============================
+   Load examples.json (v1 or v2)
+============================= */
+async function loadExamples(){
+  // Prefer v2 if exists
+  const urls = ["./examples.v2.json","./examples.json","/examples.v2.json","/examples.json"];
+  for(const u of urls){
+    try{
+      const r = await fetch(u, { cache:"no-store" });
+      if(!r.ok) continue;
+      const j = await r.json();
+      exampleDb = j;
+      setStatus("examples loaded: " + u);
+      return;
+    }catch(e){}
+  }
+  setStatus("examples not found");
 }
 
-function romajiToNaturalJa(text){
-  if(!text) return "";
-  let t = " " + text + " ";
+function normalizeDb(db){
+  // Accept v1 { personas:[], scenes:{scene:[{key,label}...]} , examples:[...] } OR v2 flexible
+  if(!db) return { personas:[], scenes:[], categories:[], levels:[], items:[] };
+
+  // personas
+  const personas = Array.isArray(db.personas) ? db.personas : [];
+  // scenes
+  let sceneDefs = [];
+  if(db.scenes && typeof db.scenes === "object"){
+    // v1 style: scenes: { bath:[{key,label}...], meal:[...], ...}
+    sceneDefs = Object.keys(db.scenes).map(k=>({ key:k, label:k }));
+  } else if(Array.isArray(db.scenes)){
+    sceneDefs = db.scenes;
+  }
+
+  // items (examples)
+  const items = Array.isArray(db.examples) ? db.examples : (Array.isArray(db.items) ? db.items : []);
+
+  // categories / levels from items
+  const cats = new Set();
+  const lvls = new Set();
+  for(const it of items){
+    if(it.category) cats.add(it.category);
+    if(it.level) lvls.add(it.level);
+  }
+  const categories = Array.from(cats).sort().map(k=>({key:k,label:k}));
+  const levels = Array.from(lvls).sort();
+  return { personas, scenes: sceneDefs, categories, levels, items };
+}
+
+function fillSelect(sel, arr, addAllLabel){
+  sel.innerHTML = "";
+  if(addAllLabel){
+    const o = document.createElement("option");
+    o.value = "";
+    o.textContent = addAllLabel;
+    sel.appendChild(o);
+  }
+  for(const it of arr){
+    const o = document.createElement("option");
+    o.value = it.key ?? it.value ?? it;
+    o.textContent = it.label ?? it.key ?? it;
+    sel.appendChild(o);
+  }
+}
+
+function getSelected(){
+  return {
+    scene: $("scene").value,
+    persona: $("persona").value,
+    category: $("category").value,
+    level: $("level").value
+  };
+}
+
+function filterExamples(){
+  const {scene, persona, category, level} = getSelected();
+  const db = normalizeDb(exampleDb);
+  let list = db.items;
+
+  if(scene) list = list.filter(x=>x.scene===scene);
+  if(persona) list = list.filter(x=>x.persona===persona);
+  if(category) list = list.filter(x=>x.category===category);
+  if(level) list = list.filter(x=>x.level===level);
+
+  return list;
+}
+
+function applyPersonaCategoryFilter(){
+  // If items include allowed_personas or persona_tags you can refine here
+  // For now: no-op (kept for future extension)
+}
+
+/* =============================
+   Stage helpers
+============================= */
+async function callChatApi(payload){
+  const r = await fetch("/api/chat", {
+    method:"POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+  if(!r.ok){
+    const t = await r.text().catch(()=>"(no body)");
+    throw new Error("API error " + r.status + ": " + t);
+  }
+  return await r.json();
+}
+
+function toRomajiStub(jp){
+  // Minimal: keep as-is if backend handles; placeholder for your pipeline
+  return jp;
+}
+
+/* =============================
+   Example fill (v2 support)
+============================= */
+function putExampleToPrompt(ex){
+  // v2: ex.text.ja / ex.text.id
+  const ja = ex?.text?.ja || ex?.jp || ex?.ja || "";
+  $("prompt").value = ja;
+  window.currentExample = ex;
+}
+
+function cycleExample(){
+  currentList = filterExamples();
+  if(!currentList.length){
+    setStatus("該当例文なし（条件を変えてください）");
+    return;
+  }
+  currentIdx = (currentIdx + 1) % currentList.length;
+  const ex = currentList[currentIdx];
+  putExampleToPrompt(ex);
+  setStatus(`例文 ${currentIdx+1}/${currentList.length}`);
+}
+
+async function runAll(){
+  try{
+    setBusy(true);
+    setStatus("Stage1 実行中...");
+    const prompt = $("prompt").value || "";
+    $("caregiverRomaji").value = toRomajiStub(prompt);
+
+    const stage1 = await callChatApi({
+      mode:"stage1",
+      prompt
+    });
+
+    $("aiReply").textContent = stage1.ai_reply || "";
+    $("feedback").textContent = stage1.feedback || "";
+    $("recommendedJa").value = stage1.recommended_ja || "";
+
+    if($("autoStage2").checked){
+      await runStage2();
+    } else {
+      setStatus("Stage1 完了");
+    }
+  }catch(e){
+    console.error(e);
+    alert(e.message || String(e));
+    setStatus("エラー");
+  }finally{
+    setBusy(false);
+  }
+}
+
+async function runStage2(){
+  try{
+    setBusy(true);
+    setStatus("Stage2 実行中...");
+    const ja = $("recommendedJa").value || "";
+    const stage2 = await callChatApi({
+      mode:"stage2",
+      text: ja
+    });
+    $("romaji").textContent = stage2.romaji || "";
+    $("indonesian").textContent = stage2.indonesian || "";
+    setStatus("完了");
+  }catch(e){
+    console.error(e);
+    alert(e.message || String(e));
+    setStatus("エラー");
+  }finally{
+    setBusy(false);
+  }
+}
+
+/* =============================
+   TTS (linked to examples.v2.json tts_lang)
+============================= */
+function ttsSupported(){
+  return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+}
+function pickVoice(langCode){
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v=>v.lang===langCode) || null;
+}
+function getTextFrom(el){
+  if(!el) return "";
+  if(typeof el.value === "string") return el.value;
+  return (el.textContent || "").trim();
+}
+function getTtsCfg(ex, lang){
+  const cfg = (ex && ex.tts_lang && ex.tts_lang[lang]) ? ex.tts_lang[lang] : null;
+  const base = ex && ex.tts ? ex.tts : null;
+  return {
+    speech_rate: (cfg && cfg.speech_rate != null) ? cfg.speech_rate : (base && base.speech_rate != null ? base.speech_rate : (lang==="id" ? 0.9 : 1.0)),
+    pause_ms: (cfg && cfg.pause_ms != null) ? cfg.pause_ms : (base && base.pause_ms != null ? base.pause_ms : 300),
+    priority: (base && base.priority) ? base.priority : "normal"
+  };
+}
+function splitForPause(text){
+  const t = (text || "").trim();
+  if(!t) return [];
+  const parts = t.split(/(?<=[。．.!?？])\s*/);
+  return parts.filter(p=>p && p.trim());
+}
+
+function romajiToNaturalJa(s){
+  // Convert only for JA TTS to avoid "wa/ga/no..." being spelled out.
+  let t = (s || "");
   t = t.replace(/\bwa\b/g, "は");
   t = t.replace(/\bga\b/g, "が");
   t = t.replace(/\bwo\b/g, "を");
@@ -64,61 +355,109 @@ function romajiToNaturalJa(text){
   t = t.replace(/\bto\b/g, "と");
   t = t.replace(/\bkara\b/g, "から");
   t = t.replace(/\bmade\b/g, "まで");
-  return t.trim();
+  t = t.replace(/\s+/g, " ").trim();
+  return t;
 }
 
-function speak(text, lang){
-  if(!ttsOK()){
-    alert("このブラウザは音声読み上げに対応していません");
+function speakWithCfg(text, lang, ex){
+  if(!ttsSupported()){
+    alert("このブラウザは読み上げ（TTS）に対応していません。Chrome/Edgeでお試しください。");
     return;
   }
-  if(!text || !text.trim()){
-    alert("読み上げる文章がありません");
+  const t = (text || "").trim();
+  if(!t){
+    alert("読み上げる文章が空です。\n・先に「例文を入れる」を押す\n・または Stage2 を実行して文章を表示\nしてから 🔊 を押してください。");
     return;
   }
+
+  const cfg = getTtsCfg(ex, lang);
+  const langCode = (lang==="id") ? "id-ID" : "ja-JP";
+  const voice = pickVoice(langCode);
+
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang === "id" ? "id-ID" : "ja-JP";
-  u.rate = lang === "id" ? 0.9 : 1.0;
-  speechSynthesis.speak(u);
+
+  const chunks = splitForPause(t);
+  let i = 0;
+
+  const speakNext = () => {
+    if(i >= chunks.length) return;
+    const u = new SpeechSynthesisUtterance(chunks[i]);
+    u.lang = langCode;
+    u.rate = cfg.speech_rate;
+    if(voice) u.voice = voice;
+
+    u.onend = () => {
+      i += 1;
+      if(i < chunks.length) setTimeout(speakNext, cfg.pause_ms);
+    };
+    u.onerror = () => {
+      i += 1;
+      if(i < chunks.length) setTimeout(speakNext, cfg.pause_ms);
+    };
+    speechSynthesis.speak(u);
+  };
+  speakNext();
 }
 
-/* ========= ボタン ========= */
-document.addEventListener("click", e => {
-  const btn = e.target.closest("button");
-  if(!btn) return;
+function currentExampleSafe(){
+  return window.currentExample || null;
+}
+if (ttsSupported() && speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = () => {};
+}
 
-  if(btn.id === "btnSpeakTest"){
-    speak("テストです。音が聞こえますか。", "ja");
+/* Click handler: use closest("button") so icon clicks work */
+document.addEventListener("click",(e)=>{
+  const btn = (e.target && e.target.closest) ? e.target.closest("button") : null;
+  const id = btn ? btn.id : (e.target && e.target.id);
+  const ex = currentExampleSafe();
+
+  if(id==="btnSpeakTest"){
+    speakWithCfg("テストです。音が聞こえますか。","ja",ex);
   }
-
-  if(btn.id === "btnSpeakExampleJa"){
-    speak(document.getElementById("prompt").value, "ja");
+  if(id==="btnSpeakExampleJa"){
+    const t = ex?.text?.ja || ex?.jp || getTextFrom($("prompt"));
+    speakWithCfg(t,"ja",ex);
   }
-
-  if(btn.id === "btnSpeakExampleId"){
-    speak(document.getElementById("prompt").value, "id");
+  if(id==="btnSpeakExampleId"){
+    const t = ex?.text?.id || ex?.id || getTextFrom($("prompt"));
+    speakWithCfg(t,"id",ex);
   }
-
-  if(btn.id === "btnSpeakStage2Romaji"){
-    const raw = document.getElementById("romaji").textContent;
+  if(id==="btnSpeakStage2Romaji"){
+    const raw = getTextFrom($("romaji"));
     const fixed = romajiToNaturalJa(raw);
-    speak(fixed, "ja");
+    speakWithCfg(fixed,"ja",ex);
   }
-
-  if(btn.id === "btnSpeakStage2Id"){
-    speak(document.getElementById("indonesian").textContent, "id");
+  if(id==="btnSpeakStage2Id"){
+    const t = getTextFrom($("indonesian"));
+    speakWithCfg(t,"id",ex);
   }
 });
 
-/* ========= ダミー送信（確認用） ========= */
-document.getElementById("sendBtn").addEventListener("click", () => {
-  document.getElementById("romaji").textContent =
-    "Yakan no akari dake de wa fuan desu. Motto gutai-teki na taisaku o oshiete kudasai.";
-  document.getElementById("indonesian").textContent =
-    "Cahaya teko saja membuat saya cemas. Tolong beri tahu langkah yang lebih konkret.";
+/* =============================
+   Bindings / init
+============================= */
+$("fillExample").addEventListener("click", cycleExample);
+$("sendBtn").addEventListener("click", runAll);
+$("runStage2").addEventListener("click", runStage2);
+
+["scene","persona","category","level"].forEach(id=>{
+  $(id).addEventListener("change", ()=>{
+    currentIdx = -1;
+    window.currentExample = null;
+    setStatus("条件変更");
+  });
 });
+
+(async function init(){
+  await loadExamples();
+  const db = normalizeDb(exampleDb);
+
+  fillSelect($("scene"), db.scenes, "全て");
+  fillSelect($("persona"), db.personas, "全て");
+  fillSelect($("category"), db.categories, "全て");
+  fillSelect($("level"), db.levels.length ? db.levels : ["初級","中級","上級"], "全て");
+})();
 </script>
-
 </body>
 </html>
