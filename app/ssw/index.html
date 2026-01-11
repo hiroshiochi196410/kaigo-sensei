@@ -819,7 +819,8 @@ if (ttsSupported() && speechSynthesis.onvoiceschanged !== undefined) {
 }
 // ===== Button bindings =====
 document.addEventListener("click",(e)=>{
-  const id = e.target && e.target.id;
+  const btn = (e.target && e.target.closest) ? e.target.closest("button") : null;
+  const id = btn ? btn.id : (e.target && e.target.id);
   const ex = currentExampleSafe();
 
   if(id==="btnSpeakTest"){
