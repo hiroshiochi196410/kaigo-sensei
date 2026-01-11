@@ -114,38 +114,6 @@
       }
     },
     {
-      "id": "meal.pace.user_calm.0003",
-      "category": "meal",
-      "subscene": "pace",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "meal.refusal.user_calm.0004",
-      "category": "meal",
-      "subscene": "refusal",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "meal.safety.user_calm.0005",
       "category": "meal",
       "subscene": "safety",
@@ -178,38 +146,6 @@
       }
     },
     {
-      "id": "meal.pace.dementia.0008",
-      "category": "meal",
-      "subscene": "pace",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "meal.refusal.dementia.0009",
-      "category": "meal",
-      "subscene": "refusal",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "meal.safety.dementia.0010",
       "category": "meal",
       "subscene": "safety",
@@ -229,38 +165,6 @@
       "id": "meal.start.family_complaint.0011",
       "category": "meal",
       "subscene": "start",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "meal.pace.family_complaint.0013",
-      "category": "meal",
-      "subscene": "pace",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "meal に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "meal.refusal.family_complaint.0014",
-      "category": "meal",
-      "subscene": "refusal",
       "persona": "family_complaint",
       "level": "beginner",
       "politeness": "polite",
@@ -1258,6 +1162,138 @@
         "meal",
         "swallow",
         "safety"
+      ]
+    },
+    {
+      "id": "meal.refusal.user_calm.flow01",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.pace.user_calm.flow02",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。ゆっくり行きましょう。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.reoffer_soft.user_calm.flow03",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.refusal.dementia.flow04",
+      "category": "meal",
+      "subscene": "refusal",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "今は食べたくない気分ですね。無理しなくて大丈夫ですよ。",
+        "romaji": "Ima wa tabetakunai kibun desu ne. Muri shinakute daijoubu desu yo.",
+        "id": "Sepertinya sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."
+      },
+      "flow_next": "reoffer_soft",
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.pace.dementia.flow05",
+      "category": "meal",
+      "subscene": "pace",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "少しずつで大丈夫です。ゆっくり行きましょう。",
+        "romaji": "Sukoshi zutsu de daijoubu desu. Yukkuri ikimashou.",
+        "id": "Sedikit demi sedikit tidak apa-apa. Mari pelan-pelan."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
+      ]
+    },
+    {
+      "id": "meal.reoffer_soft.dementia.flow06",
+      "category": "meal",
+      "subscene": "reoffer_soft",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "では、一口だけ試してみますか。",
+        "romaji": "Dewa, hitokuchi dake tameshite mimasu ka.",
+        "id": "Kalau begitu, mau coba satu suap saja?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "meal",
+        "flow"
       ]
     }
   ]
