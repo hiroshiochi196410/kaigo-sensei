@@ -647,7 +647,7 @@ let busy = false;
 
   // Events
   $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("send").addEventListener("click", runAll);
+  $("sendBtn").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
   $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
@@ -742,36 +742,54 @@ function pickVoice(langCode){
   const voices = speechSynthesis.getVoices();
   return voices.find(v=>v.lang===langCode) || null;
 }
-function speakText(text, lang){
+function speakText(text, lang, exForTts){
   if(!text || !text.trim()) return;
   const u = new SpeechSynthesisUtterance(text);
   const langCode = (lang==="id") ? "id-ID" : "ja-JP";
   u.lang = langCode;
-  // basic per-language tuning
-  u.rate = (lang==="id") ? 0.9 : 1.0;
+
+  // Prefer per-language config from examples.v2.json if available
+  const cfg = exForTts?.tts_lang?.[lang] || exForTts?.tts || null;
+  if(cfg?.speech_rate) u.rate = cfg.speech_rate;
+  else u.rate = (lang==="id") ? 0.9 : 1.0;
+
   const v = pickVoice(langCode);
   if(v) u.voice = v;
+
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
+}
+function currentExampleSafe(){
+  // app keeps last example object here
+  return window.currentExample || null;
+}
+// voices load async in some browsers
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = () => {};
 }
 // ===== Button bindings =====
 document.addEventListener("click",(e)=>{
   const id = e.target?.id;
+  const ex = currentExampleSafe();
+
+  // Example speak: if example exists use it, otherwise speak prompt text
   if(id==="btnSpeakExampleJa"){
-    const t = document.getElementById("prompt")?.value || "";
-    speakText(t,"ja");
+    const t = ex?.text?.ja || ex?.jp || document.getElementById("prompt")?.value || "";
+    speakText(t,"ja",ex);
   }
   if(id==="btnSpeakExampleId"){
-    const t = document.getElementById("prompt")?.value || "";
-    speakText(t,"id");
+    const t = ex?.text?.id || ex?.id || document.getElementById("prompt")?.value || "";
+    speakText(t,"id",ex);
   }
+
+  // Stage2 speak: speak whatever is displayed
   if(id==="btnSpeakStage2Romaji"){
     const t = document.getElementById("romaji")?.textContent || "";
-    speakText(t,"ja");
+    speakText(t,"ja",ex);
   }
   if(id==="btnSpeakStage2Id"){
     const t = document.getElementById("indonesian")?.textContent || "";
-    speakText(t,"id");
+    speakText(t,"id",ex);
   }
 });
 
