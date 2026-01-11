@@ -33,6 +33,7 @@
     <span class="badge">介護士ローマ字</span>
   </h1>
   <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
+  <div class="row"><span id="trialMsg" class="badge"></span><span id="trialCount" class="badge"></span></div>
 
   <div class="row">
     <label>Scene <select id="scene"></select></label>
@@ -54,6 +55,16 @@
     <div class="muted">介護士（あなた）の発話（日本語）</div>
     <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
     <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
+<div class="card" id="paywallBox" style="display:none; margin-top:10px;">
+  <b>無料体験</b>
+  <div id="trialInfo" class="hint" style="margin-top:6px;"></div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+    <button class="primary" id="paywallBtn" type="button">Stripeで決済して本格利用</button>
+    <span id="paywallNote" class="hint"></span>
+  </div>
+  <div id="unlockMsg" class="hint" style="margin-top:6px;"></div>
+</div>
+
     <div id="noExampleHint" class="hint" style="display:none; margin-top:6px;">この条件の例文はまだありません。自由入力で続けましょう。</div>
   </div>
 
@@ -63,7 +74,7 @@
   </div>
 
   <div class="row">
-    <button id="sendBtn" id="send" class="primary" type="button">送信</button>
+    <button id="sendBtn" class="primary" type="button">送信</button>
     <button id="stage2Btn" id="runStage2" type="button">Stage2だけ実行</button>
   </div>
 
@@ -221,7 +232,7 @@ const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (S
 
   const updateTrialUI = () => {
     const el = $("trialInfo");
-    const pw = $("paywall");
+    const pw = $("paywallBox");
     const pwBtn = $("paywallBtn");
     const pwNote = $("paywallNote");
     const um = $("unlockMsg");
@@ -282,7 +293,7 @@ let busy = false;
   const setBusy = (b) => {
     busy = b;
     $("fillExample").disabled = b;
-    $("send").disabled = b;
+    $("sendBtn").disabled = b;
     $("runStage2").disabled = b;
     $("scene").disabled = b;
     $("persona").disabled = b;
@@ -633,7 +644,7 @@ let busy = false;
 
   // Events
   $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("send").addEventListener("click", runAll);
+  $("sendBtn").addEventListener("click", runAll);
   $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
   $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
@@ -656,6 +667,72 @@ loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); up
   // Unlock code UI
   $("unlockBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); tryUnlock(); });
   $("unlockClearBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); resetUnlock(); });
+// --- Stripe checkout (A: 自動解除) ---
+async function startStripeCheckout(){
+  try{
+    if(!APP || !APP.variant){ alert("variantが未設定です"); return; }
+    const btn = document.getElementById("paywallBtn");
+    const note = document.getElementById("paywallNote");
+    if(btn){ btn.disabled = true; btn.textContent = "Stripeへ移動中..."; }
+    if(note){ note.textContent = ""; }
+    const resp = await fetch("/api/create-checkout-session",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ variant: APP.variant })
+    });
+    const data = await resp.json().catch(()=> ({}));
+    if(!resp.ok || !data.url){
+      const msg = data.error || "checkoutの作成に失敗しました";
+      if(note){ note.textContent = msg; }
+      if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
+      return;
+    }
+    location.href = data.url;
+  }catch(e){
+    console.error(e);
+    const note = document.getElementById("paywallNote");
+    const btn = document.getElementById("paywallBtn");
+    if(note){ note.textContent = "Stripe連携でエラーが発生しました"; }
+    if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
+  }
+}
+
+async function checkStripeSuccessOnLoad(){
+  try{
+    const qs = new URLSearchParams(location.search);
+    const success = qs.get("success");
+    const sessionId = qs.get("session_id");
+    if(success !== "1" || !sessionId) return;
+
+    const msg = document.getElementById("unlockMsg");
+    if(msg){ msg.textContent = "決済を確認しています..."; }
+
+    const v = (APP && APP.variant) ? APP.variant : "";
+    const resp = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}&variant=${encodeURIComponent(v)}`);
+    const data = await resp.json().catch(()=> ({}));
+
+    if(resp.ok && data.paid){
+      // paidフラグ（variant別）
+      localStorage.setItem(`kaigo_paid_${v}`, "1");
+      if(msg){ msg.textContent = "決済確認OK：本格利用が有効になりました。"; }
+      // URLを綺麗に
+      history.replaceState({}, "", location.pathname);
+      // UI更新
+      if(typeof updateTrialUI === "function") updateTrialUI();
+    }else{
+      if(msg){ msg.textContent = "決済の確認ができませんでした。しばらくして再読み込みしてください。"; }
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+
+// paywallボタンを接続
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = document.getElementById("paywallBtn");
+  if(btn) btn.addEventListener("click", startStripeCheckout);
+  checkStripeSuccessOnLoad();
+});
 </script>
 </body>
 </html>
