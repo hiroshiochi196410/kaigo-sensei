@@ -908,10 +908,11 @@
         "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -930,10 +931,11 @@
         "id": "Apakah tersedak? Mari istirahat sebentar."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -952,10 +954,11 @@
         "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -974,10 +977,11 @@
         "id": "Tidak apa-apa jika tidak dipaksakan."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -996,10 +1000,11 @@
         "id": "Mari makan sedikit demi sedikit dan kunyah perlahan sebelum menelan."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -1018,10 +1023,11 @@
         "id": "Apakah tersedak? Mari istirahat sebentar."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -1040,10 +1046,11 @@
         "id": "Sepertinya sulit menelan, saya akan memperbaiki posisi duduk."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -1062,10 +1069,11 @@
         "id": "Tidak apa-apa jika tidak dipaksakan."
       },
       "tags": [
+        "risk_high",
         "ssw",
         "meal",
-        "swallow",
-        "safety"
+        "safety",
+        "swallow"
       ]
     },
     {
@@ -1217,10 +1225,11 @@
       },
       "flow_next": "process_clean",
       "tags": [
-        "ssw",
+        "risk_high",
         "toilet",
-        "flow",
-        "accident"
+        "ssw",
+        "accident",
+        "flow"
       ]
     },
     {
@@ -1286,10 +1295,11 @@
       },
       "flow_next": "process_clean",
       "tags": [
-        "ssw",
+        "risk_high",
         "toilet",
-        "flow",
-        "accident"
+        "ssw",
+        "accident",
+        "flow"
       ]
     },
     {
@@ -1355,9 +1365,10 @@
       },
       "flow_next": "check_balance",
       "tags": [
-        "ssw",
-        "toilet",
         "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
         "safety",
         "flow"
       ]
@@ -1427,9 +1438,10 @@
       },
       "flow_next": "check_balance",
       "tags": [
-        "ssw",
-        "toilet",
         "transfer",
+        "risk_high",
+        "toilet",
+        "ssw",
         "safety",
         "flow"
       ]
@@ -1499,6 +1511,7 @@
       },
       "flow_next": "environment",
       "tags": [
+        "risk_high",
         "ssw",
         "night",
         "safety",
@@ -1522,6 +1535,7 @@
       },
       "flow_next": "toilet_offer",
       "tags": [
+        "risk_high",
         "ssw",
         "night",
         "safety",
@@ -1568,6 +1582,7 @@
       },
       "flow_next": "environment",
       "tags": [
+        "risk_high",
         "ssw",
         "night",
         "safety",
@@ -1591,6 +1606,7 @@
       },
       "flow_next": "toilet_offer",
       "tags": [
+        "risk_high",
         "ssw",
         "night",
         "safety",
