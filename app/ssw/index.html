@@ -423,7 +423,7 @@ let busy = false;
       setStatus("examples.json 読み込み中…");
       const db = await fetchJSONWithFallbacks();
 
-      const root = db.examples || db.data || db.dataset || db.items || null;
+      const root = db.examples || db.data || db.dataset || db.items || db.scenes || null;
       if(!root) throw new Error("examples root not found (need examples/data/dataset)");
 
       // scenes (dict or array)
