@@ -242,22 +242,6 @@
       }
     },
     {
-      "id": "toilet.accident.user_calm.0019",
-      "category": "toilet",
-      "subscene": "accident",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "toilet.hygiene.user_calm.0020",
       "category": "toilet",
       "subscene": "hygiene",
@@ -322,22 +306,6 @@
       }
     },
     {
-      "id": "toilet.accident.dementia.0024",
-      "category": "toilet",
-      "subscene": "accident",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "toilet.hygiene.dementia.0025",
       "category": "toilet",
       "subscene": "hygiene",
@@ -389,22 +357,6 @@
       "id": "toilet.privacy.family_complaint.0028",
       "category": "toilet",
       "subscene": "privacy",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "toilet.accident.family_complaint.0029",
-      "category": "toilet",
-      "subscene": "accident",
       "persona": "family_complaint",
       "level": "beginner",
       "politeness": "polite",
@@ -1294,6 +1246,144 @@
         "ssw",
         "meal",
         "flow"
+      ]
+    },
+    {
+      "id": "toilet.accident.user_calm.flow01",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.process_clean.user_calm.flow02",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.reassure_end.user_calm.flow03",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.accident.dementia.flow04",
+      "category": "toilet",
+      "subscene": "accident",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "大丈夫ですよ。誰でもあることです。",
+        "romaji": "Daijoubu desu yo. Daredemo aru koto desu.",
+        "id": "Tidak apa-apa. Ini bisa terjadi pada siapa saja."
+      },
+      "flow_next": "process_clean",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.process_clean.dementia.flow05",
+      "category": "toilet",
+      "subscene": "process_clean",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "explain",
+      "text": {
+        "ja": "今からきれいにしますので、少しお待ちください。",
+        "romaji": "Ima kara kirei ni shimasu node, sukoshi omachi kudasai.",
+        "id": "Saya akan membersihkannya sekarang, mohon tunggu sebentar."
+      },
+      "flow_next": "reassure_end",
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
+      ]
+    },
+    {
+      "id": "toilet.reassure_end.dementia.flow06",
+      "category": "toilet",
+      "subscene": "reassure_end",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "終わりました。気分はいかがですか。",
+        "romaji": "Owarimashita. Kibun wa ikaga desu ka.",
+        "id": "Sudah selesai. Bagaimana perasaan Anda sekarang?"
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "flow",
+        "accident"
       ]
     }
   ]
