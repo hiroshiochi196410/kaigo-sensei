@@ -210,22 +210,6 @@
       }
     },
     {
-      "id": "toilet.transfer.user_calm.0017",
-      "category": "toilet",
-      "subscene": "transfer",
-      "persona": "user_calm",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "toilet.privacy.user_calm.0018",
       "category": "toilet",
       "subscene": "privacy",
@@ -274,22 +258,6 @@
       }
     },
     {
-      "id": "toilet.transfer.dementia.0022",
-      "category": "toilet",
-      "subscene": "transfer",
-      "persona": "dementia",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
       "id": "toilet.privacy.dementia.0023",
       "category": "toilet",
       "subscene": "privacy",
@@ -325,22 +293,6 @@
       "id": "toilet.urge.family_complaint.0026",
       "category": "toilet",
       "subscene": "urge",
-      "persona": "family_complaint",
-      "level": "beginner",
-      "politeness": "polite",
-      "speaker_role": "caregiver",
-      "listener_role": "patient",
-      "intent": "confirm",
-      "text": {
-        "ja": "toilet に関する基本的な声かけ例文です。",
-        "romaji": "Kihontekina koe kake reibun desu.",
-        "id": "Ini contoh kalimat dasar untuk situasi ini."
-      }
-    },
-    {
-      "id": "toilet.transfer.family_complaint.0027",
-      "category": "toilet",
-      "subscene": "transfer",
       "persona": "family_complaint",
       "level": "beginner",
       "politeness": "polite",
@@ -1384,6 +1336,150 @@
         "toilet",
         "flow",
         "accident"
+      ]
+    },
+    {
+      "id": "toilet.transfer.user_calm.flow01",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.check_balance.user_calm.flow02",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.move_step.user_calm.flow03",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.transfer.dementia.flow04",
+      "category": "toilet",
+      "subscene": "transfer",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "今から立ち上がります。私が支えますので、ゆっくりいきましょう。",
+        "romaji": "Ima kara tachiagarimasu. Watashi ga sasaemasu node, yukkuri ikimashou.",
+        "id": "Sekarang kita akan berdiri. Saya akan menopang, mari pelan-pelan."
+      },
+      "flow_next": "check_balance",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.check_balance.dementia.flow05",
+      "category": "toilet",
+      "subscene": "check_balance",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "立てていますか。ふらつきはありませんか。",
+        "romaji": "Tateite imasu ka. Furatsuki wa arimasen ka.",
+        "id": "Apakah sudah berdiri dengan baik? Apakah terasa pusing?"
+      },
+      "flow_next": "move_step",
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "toilet.move_step.dementia.flow06",
+      "category": "toilet",
+      "subscene": "move_step",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "request",
+      "text": {
+        "ja": "では、一歩ずつ前に進みましょう。",
+        "romaji": "Dewa, ippo zutsu mae ni susumimashou.",
+        "id": "Kalau begitu, mari melangkah maju satu langkah demi satu."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "toilet",
+        "transfer",
+        "safety",
+        "flow"
       ]
     }
   ]
