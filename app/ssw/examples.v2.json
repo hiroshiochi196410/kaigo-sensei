@@ -1481,6 +1481,144 @@
         "safety",
         "flow"
       ]
+    },
+    {
+      "id": "night.check_anxiety.user_calm.flow01",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.environment.user_calm.flow02",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.toilet_offer.user_calm.flow03",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "user_calm",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.check_anxiety.dementia.flow04",
+      "category": "night",
+      "subscene": "check_anxiety",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "empathy",
+      "text": {
+        "ja": "眠れませんか。そばにいますので大丈夫ですよ。",
+        "romaji": "Nemuremasen ka. Soba ni imasu node daijoubu desu yo.",
+        "id": "Apakah tidak bisa tidur? Saya ada di sini, tidak apa-apa."
+      },
+      "flow_next": "environment",
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.environment.dementia.flow05",
+      "category": "night",
+      "subscene": "environment",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "safety",
+      "text": {
+        "ja": "足元を明るくしますね。転ばないようにします。",
+        "romaji": "Ashimoto o akaruku shimasu ne. Korobanai you ni shimasu.",
+        "id": "Saya akan menyalakan lampu supaya tidak jatuh."
+      },
+      "flow_next": "toilet_offer",
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
+    },
+    {
+      "id": "night.toilet_offer.dementia.flow06",
+      "category": "night",
+      "subscene": "toilet_offer",
+      "persona": "dementia",
+      "level": "beginner",
+      "politeness": "polite",
+      "speaker_role": "caregiver",
+      "listener_role": "patient",
+      "intent": "confirm",
+      "text": {
+        "ja": "お手洗いに行きますか。付き添いますよ。",
+        "romaji": "Otearai ni ikimasu ka. Tsukisoimasu yo.",
+        "id": "Apakah ingin ke toilet? Saya akan menemani."
+      },
+      "flow_next": null,
+      "tags": [
+        "ssw",
+        "night",
+        "safety",
+        "flow"
+      ]
     }
   ]
 }
