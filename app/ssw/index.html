@@ -44,6 +44,7 @@
     <button id="fillExample" type="button">例文を入れる</button>
     <button id="btnSpeakExampleJa" type="button">🔊例文(JA)</button>
     <button id="btnSpeakExampleId" type="button">🔊例文(ID)</button>
+    <button id="btnSpeakTest" type="button">🔊テスト</button>
 
 
     <label class="muted" style="gap:8px;">
@@ -295,12 +296,8 @@ let busy = false;
 
   const setBusy = (b) => {
     busy = b;
-    $("fillExample").disabled = b;
-    $("send").disabled = b;
-    $("runStage2").disabled = b;
-    $("scene").disabled = b;
-    $("persona").disabled = b;
-    $("category").disabled = b;
+    const ids = ["fillExample","sendBtn","runStage2","scene","persona","category"];
+    ids.forEach((id)=>{ const el = $(id); if(el) el.disabled = b; });
   };
 
   function abortInFlight(){
@@ -738,13 +735,33 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });
 
 // ===== TTS (Web Speech API) =====
+function ttsSupported(){
+  return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+}
 function pickVoice(langCode){
   const voices = speechSynthesis.getVoices();
   return voices.find(v=>v.lang===langCode) || null;
 }
+function getTextFrom(el){
+  if(!el) return "";
+  if(typeof el.value === "string") return el.value;
+  return (el.textContent || "").trim();
+}
 function speakText(text, lang, exForTts){
-  if(!text || !text.trim()) return;
-  const u = new SpeechSynthesisUtterance(text);
+  if(!ttsSupported()){
+    alert("このブラウザは読み上げ（TTS）に対応していません。Chrome/Edgeでお試しください。");
+    return;
+  }
+  const t = (text || "").trim();
+  if(!t){
+    alert("読み上げる文章が空です。
+・先に「例文を入れる」を押す
+・または Stage2 を実行して文章を表示
+してから 🔊 を押してください。");
+    return;
+  }
+
+  const u = new SpeechSynthesisUtterance(t);
   const langCode = (lang==="id") ? "id-ID" : "ja-JP";
   u.lang = langCode;
 
@@ -756,15 +773,15 @@ function speakText(text, lang, exForTts){
   const v = pickVoice(langCode);
   if(v) u.voice = v;
 
+  // reset any stuck queue
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
 function currentExampleSafe(){
-  // app keeps last example object here
   return window.currentExample || null;
 }
 // voices load async in some browsers
-if (speechSynthesis.onvoiceschanged !== undefined) {
+if (ttsSupported() && speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = () => {};
 }
 // ===== Button bindings =====
@@ -772,23 +789,27 @@ document.addEventListener("click",(e)=>{
   const id = e.target?.id;
   const ex = currentExampleSafe();
 
+  if(id==="btnSpeakTest"){
+    speakText("テストです。音が聞こえますか。","ja",ex);
+  }
+
   // Example speak: if example exists use it, otherwise speak prompt text
   if(id==="btnSpeakExampleJa"){
-    const t = ex?.text?.ja || ex?.jp || document.getElementById("prompt")?.value || "";
+    const t = ex?.text?.ja || ex?.jp || getTextFrom(document.getElementById("prompt"));
     speakText(t,"ja",ex);
   }
   if(id==="btnSpeakExampleId"){
-    const t = ex?.text?.id || ex?.id || document.getElementById("prompt")?.value || "";
+    const t = ex?.text?.id || ex?.id || getTextFrom(document.getElementById("prompt"));
     speakText(t,"id",ex);
   }
 
-  // Stage2 speak: speak whatever is displayed
+  // Stage2 speak: speak whatever is displayed (textarea or div)
   if(id==="btnSpeakStage2Romaji"){
-    const t = document.getElementById("romaji")?.textContent || "";
+    const t = getTextFrom(document.getElementById("romaji"));
     speakText(t,"ja",ex);
   }
   if(id==="btnSpeakStage2Id"){
-    const t = document.getElementById("indonesian")?.textContent || "";
+    const t = getTextFrom(document.getElementById("indonesian"));
     speakText(t,"id",ex);
   }
 });
