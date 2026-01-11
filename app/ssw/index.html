@@ -1,852 +1,124 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI <span id="variantBadge" class="badge" style="display:none;"></span> （カテゴリ絞り込み：persona対応）</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
-    h1 { font-size: 20px; margin: 0 0 10px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 8px 0 12px; }
-    label { display:flex; gap:6px; align-items:center; font-size: 14px; }
-    select, textarea, button, input { font-size: 15px; }
-    button { padding: 10px 14px; cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
-    button.primary { border-color:#111; }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-    textarea { width:100%; min-height:110px; padding:10px; border-radius: 12px; border:1px solid #ddd; }
-    .muted { color:#666; font-size:13px; }
-    .badge { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; color:#333; }
-    .card { border:1px solid #e1e1e1; border-radius:14px; padding:12px; margin-top:12px; }
-    .grid { display:grid; grid-template-columns: 1fr; gap:10px; }
-    @media (min-width: 980px){ .grid { grid-template-columns: 1fr 1fr; } }
-    pre { white-space: pre-wrap; word-break: break-word; margin:0; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .sep { height:1px; background:#eee; margin:10px 0; }
-    .hint { font-size: 12px; color:#777; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>介護ロールプレイAI</title>
+
+<style>
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+textarea { width: 100%; min-height: 100px; padding: 8px; }
+button { padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+.card { border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-top: 10px; }
+</style>
 </head>
+
 <body>
-  <h1>介護ロールプレイAI
-    <span class="badge">例文復活FIX</span>
-    <span class="badge">カテゴリ</span>
-    <span class="badge">persona絞り込み</span>
-    <span class="badge">介護士ローマ字</span>
-  </h1>
-  <div class="muted">①例文投入（押すたび切替）→ ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
-  <div class="row">
-    <label>Scene <select id="scene"></select></label>
-    <label>Persona <select id="persona"></select></label>
-    <label>カテゴリ <select id="category"></select></label>
-    <label>レベル <select id="level"></select></label>
+<h2>介護ロールプレイAI</h2>
 
-    
-    <button id="fillExample" type="button">例文を入れる</button>
-    <button id="btnSpeakExampleJa" type="button">🔊例文(JA)</button>
-    <button id="btnSpeakExampleId" type="button">🔊例文(ID)</button>
-    <button id="btnSpeakTest" type="button">🔊テスト</button>
-
-
-    <label class="muted" style="gap:8px;">
-      <input id="autoStage2" type="checkbox" checked />
-      Stage2を自動実行
-    </label>
-
-    <span id="status" class="muted"></span>
-  </div>
-
-  <div>
-    <div class="muted">介護士（あなた）の発話（日本語）</div>
-    <textarea id="prompt" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
-    <div class="hint">※ examples.json がある場合：scene×persona×カテゴリの例文が出ます（押すたび切替）</div>
-<div class="card" id="paywallBox" style="display:none; margin-top:10px;">
-  <b>無料体験</b>
-  <div id="trialInfo" class="hint" style="margin-top:6px;"></div>
-  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
-    <button class="primary" id="paywallBtn" type="button">Stripeで決済して本格利用</button>
-    <span id="paywallNote" class="hint"></span>
-  </div>
-  <div id="unlockMsg" class="hint" style="margin-top:6px;"></div>
+<div class="row">
+  <button id="fillExample">例文を入れる</button>
+  <button id="btnSpeakExampleJa">🔊例文(JA)</button>
+  <button id="btnSpeakExampleId">🔊例文(ID)</button>
+  <button id="btnSpeakTest">🔊テスト</button>
 </div>
 
-    <div id="noExampleHint" class="hint" style="display:none; margin-top:6px;">この条件の例文はまだありません。自由入力で続けましょう。</div>
-  </div>
+<h3>介護士（あなた）の発話（日本語）</h3>
+<textarea id="prompt"></textarea>
 
-  <div class="card">
-    <div><b>介護士発話（ローマ字）</b></div>
-    <pre id="caregiverRomaji" class="mono"></pre>
-  </div>
+<div class="row">
+  <button id="sendBtn">送信</button>
+</div>
 
-  <div class="row">
-    <button id="sendBtn" class="primary" type="button">送信</button>
-    <button id="runStage2" type="button">Stage2だけ実行</button>
-  </div>
+<div class="card">
+  <h3>Stage2（推奨返答）</h3>
 
-  <div class="grid">
-    <div class="card">
-      <div class="muted">Stage1（日本語）</div>
-      <div class="sep"></div>
-      <div><b>相手（AI側）の返答</b></div>
-      <pre id="aiReply" class="mono"></pre>
-      <div class="sep"></div>
-      <div><b>あなたへのフィードバック</b></div>
-      <pre id="feedback" class="mono"></pre>
-      <div class="sep"></div>
-      <div><b>推奨返答（日本語）</b></div>
-      <textarea id="suggestedJp" placeholder="Stage1実行後に入ります"></textarea>
-    </div>
+  <b>ローマ字（推奨返答）</b>
+  <button id="btnSpeakStage2Romaji">🔊</button>
+  <div id="romaji"></div>
 
-    <div class="card">
-      <div class="muted">Stage2（翻訳：推奨返答）</div>
-      <div class="sep"></div>
-      <div><b>ローマ字（推奨返答）</b> <button id="btnSpeakStage2Romaji" type="button">🔊</button></div>
-      <pre id="romaji" class="mono"></pre>
-      <div class="sep"></div>
-      <div><b>インドネシア語（推奨返答）</b> <button id="btnSpeakStage2Id" type="button">🔊</button></div>
-      <pre id="indonesian" class="mono"></pre>
-    </div>
-  </div>
+  <br><br>
+
+  <b>インドネシア語（推奨返答）</b>
+  <button id="btnSpeakStage2Id">🔊</button>
+  <div id="indonesian"></div>
+</div>
 
 <script>
-  const $ = (id) => document.getElementById(id);
-  const setStatus = (m) => $("status").textContent = m || "";
-  const showNoExampleHint = (show) => {
-    const el = $("noExampleHint");
-    if(!el) return;
-    el.style.display = show ? "block" : "none";
-  };
-
-
-  
-  // -----------------------
-  // App config (variant)
-  // Each sub-app should place ./config.json and ./examples.json
-  // -----------------------
-  let APP = {
-    variant: "default",
-    title: document.title,
-    default_scene: "bath",
-    default_persona: "user_calm",
-    default_level: "all",
-    trial_limit: 3,
-    stripe_price_id: "",
-    stripe_checkout_url: "" // optional (if you already have a hosted payment page)
-  };
-
-  async function loadConfig(){
-    // Prefer relative config (e.g., /app/trainee/config.json). Fallback to /app/config.json.
-    const urls = ["./config.json", "/app/config.json"];
-    for(const u of urls){
-      try{
-        const r = await fetch(u, { cache:"no-store" });
-        if(!r.ok) continue;
-        const cfg = await r.json();
-        APP = { ...APP, ...cfg };
-        // Title
-        if(APP.title){
-          document.title = APP.title;
-          // Also adjust H1 text without breaking badges
-          const h1 = document.querySelector("h1");
-          if(h1){
-            // keep existing HTML, just prepend title text
-            // We'll set first text node if exists
-          }
-        }
-        const badge = $("variantBadge");
-        if(badge && APP.variant){
-          badge.textContent = APP.variant;
-          badge.style.display = "inline-block";
-        }
-        return APP;
-      } catch(e){
-        // ignore and try next
-      }
-    }
-    return APP;
-  }
-
-  // -----------------------
-  // Trial gating (per variant)
-  // - counts successful Stage1 calls
-  // - stored in localStorage per variant
-  // -----------------------
-  const trialKey = () => `kaigo_trial_${APP.variant || "default"}`;
-  
-  // -----------------------
-  // Simple unlock (manual code) for MVP
-  // config.json:
-  //   "unlock_code": "XXXX-YYYY" or "unlock_codes": ["...","..."]
-  // When correct, sets localStorage kaigo_paid_<variant> = "1"
-  // -----------------------
-  const normalizeCode = (s) => (s||"").toString().trim().replace(/\s+/g,"").toUpperCase();
-
-  const getAllowedUnlockCodes = () => {
-    const codes = [];
-    if (APP.unlock_code) codes.push(APP.unlock_code);
-    if (Array.isArray(APP.unlock_codes)) codes.push(...APP.unlock_codes);
-    // variant-specific (optional)
-    if (APP.variant && APP[`unlock_code_${APP.variant}`]) codes.push(APP[`unlock_code_${APP.variant}`]);
-    if (APP.variant && Array.isArray(APP[`unlock_codes_${APP.variant}`])) codes.push(...APP[`unlock_codes_${APP.variant}`]);
-    return codes.map(normalizeCode).filter(Boolean);
-  };
-
-  const tryUnlock = () => {
-    const input = $("unlockCode");
-    const msg = $("unlockMsg");
-    const code = normalizeCode(input?.value || "");
-    const allowed = getAllowedUnlockCodes();
-
-    if (!code) {
-      if (msg) { msg.textContent = "解除コードを入力してください。"; msg.style.color = "#b45309"; }
-      return false;
-    }
-    if (allowed.length === 0) {
-      if (msg) { msg.textContent = "（解除コードが未登録です：config.json を確認してください）"; msg.style.color = "#b45309"; }
-      return false;
-    }
-    const ok = allowed.includes(code);
-    if (ok) {
-      localStorage.setItem(paidKey(), "1");
-      if (msg) { msg.textContent = "✅ 解除しました。本格利用が可能です。"; msg.style.color = "#065f46"; }
-      updateTrialUI();
-      return true;
-    }
-    if (msg) { msg.textContent = "解除コードが違います。"; msg.style.color = "#b91c1c"; }
-    return false;
-  };
-
-  const resetUnlock = () => {
-    localStorage.removeItem(paidKey());
-    updateTrialUI();
-    const msg = $("unlockMsg");
-    if (msg) { msg.textContent = "解除状態をリセットしました。"; msg.style.color = "#374151"; }
-  };
-
-const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (Stripe/Webhook)
-  const isPaid = () => localStorage.getItem(paidKey()) === "1";
-
-  const getTrialCount = () => Number(localStorage.getItem(trialKey()) || "0");
-  const setTrialCount = (n) => localStorage.setItem(trialKey(), String(Math.max(0, Number(n)||0)));
-
-  const remainingTrials = () => {
-    const limit = Number(APP.trial_limit ?? 3);
-    if(isPaid()) return Infinity;
-    return Math.max(0, limit - getTrialCount());
-  };
-
-  const updateTrialUI = () => {
-    const el = $("trialInfo");
-    const pw = $("paywall");
-    const pwBtn = $("paywallBtn");
-    const pwNote = $("paywallNote");
-    const um = $("unlockMsg");
-    if(!el) return;
-    const limit = Number(APP.trial_limit ?? 3);
-    if(isPaid()){
-      el.textContent = "✅ 本格利用：有効（決済済み）";
-      enableActions(true);
-      if(pw) pw.style.display = "none";
-      if(um) um.textContent = "";
-      return;
-    }
-    const used = getTrialCount();
-    const left = Math.max(0, limit - used);
-    el.textContent = `試用：${used}/${limit} 回（残り ${left} 回）`;
-    enableActions(left > 0);
-    if(pw) pw.style.display = (left === 0 ? "block" : "none");
-    if(pwBtn){
-      const url = APP.stripe_checkout_url || "";
-      pwBtn.href = url || "#";
-      pwBtn.style.pointerEvents = url ? "auto" : "none";
-      pwBtn.style.opacity = url ? "1" : "0.5";
-    }
-    if(pwNote){
-      if(APP.stripe_checkout_url){
-        pwNote.textContent = "";
-      } else if(APP.stripe_price_id){
-        pwNote.textContent = `（Stripe Price ID: ${APP.stripe_price_id}）※次のステップでCheckoutリンクを接続します`;
-      } else {
-        pwNote.textContent = "※次のステップでStripeの購入リンクを接続します";
-      }
-    }
-if(left === 0){
-      setStatus("試用回数に達しました。自由入力はできますが、AI応答には決済が必要です。");
-      showNoExampleHint(false);
-    }
-  };
-
-  const enableActions = (enabled) => {
-    // Disable API-consuming buttons when trial exhausted
-    const sendBtn = $("sendBtn");
-    const stage2Btn = $("runStage2");
-    if(sendBtn) sendBtn.disabled = !enabled;
-    if(stage2Btn) stage2Btn.disabled = !enabled;
-  };
-
-  const consumeTrial = () => {
-    if(isPaid()) return true;
-    const left = remainingTrials();
-    if(left <= 0) return false;
-    setTrialCount(getTrialCount() + 1);
-    updateTrialUI();
-    return true;
-  };
-let busy = false;
-  let inFlight = null; // AbortController
-
-  const setBusy = (b) => {
-    busy = b;
-    const ids = ["fillExample","sendBtn","runStage2","scene","persona","category"];
-    ids.forEach((id)=>{ const el = $(id); if(el) el.disabled = b; });
-  };
-
-  function abortInFlight(){
-    if(inFlight){
-      try { inFlight.abort(); } catch(_){}
-      inFlight = null;
-    }
-  }
-
-  async function postChat(payload, { timeoutMs = 15000 } = {}){
-    abortInFlight();
-    inFlight = new AbortController();
-
-    const timer = setTimeout(() => inFlight?.abort(), timeoutMs);
-    try{
-      const r = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify(payload),
-        signal: inFlight.signal
-      });
-      const j = await r.json().catch(()=> ({}));
-      if(!r.ok){
-        const msg = j?.message || j?.error || (j?.details ? String(j.details) : "") || ("HTTP " + r.status);
-        const e = new Error(msg);
-        e.status = r.status;
-        throw e;
-      }
-      return j;
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  function meta(stage){
-    return {
-      stage,
-      persona: $("persona").value || "user_calm",
-      scene: $("scene").value || "bath"
-    };
-  }
-
-  function clearOutputs(){
-    $("caregiverRomaji").textContent = "";
-    $("aiReply").textContent = "";
-    $("feedback").textContent = "";
-    $("suggestedJp").value = "";
-    $("romaji").textContent = "";
-    $("indonesian").textContent = "";
-  }
-
-  // -----------------------
-  // Examples loader
-  // -----------------------
-  let EX = null;
-  const counters = {}; // counters[scene][persona][cat] = next index
-
-  function ensureCounter(scene, persona, cat){
-    if(!counters[scene]) counters[scene] = {};
-    if(!counters[scene][persona]) counters[scene][persona] = {};
-    if(typeof counters[scene][persona][cat] !== "number") counters[scene][persona][cat] = 0;
-  }
-
-
-  function resetCounter(scene, persona, cat){
-    if(!scene || !persona || !cat) return;
-    if(counters[scene] && counters[scene][persona] && typeof counters[scene][persona][cat] === "number"){
-      counters[scene][persona][cat] = 0;
-    }
-  }
-  function populateSelect(sel, options){
-    sel.innerHTML = "";
-    options.forEach(o=>{
-      const opt = document.createElement("option");
-      opt.value = o.key;
-      opt.textContent = o.label;
-      sel.appendChild(opt);
-    });
-  }
-
-  function normalizeExampleItem(x){
-    if(typeof x === "string") return { jp: x, level: "beginner" };
-    if(x && typeof x === "object"){
-      return {
-        jp: x.jp || x.text || x.prompt || "",
-        level: x.level || x.lv || x.difficulty || "beginner"
-      };
-    }
-    return { jp: "", level: "beginner" };
-  }
-
-  function getExampleList(root, scene, persona, cat){
-    const list = (root && root[scene] && root[scene][persona] && root[scene][persona][cat]) || [];
-    const level = ($("level") && $("level").value) ? $("level").value : "all";
-    return (Array.isArray(list) ? list : [])
-      .map(normalizeExampleItem)
-      .filter(it => it.jp)
-      .filter(it => (level === "all") ? true : (it.level === level));
-  }
-
-  async function fetchJSONWithFallbacks(){
-    const urls = ["./examples.json", "/examples.json", "/app/examples.json"];
-    let lastErr = null;
-    for(const u of urls){
-      try{
-        const r = await fetch(u, { cache:"no-store" });
-        if(!r.ok) throw new Error(u + " HTTP " + r.status);
-        return await r.json();
-      } catch(e){
-        lastErr = e;
-      }
-    }
-    throw lastErr || new Error("examples.json not found");
-  }
-
-  async function loadExamples(){
-    if(EX) return EX;
-
-    try{
-      setStatus("examples.json 読み込み中…");
-      const db = await fetchJSONWithFallbacks();
-
-      const root = db.examples || db.data || db.dataset || db.items || db.scenes || null;
-      if(!root) throw new Error("examples root not found (need examples/data/dataset)");
-
-      // scenes (dict or array)
-      const sceneOptions = [];
-      if(Array.isArray(db.scenes)){
-        db.scenes.forEach(v=>{
-          if(typeof v === "string") sceneOptions.push({key:v,label:v});
-          else if(v && typeof v === "object") sceneOptions.push({key:(v.key??v.value), label:(v.label??v.name??v.key??v.value)});
-        });
-      } else if(db.scenes && typeof db.scenes === "object"){
-        Object.keys(db.scenes).forEach(k=>{
-          const labelMap = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
-          sceneOptions.push({ key:k, label: (labelMap[k] || k) });
-        });
-      } else {
-        Object.keys(root||{}).forEach(k=>sceneOptions.push({key:k,label:k}));
-      }
-
-      // personas
-      const personaOptions = [];
-      if(Array.isArray(db.personas)){
-        db.personas.forEach(v=>{
-          if(typeof v === "string") personaOptions.push({key:v,label:v});
-          else if(v && typeof v === "object"){
-            const key = v.key ?? v.value ?? v.id;
-            const label = v.label ?? v.name ?? key;
-            if(key) personaOptions.push({key, label});
-          }
-        });
-      } else {
-        const first = sceneOptions[0]?.key;
-        Object.keys((root && root[first]) || {}).forEach(p=>personaOptions.push({key:p,label:p}));
-      }
-
-      EX = { db, root, sceneOptions, personaOptions };
-      populateSelect($("scene"), sceneOptions);
-      populateSelect($("persona"), personaOptions);
-      // Level options (UI only)
-      const levelOptions = [
-        { key: "all", label: "全て" },
-        { key: "beginner", label: "初級" },
-        { key: "intermediate", label: "中級" },
-        { key: "field", label: "現場即応" }
-      ];
-      populateSelect($("level"), levelOptions);
-      $("level").value = (APP.default_level || "all");
-      // Apply defaults for scene/persona (if options contain them)
-      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
-      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
-      
-
-
-      refreshCategories();
-      showNoExampleHint(false);
-      setStatus("examples.json OK");
-      return EX;
-    } catch(e){
-      EX = null;
-      showNoExampleHint(true);
-      setStatus("例文なし（examples.json 未設定/読込失敗）");
-      populateSelect($("scene"), [
-        {key:"bath",label:"入浴"},
-        {key:"meal",label:"食事"},
-        {key:"toilet",label:"排泄"},
-        {key:"night",label:"夜間"},
-        {key:"complaint",label:"クレーム対応"}
-      ]);
-      populateSelect($("persona"), [
-        {key:"user_calm",label:"利用者：穏やか"},
-        {key:"user_angry",label:"利用者：怒り"},
-        {key:"dementia",label:"利用者：少し混乱"},
-        {key:"family_anxious",label:"家族：不安"},
-        {key:"family_complaint",label:"家族：クレーム"}
-      ]);
-      populateSelect($("category"), [{key:"free",label:"自由入力"}]);
-      populateSelect($("level"), [
-        {key:"all",label:"全て"},
-        {key:"beginner",label:"初級"},
-        {key:"intermediate",label:"中級"},
-        {key:"field",label:"現場即応"}
-      ]);
-      $("level").value = (APP.default_level || "all");
-      // Apply defaults for scene/persona (if options contain them)
-      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
-      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
-      
-      return null;
-    }
-  }
-
-  // ✅ ここが今回の実装ポイント：
-  // scene×persona で「実際に例文が存在するカテゴリだけ」表示する
-  function refreshCategories(){
-    if(!EX){
-      populateSelect($("category"), [{key:"free",label:"自由入力"}]);
-      populateSelect($("level"), [
-        {key:"all",label:"全て"},
-        {key:"beginner",label:"初級"},
-        {key:"intermediate",label:"中級"},
-        {key:"field",label:"現場即応"}
-      ]);
-      $("level").value = (APP.default_level || "all");
-      // Apply defaults for scene/persona (if options contain them)
-      if(APP.default_scene && Array.from($("scene").options).some(o=>o.value===APP.default_scene)) $("scene").value = APP.default_scene;
-      if(APP.default_persona && Array.from($("persona").options).some(o=>o.value===APP.default_persona)) $("persona").value = APP.default_persona;
-      
-      return;
-    }
-    const { db, root } = EX;
-    const scene = $("scene").value;
-    const persona = $("persona").value;
-
-    // A) まず「sceneに定義されたカテゴリ一覧（key/label）」を作る
-    let definedCats = [];
-    if(db.scenes && typeof db.scenes === "object" && !Array.isArray(db.scenes) && Array.isArray(db.scenes[scene])){
-      definedCats = db.scenes[scene]
-        .map(it => ({ key: (it.key ?? it.value ?? it.id), label: (it.label ?? it.name ?? (it.key ?? it.value ?? it.id) ?? "") }))
-        .filter(x=>x.key);
-    } else {
-      // fallback: infer by keys in examples root
-      definedCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
-    }
-
-    // B) 次に「このscene×personaで例文があるカテゴリ」だけに絞る
-    const availableKeys = new Set(Object.keys((root && root[scene] && root[scene][persona]) || {}));
-    const filtered = definedCats.filter(c => availableKeys.has(c.key));
-
-    // C) filteredが空なら、例文のキーをそのまま使う（保険）
-    const fallbackCats = Object.keys((root && root[scene] && root[scene][persona]) || {}).map(c=>({key:c,label:c}));
-    const finalCats = (filtered.length ? filtered : (fallbackCats.length ? fallbackCats : [{key:"free",label:"自由入力"}]));
-
-    // selection維持（可能なら）
-    const prev = $("category").value;
-    populateSelect($("category"), finalCats);
-    if(prev && finalCats.some(x=>x.key===prev)) $("category").value = prev;
-  }
-
-  function getNextExample(){
-    if(!EX) return null;
-
-    const { root } = EX;
-    const scene = $("scene").value;
-    const persona = $("persona").value;
-    const cat = $("category").value;
-    const level = ($("level") && $("level").value) ? $("level").value : "all";
-    const catKey = cat + "::" + level;
-
-    const list = getExampleList(root, scene, persona, cat);
-    if(!list.length) return null;
-
-    ensureCounter(scene, persona, catKey);
-    const i = counters[scene][persona][catKey] % list.length;
-    counters[scene][persona][catKey] = counters[scene][persona][catKey] + 1;
-    return list[i];
-  }
-
-  async function fillExample(){
-    await loadExamples();
-    const ex = getNextExample();
-    if(!ex){
-      setStatus("この条件の例文はまだありません。自由入力で続けましょう。");
-      showNoExampleHint(true);
-      return;
-    }
-    $("prompt").value = (ex?.text?.ja ?? ex?.jp ?? "");
-      window.currentExample = ex;
-    showNoExampleHint(false);
-    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
-    const lv = ex.level || (($("level")&&$("level").value) ? $("level").value : "beginner");
-    setStatus("例文を入力しました（押すたび切替） / レベル: " + (levelLabelMap[lv] || lv));
-  }
-
-  // -----------------------
-  // Main actions
-  // -----------------------
-  async function runAll(){
-    if(busy) return;
-
-    const jp = $("prompt").value.trim();
-    if(!jp){ setStatus("入力が空です"); return; }
-
-    setBusy(true);
-    setStatus("介護士発話をローマ字化…");
-
-    try{
-      clearOutputs();
-
-      const r0 = await postChat({ prompt: jp, meta: meta(2) });
-      $("caregiverRomaji").textContent = r0.romaji || "";
-
-      setStatus("Stage1 実行中…");
-      const s1 = await postChat({ prompt: jp, meta: meta(1) });
-      $("aiReply").textContent = s1.ai_reply_jp || "";
-      $("feedback").textContent = s1.feedback_jp || "";
-      $("suggestedJp").value = s1.suggested_reply_jp || "";
-
-      if($("autoStage2").checked){
-        await runStage2Only();
-      } else {
-        setStatus("Stage1 完了（Stage2は手動）");
-      }
-    } catch(e){
-      if(e?.name === "AbortError") return;
-      setStatus("エラー: " + (e?.message || e));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function runStage2Only(){
-    const suggested = $("suggestedJp").value.trim();
-    if(!suggested){
-      setStatus("Stage2: 推奨返答（日本語）が空です");
-      return;
-    }
-    setStatus("Stage2 実行中…");
-    const s2 = await postChat({ prompt: suggested, meta: meta(2) });
-    $("romaji").textContent = s2.romaji || "";
-    $("indonesian").textContent = s2.indonesian || "";
-    setStatus("完了");
-  }
-
-  // Events
-  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
-  $("sendBtn").addEventListener("click", runAll);
-  $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
-
-  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
-    setStatus("Scene変更：例文or入力→送信"); });
-  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
-    setStatus("Persona変更：例文or入力→送信"); });
-  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
-    setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
-
-  $("level").addEventListener("change", ()=>{
-    // Level change resets cycling within that level
-    resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all"));
-    clearOutputs();
-    showNoExampleHint(false);
-    const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
-    setStatus("レベル変更： " + (levelLabelMap[$("level").value] || $("level").value) + "（例文は最初から）");
-  });
-loadConfig().then(()=> loadExamples()).then(()=>{ if(EX) refreshCategories(); updateTrialUI(); });
-
-  // Unlock code UI
-  $("unlockBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); tryUnlock(); });
-  $("unlockClearBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); resetUnlock(); });
-// --- Stripe checkout (A: 自動解除) ---
-async function startStripeCheckout(){
-  try{
-    if(!APP || !APP.variant){ alert("variantが未設定です"); return; }
-    const btn = document.getElementById("paywallBtn");
-    const note = document.getElementById("paywallNote");
-    if(btn){ btn.disabled = true; btn.textContent = "Stripeへ移動中..."; }
-    if(note){ note.textContent = ""; }
-    const resp = await fetch("/api/create-checkout-session",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ variant: APP.variant })
-    });
-    const data = await resp.json().catch(()=> ({}));
-    if(!resp.ok || !data.url){
-      const msg = data.error || "checkoutの作成に失敗しました";
-      if(note){ note.textContent = msg; }
-      if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
-      return;
-    }
-    location.href = data.url;
-  }catch(e){
-    console.error(e);
-    const note = document.getElementById("paywallNote");
-    const btn = document.getElementById("paywallBtn");
-    if(note){ note.textContent = "Stripe連携でエラーが発生しました"; }
-    if(btn){ btn.disabled = false; btn.textContent = "Stripeで決済して本格利用"; }
-  }
+/* ========= TTS 基本 ========= */
+function ttsOK(){
+  return "speechSynthesis" in window;
 }
 
-async function checkStripeSuccessOnLoad(){
-  try{
-    const qs = new URLSearchParams(location.search);
-    const success = qs.get("success");
-    const sessionId = qs.get("session_id");
-    if(success !== "1" || !sessionId) return;
-
-    const msg = document.getElementById("unlockMsg");
-    if(msg){ msg.textContent = "決済を確認しています..."; }
-
-    const v = (APP && APP.variant) ? APP.variant : "";
-    const resp = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}&variant=${encodeURIComponent(v)}`);
-    const data = await resp.json().catch(()=> ({}));
-
-    if(resp.ok && data.paid){
-      // paidフラグ（variant別）
-      localStorage.setItem(`kaigo_paid_${v}`, "1");
-      if(msg){ msg.textContent = "決済確認OK：本格利用が有効になりました。"; }
-      // URLを綺麗に
-      history.replaceState({}, "", location.pathname);
-      // UI更新
-      if(typeof updateTrialUI === "function") updateTrialUI();
-    }else{
-      if(msg){ msg.textContent = "決済の確認ができませんでした。しばらくして再読み込みしてください。"; }
-    }
-  }catch(e){
-    console.error(e);
-  }
+function romajiToNaturalJa(text){
+  if(!text) return "";
+  let t = " " + text + " ";
+  t = t.replace(/\bwa\b/g, "は");
+  t = t.replace(/\bga\b/g, "が");
+  t = t.replace(/\bwo\b/g, "を");
+  t = t.replace(/\bno\b/g, "の");
+  t = t.replace(/\bni\b/g, "に");
+  t = t.replace(/\bde\b/g, "で");
+  t = t.replace(/\bto\b/g, "と");
+  t = t.replace(/\bkara\b/g, "から");
+  t = t.replace(/\bmade\b/g, "まで");
+  return t.trim();
 }
 
-// paywallボタンを接続
-document.addEventListener("DOMContentLoaded", ()=>{
-  const btn = document.getElementById("paywallBtn");
-  if(btn) btn.addEventListener("click", startStripeCheckout);
-  checkStripeSuccessOnLoad();
-});
-
-// ===== TTS (Web Speech API) - linked to examples.v2.json tts_lang =====
-function ttsSupported(){
-  return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
-}
-function pickVoice(langCode){
-  const voices = speechSynthesis.getVoices();
-  // Prefer exact match
-  return voices.find(v=>v.lang===langCode) || null;
-}
-function getTextFrom(el){
-  if(!el) return "";
-  if(typeof el.value === "string") return el.value;
-  return (el.textContent || "").trim();
-}
-function getTtsCfg(ex, lang){
-  // Priority: per-language config -> generic tts -> fallback defaults
-  const cfg = (ex && ex.tts_lang && ex.tts_lang[lang]) ? ex.tts_lang[lang] : null;
-  const base = ex && ex.tts ? ex.tts : null;
-  return {
-    speech_rate: (cfg && cfg.speech_rate != null) ? cfg.speech_rate : (base && base.speech_rate != null ? base.speech_rate : (lang==="id" ? 0.9 : 1.0)),
-    pause_ms: (cfg && cfg.pause_ms != null) ? cfg.pause_ms : (base && base.pause_ms != null ? base.pause_ms : 300),
-    priority: (base && base.priority) ? base.priority : "normal"
-  };
-}
-function splitForPause(text){
-  const t = (text || "").trim();
-  if(!t) return [];
-  // Split into chunks to allow natural pauses (keep punctuation)
-  const parts = t.split(/(?<=[。．.!?？])\s*/);
-  return parts.filter(p=>p && p.trim());
-}
-function speakWithCfg(text, lang, ex){
-  if(!ttsSupported()){
-    alert("このブラウザは読み上げ（TTS）に対応していません。Chrome/Edgeでお試しください。");
+function speak(text, lang){
+  if(!ttsOK()){
+    alert("このブラウザは音声読み上げに対応していません");
     return;
   }
-  const t = (text || "").trim();
-  if(!t){
-    alert("読み上げる文章が空です。\n・先に「例文を入れる」を押す\n・または Stage2 を実行して文章を表示\nしてから 🔊 を押してください。");
+  if(!text || !text.trim()){
+    alert("読み上げる文章がありません");
     return;
   }
-
-  const cfg = getTtsCfg(ex, lang);
-  const langCode = (lang==="id") ? "id-ID" : "ja-JP";
-  const voice = pickVoice(langCode);
-
-  // Cancel any running speech to avoid queue pile-up
   speechSynthesis.cancel();
-
-  const chunks = splitForPause(t);
-  let i = 0;
-
-  const speakNext = () => {
-    if(i >= chunks.length) return;
-    const u = new SpeechSynthesisUtterance(chunks[i]);
-    u.lang = langCode;
-    u.rate = cfg.speech_rate;
-    if(voice) u.voice = voice;
-
-    u.onend = () => {
-      i += 1;
-      if(i < chunks.length){
-        setTimeout(speakNext, cfg.pause_ms);
-      }
-    };
-    u.onerror = () => {
-      i += 1;
-      if(i < chunks.length){
-        setTimeout(speakNext, cfg.pause_ms);
-      }
-    };
-    speechSynthesis.speak(u);
-  };
-
-  speakNext();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === "id" ? "id-ID" : "ja-JP";
+  u.rate = lang === "id" ? 0.9 : 1.0;
+  speechSynthesis.speak(u);
 }
-function currentExampleSafe(){
-  return window.currentExample || null;
-}
-// voices load async in some browsers
-if (ttsSupported() && speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = () => {};
-}
-// ===== Button bindings =====
-document.addEventListener("click",(e)=>{
-  const btn = (e.target && e.target.closest) ? e.target.closest("button") : null;
-  const id = btn ? btn.id : (e.target && e.target.id);
-  const ex = currentExampleSafe();
 
-  if(id==="btnSpeakTest"){
-    speakWithCfg("テストです。音が聞こえますか。","ja",ex);
+/* ========= ボタン ========= */
+document.addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if(!btn) return;
+
+  if(btn.id === "btnSpeakTest"){
+    speak("テストです。音が聞こえますか。", "ja");
   }
 
-  if(id==="btnSpeakExampleJa"){
-    const t = (ex && ex.text && ex.text.ja) || ex.jp || getTextFrom(document.getElementById("prompt"));
-    speakWithCfg(t,"ja",ex);
-  }
-  if(id==="btnSpeakExampleId"){
-    const t = (ex && ex.text && ex.text.id) || ex.id || getTextFrom(document.getElementById("prompt"));
-    speakWithCfg(t,"id",ex);
+  if(btn.id === "btnSpeakExampleJa"){
+    speak(document.getElementById("prompt").value, "ja");
   }
 
-  if(id==="btnSpeakStage2Romaji"){
-    const t = getTextFrom(document.getElementById("romaji"));
-    speakWithCfg(t,"ja",ex);
+  if(btn.id === "btnSpeakExampleId"){
+    speak(document.getElementById("prompt").value, "id");
   }
-  if(id==="btnSpeakStage2Id"){
-    const t = getTextFrom(document.getElementById("indonesian"));
-    speakWithCfg(t,"id",ex);
+
+  if(btn.id === "btnSpeakStage2Romaji"){
+    const raw = document.getElementById("romaji").textContent;
+    const fixed = romajiToNaturalJa(raw);
+    speak(fixed, "ja");
+  }
+
+  if(btn.id === "btnSpeakStage2Id"){
+    speak(document.getElementById("indonesian").textContent, "id");
   }
 });
 
+/* ========= ダミー送信（確認用） ========= */
+document.getElementById("sendBtn").addEventListener("click", () => {
+  document.getElementById("romaji").textContent =
+    "Yakan no akari dake de wa fuan desu. Motto gutai-teki na taisaku o oshiete kudasai.";
+  document.getElementById("indonesian").textContent =
+    "Cahaya teko saja membuat saya cemas. Tolong beri tahu langkah yang lebih konkret.";
+});
 </script>
+
 </body>
 </html>
