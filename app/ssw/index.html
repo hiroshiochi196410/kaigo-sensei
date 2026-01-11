@@ -642,18 +642,18 @@ let busy = false;
   }
 
   // Events
-  $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
+  if ($("fillExample")) $("fillExample").addEventListener("click", ()=>fillExample().catch(e=>setStatus("例文エラー: "+e.message)));
   sendBtn && sendBtn.addEventListener("click", runAll);
-  $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
+  if ($("runStage2")) $("runStage2").addEventListener("click", ()=>runStage2Only().catch(e=>setStatus("Stage2エラー: "+e.message)));
 
-  $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+  if ($("scene")) $("scene").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
     setStatus("Scene変更：例文or入力→送信"); });
-  $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
+  if ($("persona")) $("persona").addEventListener("change", ()=>{ if(EX) refreshCategories(); clearOutputs(); showNoExampleHint(false);
     setStatus("Persona変更：例文or入力→送信"); });
-  $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
+  if ($("category")) $("category").addEventListener("change", ()=>{ resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all")); clearOutputs(); showNoExampleHint(false);
     setStatus("カテゴリ変更：例文は最初から（カウンタをリセット）"); });
 
-  $("level").addEventListener("change", ()=>{
+  if ($("level")) $("level").addEventListener("change", ()=>{
     // Level change resets cycling within that level
     resetCounter($("scene").value, $("persona").value, $("category").value + "::" + (($("level")&&$("level").value)?$("level").value:"all"));
     clearOutputs();
