@@ -585,7 +585,8 @@ let busy = false;
       showNoExampleHint(true);
       return;
     }
-    $("prompt").value = ex.jp;
+    $("prompt").value = (ex?.text?.ja ?? ex?.jp ?? "");
+      window.currentExample = ex;
     showNoExampleHint(false);
     const levelLabelMap = { beginner:"初級", intermediate:"中級", field:"現場即応", all:"全て" };
     const lv = ex.level || (($("level")&&$("level").value) ? $("level").value : "beginner");
