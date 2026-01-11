@@ -151,11 +151,8 @@ function putExample(ex){
   currentExample=ex;
   $("prompt").value = ex?.text?.ja || "";
   // 例文に romaji/id があるなら仮表示（無ければ空）
-  // APIが返している “推奨返答(日本語)” をまず表示
-const jp = out?.suggested_reply_jp || out?.ai_reply_jp || "";
-$("romaji").textContent = jp;       // いったんここに表示（次でローマ字化する）
-$("indonesian").textContent = "";   // 次の段階でIDを入れる
-
+  $("romaji").textContent = ex?.romaji || "";
+  $("indonesian").textContent = ex?.text?.id || "";
 }
 
 // 例文投入（押すたび切替）
@@ -180,8 +177,12 @@ async function callStage2(text){
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      prompt: text,   // ← ★ここが重要
-      mode: "stage2"
+      prompt: text,
+      mode: "stage2",
+      scene: $("scene")?.value || "",
+      persona: $("persona")?.value || "",
+      category: $("category")?.value || "",
+      level: normalizeLevel($("level")?.value || "")
     })
   });
 
@@ -200,8 +201,12 @@ $("btnStage2").onclick=async ()=>{
     setBusy(true);
     setStatus("Stage2生成中…");
     const out = await callStage2(ja);
-    $("romaji").textContent = out?.romaji || "";
-    $("indonesian").textContent = out?.indonesian || "";
+    // APIの返却キーに合わせて表示
+    const jp = out?.suggested_reply_jp || out?.ai_reply_jp || "";
+    $("romaji").textContent = jp;
+    $("indonesian").textContent = out?.indonesian || out?.id || out?.text?.id || "";
+    // 参考：フィードバックやAI返答を見たい場合は console に出している
+    console.log("stage2 raw:", out);
     setStatus("Stage2完了");
   }catch(e){
     console.error(e);
