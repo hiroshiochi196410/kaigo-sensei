@@ -330,66 +330,76 @@ const DIGRAPH_MAP = {
 function isVowel(ch){ return ["a","i","u","e","o"].includes(ch); }
 
 function kanaToRomaji(input){
+  // Lightweight fallback: convert kana -> romaji, and avoid mixing kanji into the romaji field.
+  // For accurate romaji (incl. kanji), we request `user_romaji` from the API after "送信".
   if(!input) return "";
-  let s = input.normalize("NFKC");
-  // 句読点などを整える
-  s = s.replace(/　/g," ").replace(/[、]/g,", ").replace(/[。]/g,". ");
+  const s = normalizeJP(input);
+
   let out = "";
-  for(let i=0; i<s.length; i++){
+  let i = 0;
+
+  const isKana = (ch)=> /[ぁ-ゖァ-ヺー]/.test(ch);
+  const isLatinOrNum = (ch)=> /[A-Za-z0-9]/.test(ch);
+
+  while(i < s.length){
     const c = s[i];
 
-    // 小さい「っ」促音
-    if(c === "っ" || c === "ッ"){
-      const next2 = s.slice(i+1, i+3);
-      const next1 = s[i+1] || "";
-      let r = DIGRAPH_MAP[next2] || KANA_MAP[next1] || "";
-      out += r ? r[0] : "";
-      continue;
-    }
-
-    // 長音「ー」
-    if(c === "ー"){
-      const last = out.trimEnd().slice(-1);
-      if(isVowel(last)) out += last;
-      continue;
-    }
-
-    // 拗音2文字
-    const pair = s.slice(i, i+2);
-    if(DIGRAPH_MAP[pair]){
-      out += DIGRAPH_MAP[pair];
+    // Keep ASCII spaces/punct as separators
+    if(/[\s.,!?;:()\[\]{}"'-]/.test(c)){
+      out += c;
       i++;
       continue;
     }
 
-    if(KANA_MAP[c]){
-      // ん + 母音/やゆよ の前は apostrophe を入れて区切る（簡易）
-      if((c==="ん"||c==="ン")){
-        const nx = s[i+1] || "";
-        const nxPair = s.slice(i+1, i+3);
-        const nxRoma = DIGRAPH_MAP[nxPair] || KANA_MAP[nx] || "";
-        if(nxRoma && (isVowel(nxRoma[0]) || nxRoma.startsWith("y"))){
-          out += "n'";
-        }else{
-          out += "n";
-        }
-      }else{
-        out += KANA_MAP[c];
-      }
+    // Keep latin/nums (user may type romaji already)
+    if(isLatinOrNum(c)){
+      out += c;
+      i++;
       continue;
     }
 
-    // 英数字・記号・漢字はそのまま（空白含む）
-    out += c;
+    // Convert kana
+    if(isKana(c)){
+      const next2 = (s[i] || "") + (s[i+1] || "");
+      const next1 = s[i+1] || "";
+
+      let r = DIGRAPH_MAP[next2] || DIGRAPH_MAP[normalizeJP(next2)] || null;
+      if(r){
+        out += r;
+        i += 2;
+        continue;
+      }
+
+      r = KANA_MAP[c] || KANA_MAP[normalizeJP(c)] || "";
+      if(c === "っ" || c === "ッ"){
+        // small tsu: double the next consonant if possible
+        const look2 = (s[i+1] || "") + (s[i+2] || "");
+        const look1 = s[i+1] || "";
+        const nextRoma = DIGRAPH_MAP[look2] || KANA_MAP[look1] || "";
+        out += (nextRoma && nextRoma[0]) ? nextRoma[0] : "";
+        i += 1;
+        continue;
+      }
+
+      // long vowel mark
+      if(c === "ー"){
+        out += "-";
+        i += 1;
+        continue;
+      }
+
+      out += r;
+      i += 1;
+      continue;
+    }
+
+    // Any other char (kanji, emoji, etc.) -> separator
+    out += " ";
+    i++;
   }
 
-  // スペース整形
-  out = out
-    .replace(/\s+/g, " ")
-    .replace(/\s+([,\.\?!])/g, "$1")
-    .trim();
-
-  // 文頭だけ大文字にしない（学習用途：安定優先）
+  // Tidy: collapse spaces
+  out = out.replace(/\s+/g, " ").trim();
   return out;
 }
 
@@ -484,21 +494,32 @@ async function callChatAPI(payload){
 }
 
 function buildPromptForStage1(jpText, cfg){
-  // backendの実装が不明なので、最低限の情報を含める
+  // Stage1: AI側の返答(日本語) + フィードバック(日本語) + 推奨返答(日本語)
+  // さらに「あなたの発話」をローマ字化して返す（教材品質の安定化用）
   return [
-    "あなたは介護現場のロールプレイAIです。",
-    `状況(Scene): ${cfg.scene}`,
-    `相手(Persona): ${cfg.persona}`,
-    `カテゴリ: ${cfg.category}`,
-    `レベル: ${cfg.level}`,
-    "",
-    "以下の『介護士の発話（日本語）』に対して、次の3点を日本語で返してください。",
-    "1) 相手（AI側）の返答",
-    "2) 介護士へのフィードバック",
-    "3) 推奨返答（日本語）",
-    "",
-    "介護士の発話（日本語）:",
-    jpText
+`あなたは介護現場のロールプレイAIです。以下の条件で、必ずJSONだけを返してください（説明文は禁止）。`,
+``,
+`【設定】`,
+`scene: ${cfg.scene}`,
+`persona: ${cfg.persona}`,
+`category: ${cfg.category}`,
+`level: ${cfg.level}`,
+``,
+`【介護士（あなた）の発話（日本語）】`,
+jpText,
+``,
+`【出力JSONの形式】`,
+`{`,
+`  "ai_reply_jp": "相手（AI側）の返答（日本語）",`,
+`  "feedback_jp": "あなたの発話への短いフィードバック（日本語、1〜2文）",`,
+`  "suggested_reply_jp": "次にあなたが言う推奨返答（日本語、1文）",`,
+`  "user_romaji": "上の『介護士の発話』をローマ字にしたもの（ヘボン式寄り、単語の間はスペースで区切る。句読点は残す）"`,
+`}`,
+``,
+`【ルール】`,
+`- 必ず有効なJSONのみ返す。コードフェンス禁止。`,
+`- user_romajiは、漢字も含めて読みを推定してローマ字化する（分からない場合は、ひらがなにしてからローマ字化してよい）。`,
+`- 施設の会話として丁寧で自然な日本語にする。`,
   ].join("\n");
 }
 
