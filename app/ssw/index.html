@@ -232,6 +232,41 @@ const OPTIONS = {
 };
 
 function $(id){ return document.getElementById(id); }
+
+// --- Normalization helpers ---
+// Normalize Japanese text to a consistent form (full/half width, punctuation, etc.)
+// NOTE: Some builds referenced normalizeJP() but didn't define it, which breaks all buttons.
+function normalizeJP(str){
+  if (str == null) return "";
+  let s = String(str);
+  // Normalize widths/compatibility characters
+  try { s = s.normalize('NFKC'); } catch(e) {}
+  // Normalize common punctuation variants
+  s = s
+    .replace(/[“”]/g,'"')
+    .replace(/[‘’]/g,"'")
+    .replace(/[−―ー]/g,'-')
+    .replace(/　/g,' ');
+  // Collapse spaces
+  s = s.replace(/[ \t\n\r]+/g,' ').trim();
+  return s;
+}
+
+// Romaji formatting: keep ASCII-only, normalize spaces around punctuation.
+function normalizeRomaji(str){
+  if (str == null) return "";
+  let s = String(str);
+  try { s = s.normalize('NFKC'); } catch(e) {}
+  // Replace full-width spaces and collapse
+  s = s.replace(/　/g,' ');
+  // Ensure spacing after punctuation when missing
+  s = s
+    .replace(/([\.!\?])(?=\S)/g, '$1 ')
+    .replace(/\s+([\.!\?,:;])/g, '$1')
+    .replace(/[ \t\n\r]+/g,' ')
+    .trim();
+  return s;
+}
 function setStatus(msg){ const el = $("statusMsg"); if(el) el.textContent = msg || ""; }
 
 function fillSelect(id, list, defaultV){
