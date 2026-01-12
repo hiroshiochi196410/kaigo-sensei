@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI <span id="variantBadge" class="badge" style="display:none;"></span> （カテゴリ絞り込み：persona対応）</title>
+  <title>介護ロールプレイAI</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 18px; }
     h1 { font-size: 20px; margin: 0 0 10px; }
@@ -125,6 +125,7 @@
     default_level: "all",
     trial_limit: 3,
     stripe_price_id: "",
+    paywall_api: "/api/paywall",
     stripe_checkout_url: "" // optional (if you already have a hosted payment page)
   };
 
@@ -139,7 +140,7 @@
         APP = { ...APP, ...cfg };
         // Title
         if(APP.title){
-          document.title = APP.title;
+          document.title = "介護ロールプレイAI";
           // Also adjust H1 text without breaking badges
           const h1 = document.querySelector("h1");
           if(h1){
@@ -251,9 +252,9 @@ const paidKey  = () => `kaigo_paid_${APP.variant || "default"}`; // for later (S
     if(pw) pw.style.display = (left === 0 ? "block" : "none");
     if(pwBtn){
       const url = APP.stripe_checkout_url || "";
-      pwBtn.href = url || "#";
-      pwBtn.style.pointerEvents = url ? "auto" : "none";
-      pwBtn.style.opacity = url ? "1" : "0.5";
+      pwBtn.dataset.url = url;
+      pwBtn.disabled = !url && !APP.stripe_price_id; // if we can create checkout session, allow even without url
+      pwBtn.style.opacity = pwBtn.disabled ? "0.5" : "1";
     }
     if(pwNote){
       if(APP.stripe_checkout_url){
@@ -630,7 +631,7 @@ let busy = false;
     }
   }
 
-  async async function runStage2Only(){
+  async function runStage2Only(){
     const suggested = $("suggestedJp").value.trim();
     if(!suggested){
       setStatus("Stage2: 推奨返答（日本語）が空です");
