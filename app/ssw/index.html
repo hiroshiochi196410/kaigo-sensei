@@ -1,437 +1,751 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kaigo-Sensei（SSW 公開ミニ版）</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>介護ロールプレイAI (SSW)</title>
 <style>
-  :root{ --bg:#fafafa; --card:#fff; --line:#e5e7eb; --txt:#111; --muted:#666; }
-  body{ margin:16px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--txt); background:var(--bg); }
-  h1{ font-size:20px; margin:0 0 8px; }
-  .toolbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-  select, button{ padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#fff; }
-  button{ cursor:pointer; }
-  .row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
-  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; flex:1; min-width:320px; }
-  textarea{ width:100%; min-height:84px; border:1px solid var(--line); border-radius:12px; padding:10px; box-sizing:border-box; }
-  .muted{ color:var(--muted); font-size:12px; }
-  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
-  .kpi{ margin-left:auto; }
-  .pill{ display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; font-size:12px; background:#fff; }
-  .speak{ padding:6px 8px; border-radius:999px; }
+  :root{
+    --border:#d9d9d9;
+    --bg:#ffffff;
+    --muted:#666;
+    --card:#fafafa;
+    --btn:#f3f3f3;
+  }
+  *{box-sizing:border-box}
+  body{font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; margin:16px; color:#111; background:var(--bg)}
+  h1{font-size:22px; margin:0 0 10px}
+  .subtabs{font-size:13px; color:var(--muted); margin-bottom:10px}
+  .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+  label{font-size:13px; color:var(--muted)}
+  select, textarea, input[type="text"]{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:14px;
+    background:#fff;
+  }
+  select{min-width:150px}
+  textarea{width:100%; min-height:120px; resize:vertical}
+  .btn{
+    border:1px solid var(--border);
+    background:var(--btn);
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:#111; color:#fff; border-color:#111}
+  .btn.small{padding:6px 10px; font-size:13px}
+  .btn.icon{display:inline-flex; align-items:center; gap:6px}
+  .btn[disabled]{opacity:.5; cursor:not-allowed}
+  .help{font-size:12px; color:var(--muted); margin:8px 0 0}
+  .panel{
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:#fff;
+    padding:12px;
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width: 960px){ .grid2{grid-template-columns:1fr} }
+  .card{
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--card);
+    padding:12px;
+    min-height:110px;
+  }
+  .card h3{font-size:14px; margin:0 0 8px}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  .out{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px;
+    background:#fff;
+    min-height:80px;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+  }
+  .out.mini{min-height:60px}
+  .right{margin-left:auto}
+  .badge{font-size:12px; color:var(--muted)}
+  .divider{height:1px; background:var(--border); margin:12px 0}
+  .toast{font-size:12px; color:var(--muted)}
 </style>
 </head>
 <body>
 
-<h1>介護ロールプレイAI（SSW 公開ミニ版）</h1>
-<div class="toolbar">
-  <label>シーン <select id="sceneSel"></select></label>
-  <label>相手 <select id="personaSel"></select></label>
-  <label>カテゴリ <select id="catSel"></select></label>
-  <label>レベル <select id="levelSel"></select></label>
+<h1>介護ロールプレイAI</h1>
+<div class="subtabs">①例文投入（押すたび切替） → ②介護士発話ローマ字 → ③Stage1 → ④Stage2（推奨返答のローマ字＋インドネシア語）</div>
 
-  <button type="button" id="btnExample">例文を入れる</button>
+<div class="panel">
+  <div class="row">
+    <label>Scene
+      <select id="sceneSel"></select>
+    </label>
+    <label>Persona
+      <select id="personaSel"></select>
+    </label>
+    <label>カテゴリ
+      <select id="catSel"></select>
+    </label>
+    <label>レベル
+      <select id="levelSel"></select>
+    </label>
 
-  <span class="kpi muted" id="statusMsg">例文: 読み込み済み（直書き）</span>
-</div>
+    <button class="btn" id="btnExample">例文を入れる</button>
+    <button class="btn small" id="btnExampleJA">例文(JA)</button>
+    <button class="btn small" id="btnExampleRoma">ローマ字</button>
+    <button class="btn small" id="btnExampleID">ID</button>
+    <button class="btn small" id="btnTest">テスト</button>
 
-<div class="card" style="margin-top:12px;">
-  <div class="muted">介護士（あなた）の発話（日本語）</div>
-  <textarea id="jpInput" placeholder="例文ボタンで入力 / 自由入力"></textarea>
-
-  <div class="muted" style="margin-top:10px;">介護士（あなた）の発話（ローマ字：任意）</div>
-  <textarea id="romaInput" placeholder="任意（空でもOK）"></textarea>
-
-  <div class="actions">
-    <button type="button" id="btnSend">送信</button>
-    <button type="button" id="btnStage2Only">Stage2だけ実行</button>
-    <label class="muted"><input type="checkbox" id="autoStage2" checked> Stage2を自動実行</label>
-  </div>
-  <div class="muted" id="hint">※ 例文は index.html 直書き方式（A）。まず“必ず動く”を優先。</div>
-</div>
-
-<div class="row">
-  <div class="card">
-    <div style="display:flex; align-items:center; gap:8px;">
-      <strong>Stage1（日本語）</strong>
-      <span class="pill">AI応答</span>
-    </div>
-    <div id="aiReplyJp" style="margin-top:8px;"></div>
-    <div id="feedbackJp" class="muted" style="margin-top:8px;"></div>
-
-    <div class="muted" style="margin-top:12px;">推奨返答（日本語）</div>
-    <textarea id="suggestedJp" placeholder="Stage1後に入ります"></textarea>
-
-    <div class="muted" style="margin-top:10px;">（例文の日本語）</div>
-    <div class="actions">
-      <button class="speak" type="button" id="btnExampleJA">例文（日本語）</button>
-      <button class="speak" type="button" id="btnExampleRoma">例文（ローマ字）</button>
-      <button class="speak" type="button" id="btnExampleID">例文（インドネシア語）</button>
-    </div>
+    <label class="right" style="display:flex; align-items:center; gap:8px;">
+      <input type="checkbox" id="autoStage2" checked />
+      <span class="badge">Stage2を自動実行</span>
+    </label>
+    <span id="statusMsg" class="badge"> </span>
   </div>
 
+  <div class="divider"></div>
+
+  <label>介護士（あなた）の発話（日本語）</label>
+  <textarea id="jpInput" placeholder="例文ボタンで自動入力、または自由入力"></textarea>
+  <div class="help">※ examples がある場合：scene × persona × カテゴリ の例文が出ます（押すたび切替）</div>
+
+  <div style="margin-top:10px;">
+    <label>介護士発話（ローマ字）</label>
+    <div id="romaInput" class="out mono mini"></div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <button class="btn primary" id="btnSend">送信</button>
+    <button class="btn" id="btnStage2Only">Stage2だけ実行</button>
+    <span class="toast" id="hint"></span>
+  </div>
+</div>
+
+<div class="grid2" style="margin-top:14px;">
   <div class="card">
-    <div style="display:flex; align-items:center; gap:8px;">
-      <strong>Stage2（翻訳・推奨返答）</strong>
-      <span class="pill">ローマ字 / インドネシア語</span>
-    </div>
+    <h3>Stage1（日本語）</h3>
+    <div style="margin-top:8px;"><b>相手（AI側）の返答</b></div>
+    <div id="aiReplyJp" class="out" style="margin-top:6px;"></div>
 
-    <div class="muted" style="margin-top:10px;">推奨返答（ローマ字）</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <div id="suggestedRoma" style="flex:1;"></div>
-      <button type="button" class="speak" id="speakRoma" title="読み上げ（ローマ字）">🔊</button>
-    </div>
+    <div style="margin-top:10px;"><b>あなたへのフィードバック</b></div>
+    <div id="feedbackJp" class="out" style="margin-top:6px;"></div>
 
-    <div class="muted" style="margin-top:12px;">推奨返答（インドネシア語）</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <div id="suggestedID" style="flex:1;"></div>
-      <button type="button" class="speak" id="speakID" title="読み上げ（インドネシア語）">🔊</button>
+    <div style="margin-top:10px;"><b>推奨返答（日本語）</b></div>
+    <div id="suggestedJp" class="out" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Stage2（翻訳・推奨返答）</h3>
+
+    <div class="row" style="justify-content:space-between;">
+      <b>ローマ字（推奨返答）</b>
+      <button class="btn small icon" id="speakRoma" title="読み上げ（ローマ字）">🔊</button>
     </div>
+    <div id="suggestedRoma" class="out mono" style="margin-top:6px;"></div>
+
+    <div class="row" style="justify-content:space-between; margin-top:10px;">
+      <b>インドネシア語（推奨返答）</b>
+      <button class="btn small icon" id="speakID" title="読み上げ（インドネシア語）">🔊</button>
+    </div>
+    <div id="suggestedID" class="out" style="margin-top:6px;"></div>
   </div>
 </div>
 
 <script>
-// ====== 公開ミニ版（A方式）：例文を index.html に固定 ======
+/** ==========
+ *  例文データ（必要に応じて増やせます）
+ *  ========== */
+const EXAMPLES = {
+  bath: {
+    user_calm: {
+      calling: [
+        {jp:"ゆっくりで大丈夫ですよ。気持ちよく入りましょう。", id:"Pelan-pelan saja, tidak apa-apa. Mari mandi dengan nyaman."},
+        {jp:"寒くないですか？お湯の温度は大丈夫ですか？", id:"Apakah Anda merasa dingin? Apakah suhu airnya sudah pas?"}
+      ],
+      complaint: [
+        {jp:"不安でしたね。今の状況を教えてください。", id:"Anda merasa cemas, ya. Tolong ceritakan situasinya sekarang."}
+      ]
+    }
+  },
+  toilet: {
+    user_calm: {
+      privacy: [
+        {jp:"トイレに行く準備はできていますか？必要ならお手伝いします。", id:"Apakah Anda siap ke toilet? Jika perlu, saya bantu."}
+      ],
+      urge: [
+        {jp:"急ぎましょう。転ばないようにゆっくり歩きます。", id:"Mari kita cepat, tapi berjalan pelan agar tidak jatuh."}
+      ]
+    }
+  },
+  meal: {
+    user_calm: {
+      refusal: [
+        {jp:"今は食べたくない気分ですね。無理しなくて大丈夫です。", id:"Sepertinya Anda sedang tidak ingin makan. Tidak apa-apa jika tidak dipaksakan."}
+      ]
+    }
+  },
+  night: {
+    family_complaint: {
+      anxiety: [
+        {jp:"大丈夫です。ここは安全です。", id:"Tidak apa-apa. Di sini aman."},
+        {jp:"何が一番心配ですか？教えてください。", id:"Apa yang paling Anda khawatirkan? Tolong beri tahu saya."}
+      ]
+    }
+  }
+};
+
+/** ==========
+ *  Select options（表示名と内部値を分ける）
+ *  ========== */
 const OPTIONS = {
   scene: [
-    {v:"night",    t:"夜間対応"},
-    {v:"handover", t:"申し送り/報告"},
-    {v:"emergency",t:"急変"},
-    {v:"fall",     t:"転倒"},
+    {v:"bath", t:"入浴"},
+    {v:"toilet", t:"トイレ"},
+    {v:"meal", t:"食事"},
+    {v:"night", t:"夜間"},
   ],
   persona: [
-    {v:"user_calm",        t:"利用者：穏やか"},
-    {v:"dementia",         t:"利用者：認知症"},
-    {v:"family_complaint", t:"家族：不安/クレーム"},
-    {v:"jp_staff_senior",  t:"先輩職員"},
+    {v:"user_calm", t:"利用者：穏やか"},
+    {v:"dementia", t:"利用者：認知症"},
+    {v:"user_angry", t:"利用者：怒り"},
+    {v:"family_complaint", t:"家族：クレーム"},
   ],
   category: [
-    {v:"calling",  t:"声かけ"},
-    {v:"anxiety",  t:"不安/混乱"},
-    {v:"report",   t:"申し送り/報告"},
-    {v:"emergency",t:"急変"},
-    {v:"fall",     t:"転倒"},
-    {v:"all",      t:"全て"},
+    {v:"calling", t:"声かけ"},
+    {v:"privacy", t:"プライバシー"},
+    {v:"urge", t:"急ぎ"},
+    {v:"refusal", t:"拒否"},
+    {v:"complaint", t:"クレーム"},
+    {v:"anxiety", t:"不安/混乱"},
+    {v:"start", t:"start"},
+    {v:"all", t:"全て"},
   ],
   level: [
     {v:"basic", t:"初級"},
-    {v:"mid",   t:"中級"},
-    {v:"all",   t:"全て"},
+    {v:"mid", t:"中級"},
+    {v:"all", t:"全て"},
   ]
 };
 
-const EXAMPLES = {
-  night: {
-    user_calm: {
-      calling: [
-        {level:"basic", jp:"眠れないですか？少しお話しましょう。", roma:"Nemurenai desu ka? Sukoshi ohanashi shimashou.", id:"Tidak bisa tidur? Mari kita bicara sebentar."},
-        {level:"basic", jp:"寒くないですか？毛布をかけましょう。", roma:"Samukunai desu ka? Moufu o kagemashou.", id:"Apakah kedinginan? Saya selimuti ya."},
-        {level:"mid",   jp:"夜間も職員が定期的に巡回しています。ご安心ください。", roma:"Yakan mo shokuin ga teikiteki ni junkai shiteimasu. Goanshin kudasai.", id:"Staf berpatroli secara berkala pada malam hari. Silakan tenang."}
-      ],
-      anxiety: [
-        {level:"basic", jp:"不安ですか？何が心配か教えてください。", roma:"Fuan desu ka? Nani ga shinpai ka oshiete kudasai.", id:"Apakah Anda cemas? Tolong ceritakan apa yang dikhawatirkan."},
-        {level:"basic", jp:"大丈夫です。ここにいますよ。", roma:"Daijoubu desu. Koko ni imasu yo.", id:"Tidak apa-apa. Saya ada di sini."},
-        {level:"mid",   jp:"必要なら看護師に連絡します。少し待ってください。", roma:"Hitsuyou nara kangoshi ni renraku shimasu. Sukoshi matte kudasai.", id:"Jika perlu saya hubungi perawat. Mohon tunggu sebentar."}
-      ],
-      all: [] // まとめ取り用（空でもOK）
-    },
-    dementia: {
-      calling: [
-        {level:"basic", jp:"ここは施設です。私は職員です。安心してください。", roma:"Koko wa shisetsu desu. Watashi wa shokuin desu. Anshin shite kudasai.", id:"Ini adalah fasilitas. Saya petugas. Silakan tenang."},
-        {level:"basic", jp:"転ばないように、ゆっくり歩きましょう。", roma:"Korobanai you ni, yukkuri arukimashou.", id:"Agar tidak jatuh, mari berjalan pelan-pelan."}
-      ],
-      anxiety: [
-        {level:"basic", jp:"大丈夫です。私はここにいます。", roma:"Daijoubu desu. Watashi wa koko ni imasu.", id:"Tidak apa-apa. Saya ada di sini."},
-        {level:"mid",   jp:"落ち着くまで一緒にいます。ゆっくり呼吸しましょう。", roma:"Ochitsuku made issho ni imasu. Yukkuri kokyuu shimashou.", id:"Saya akan menemani sampai tenang. Mari bernapas pelan-pelan."}
-      ],
-      all: []
-    },
-    family_complaint: {
-      anxiety: [
-        {level:"basic", jp:"ご心配をおかけして申し訳ありません。状況を確認します。", roma:"Goshinpai o okake shite moushiwake arimasen. Joukyou o kakunin shimasu.", id:"Maaf membuat Anda khawatir. Saya akan cek situasinya."},
-        {level:"mid",   jp:"夜間は巡回しています。気になることがあればすぐお知らせください。", roma:"Yakan wa junkai shiteimasu. Kininaru koto ga areba sugu oshirase kudasai.", id:"Pada malam hari kami berpatroli. Jika ada yang mengkhawatirkan, segera beri tahu kami."}
-      ],
-      report: [
-        {level:"mid", jp:"現在の様子を担当者から確認し、すぐにご報告します。", roma:"Genzai no yousu o tantousha kara kakunin shi, sugu ni gohoukoku shimasu.", id:"Saya akan konfirmasi ke penanggung jawab dan segera melaporkan kepada Anda."}
-      ],
-      all: []
-    },
-    jp_staff_senior: {
-      report: [
-        {level:"basic", jp:"先輩、夜間の様子を報告します。", roma:"Senpai, yakan no yousu o houkoku shimasu.", id:"Senior, saya akan melaporkan kondisi malam ini."},
-        {level:"mid",   jp:"不安が強かったので、見守りを増やしています。", roma:"Fuan ga tsuyokatta node, mimamori o fuyashiteimasu.", id:"Karena kecemasannya kuat, kami meningkatkan pemantauan."}
-      ],
-      all: []
-    }
-  },
-
-  handover: {
-    jp_staff_senior: {
-      report: [
-        {level:"basic", jp:"申し送りです。夜間の様子を教えてください。", roma:"Moushiokuri desu. Yakan no yousu o oshiete kudasai.", id:"Ini serah-terima. Tolong beritahu kondisi malam hari."}
-      ],
-      all: []
-    },
-    user_calm: {
-      report: [
-        {level:"basic", jp:"申し送りです。夜間は落ち着いて休めました。", roma:"Moushiokuri desu. Yakan wa ochitsuite yasumemashita.", id:"Serah-terima: malamnya bisa istirahat dengan tenang."},
-        {level:"mid",   jp:"夜間に1回トイレ介助。転倒はありませんでした。", roma:"Yakan ni ikkai toire kaijo. Tentou wa arimasen deshita.", id:"Malam hari 1x bantuan toilet. Tidak ada jatuh."}
-      ],
-      all: []
-    },
-    dementia: {
-      report: [
-        {level:"basic", jp:"夜間に不穏がありましたが、声かけで落ち着きました。", roma:"Yakan ni fuon ga arimashita ga, koekake de ochitsukimashita.", id:"Ada gelisah pada malam hari, tapi tenang setelah diarahkan."}
-      ],
-      all: []
-    },
-    family_complaint: { all: [] }
-  },
-
-  emergency: {
-    user_calm: {
-      emergency: [
-        {level:"basic", jp:"息が苦しいですか？すぐ看護師を呼びます。", roma:"Iki ga kurushii desu ka? Sugu kangoshi o yobimasu.", id:"Apakah sulit bernapas? Saya panggil perawat sekarang."},
-        {level:"mid",   jp:"血圧とSpO2を確認します。少し待ってください。", roma:"Ketsuatsu to SpO2 o kakunin shimasu. Sukoshi matte kudasai.", id:"Saya akan cek tekanan darah dan SpO2. Mohon tunggu sebentar."}
-      ],
-      calling: [
-        {level:"basic", jp:"大丈夫です。楽な姿勢にしましょう。", roma:"Daijoubu desu. Raku na shisei ni shimashou.", id:"Tidak apa-apa. Mari atur posisi yang nyaman."}
-      ],
-      all: []
-    },
-    jp_staff_senior: {
-      report: [
-        {level:"basic", jp:"先輩、急変です。すぐ来てください。", roma:"Senpai, kyuuhen desu. Sugu kite kudasai.", id:"Senior, kondisi darurat. Tolong segera datang."},
-        {level:"mid",   jp:"呼吸状態悪化。バイタル確認中です。", roma:"Kokyuu joutai akka. Baitaru kakunin chuu desu.", id:"Kondisi napas memburuk. Sedang cek tanda vital."}
-      ],
-      all: []
-    },
-    dementia: { all: [] },
-    family_complaint: { all: [] }
-  },
-
-  fall: {
-    user_calm: {
-      fall: [
-        {level:"basic", jp:"転びましたか？痛いところはありますか？", roma:"Korobimashita ka? Itai tokoro wa arimasu ka?", id:"Apakah jatuh? Ada yang sakit?"},
-        {level:"mid",   jp:"動かないでください。安全を確認してから起こします。", roma:"Ugokanaide kudasai. Anzen o kakunin shite kara okoshimasu.", id:"Jangan bergerak dulu. Kami akan bantu setelah memastikan aman."}
-      ],
-      safety: [
-        {level:"basic", jp:"滑りやすいので、ゆっくり歩きましょう。", roma:"Suberiyasui node, yukkuri arukimashou.", id:"Lantainya licin, mari berjalan pelan-pelan."}
-      ],
-      all: []
-    },
-    jp_staff_senior: {
-      report: [
-        {level:"basic", jp:"先輩、転倒です。応援お願いします。", roma:"Senpai, tentou desu. Ouen onegaishimasu.", id:"Senior, ada jatuh. Mohon bantuan."},
-        {level:"mid",   jp:"頭部打撲の可能性。意識確認中です。", roma:"Toubu daboku no kanousei. Ishiki kakunin chuu desu.", id:"Kemungkinan benturan kepala. Sedang cek kesadaran."}
-      ],
-      all: []
-    },
-    dementia: {
-      fall: [
-        {level:"basic", jp:"大丈夫です。ゆっくり座りましょう。", roma:"Daijoubu desu. Yukkuri suwarimashou.", id:"Tidak apa-apa. Mari duduk pelan-pelan."}
-      ],
-      all: []
-    },
-    family_complaint: {
-      report: [
-        {level:"mid", jp:"転倒がありました。状態を確認し、対応を説明します。", roma:"Tentou ga arimashita. Joutai o kakunin shi, taiou o setsumei shimasu.", id:"Terjadi jatuh. Kami akan cek kondisi dan menjelaskan penanganannya."}
-      ],
-      all: []
-    }
-  }
-};
-
 function $(id){ return document.getElementById(id); }
-function fillSelect(id, list, defV){
+
+// --- Normalization helpers ---
+// Normalize Japanese text to a consistent form (full/half width, punctuation, etc.)
+// NOTE: Some builds referenced normalizeJP() but didn't define it, which breaks all buttons.
+function normalizeJP(str){
+  if (str == null) return "";
+  let s = String(str);
+  // Normalize widths/compatibility characters
+  try { s = s.normalize('NFKC'); } catch(e) {}
+  // Normalize common punctuation variants
+  s = s
+    .replace(/[“”]/g,'"')
+    .replace(/[‘’]/g,"'")
+    .replace(/[−―ー]/g,'-')
+    .replace(/　/g,' ');
+  // Collapse spaces
+  s = s.replace(/[ \t\n\r]+/g,' ').trim();
+  return s;
+}
+
+// Romaji formatting: keep ASCII-only, normalize spaces around punctuation.
+function normalizeRomaji(str){
+  if (str == null) return "";
+  let s = String(str);
+  try { s = s.normalize('NFKC'); } catch(e) {}
+  // Replace full-width spaces and collapse
+  s = s.replace(/　/g,' ');
+  // Ensure spacing after punctuation when missing
+  s = s
+    .replace(/([\.!\?])(?=\S)/g, '$1 ')
+    .replace(/\s+([\.!\?,:;])/g, '$1')
+    .replace(/[ \t\n\r]+/g,' ')
+    .trim();
+  return s;
+}
+function setStatus(msg){ const el = $("statusMsg"); if(el) el.textContent = msg || ""; }
+
+function fillSelect(id, list, defaultV){
   const sel = $(id);
+  if(!sel) return;
   sel.innerHTML = "";
   list.forEach(o=>{
     const opt = document.createElement("option");
-    opt.value = o.v; opt.textContent = o.t;
+    opt.value = o.v;
+    opt.textContent = o.t;
     sel.appendChild(opt);
   });
-  sel.value = defV ?? (list[0]?.v || "");
+  sel.value = defaultV || (list[0]?.v ?? "");
 }
 
-function getFilteredExamples(){
-  const scene = $("sceneSel").value;
-  const persona = $("personaSel").value;
-  const cat = $("catSel").value;
-  const level = $("levelSel").value;
+function getConfig(){
+  return {
+    scene: $("sceneSel")?.value || "bath",
+    persona: $("personaSel")?.value || "user_calm",
+    category: $("catSel")?.value || "calling",
+    level: $("levelSel")?.value || "basic",
+  };
+}
 
-  const sc = EXAMPLES[scene] || {};
-  const pe = sc[persona] || {};
-  let pool = [];
+/** ==========
+ *  日本語かな→ローマ字（簡易ヘボン式）
+ *  目的：読み上げ音の「文字化」なので、完璧より“安定”優先
+ *  ========== */
+const KANA_MAP = {
+  "あ":"a","い":"i","う":"u","え":"e","お":"o",
+  "か":"ka","き":"ki","く":"ku","け":"ke","こ":"ko",
+  "さ":"sa","し":"shi","す":"su","せ":"se","そ":"so",
+  "た":"ta","ち":"chi","つ":"tsu","て":"te","と":"to",
+  "な":"na","に":"ni","ぬ":"nu","ね":"ne","の":"no",
+  "は":"ha","ひ":"hi","ふ":"fu","へ":"he","ほ":"ho",
+  "ま":"ma","み":"mi","む":"mu","め":"me","も":"mo",
+  "や":"ya","ゆ":"yu","よ":"yo",
+  "ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro",
+  "わ":"wa","を":"o",
+  "ん":"n",
+  "が":"ga","ぎ":"gi","ぐ":"gu","げ":"ge","ご":"go",
+  "ざ":"za","じ":"ji","ず":"zu","ぜ":"ze","ぞ":"zo",
+  "だ":"da","ぢ":"ji","づ":"zu","で":"de","ど":"do",
+  "ば":"ba","び":"bi","ぶ":"bu","べ":"be","ぼ":"bo",
+  "ぱ":"pa","ぴ":"pi","ぷ":"pu","ぺ":"pe","ぽ":"po",
+  "ぁ":"a","ぃ":"i","ぅ":"u","ぇ":"e","ぉ":"o",
+  "ゃ":"ya","ゅ":"yu","ょ":"yo",
+  "ゔ":"vu",
+  // カタカナ
+  "ア":"a","イ":"i","ウ":"u","エ":"e","オ":"o",
+  "カ":"ka","キ":"ki","ク":"ku","ケ":"ke","コ":"ko",
+  "サ":"sa","シ":"shi","ス":"su","セ":"se","ソ":"so",
+  "タ":"ta","チ":"chi","ツ":"tsu","テ":"te","ト":"to",
+  "ナ":"na","ニ":"ni","ヌ":"nu","ネ":"ne","ノ":"no",
+  "ハ":"ha","ヒ":"hi","フ":"fu","ヘ":"he","ホ":"ho",
+  "マ":"ma","ミ":"mi","ム":"mu","メ":"me","モ":"mo",
+  "ヤ":"ya","ユ":"yu","ヨ":"yo",
+  "ラ":"ra","リ":"ri","ル":"ru","レ":"re","ロ":"ro",
+  "ワ":"wa","ヲ":"o","ン":"n",
+  "ガ":"ga","ギ":"gi","グ":"gu","ゲ":"ge","ゴ":"go",
+  "ザ":"za","ジ":"ji","ズ":"zu","ゼ":"ze","ゾ":"zo",
+  "ダ":"da","ヂ":"ji","ヅ":"zu","デ":"de","ド":"do",
+  "バ":"ba","ビ":"bi","ブ":"bu","ベ":"be","ボ":"bo",
+  "パ":"pa","ピ":"pi","プ":"pu","ペ":"pe","ポ":"po",
+  "ァ":"a","ィ":"i","ゥ":"u","ェ":"e","ォ":"o",
+  "ャ":"ya","ュ":"yu","ョ":"yo",
+  "ヴ":"vu",
+};
 
-  // category=all のときは全カテゴリから集める
-  if (cat === "all") {
-    for (const k of Object.keys(pe)) {
-      if (Array.isArray(pe[k])) pool.push(...pe[k]);
+const DIGRAPH_MAP = {
+  "きゃ":"kya","きゅ":"kyu","きょ":"kyo",
+  "しゃ":"sha","しゅ":"shu","しょ":"sho",
+  "ちゃ":"cha","ちゅ":"chu","ちょ":"cho",
+  "にゃ":"nya","にゅ":"nyu","にょ":"nyo",
+  "ひゃ":"hya","ひゅ":"hyu","ひょ":"hyo",
+  "みゃ":"mya","みゅ":"myu","みょ":"myo",
+  "りゃ":"rya","りゅ":"ryu","りょ":"ryo",
+  "ぎゃ":"gya","ぎゅ":"gyu","ぎょ":"gyo",
+  "じゃ":"ja","じゅ":"ju","じょ":"jo",
+  "びゃ":"bya","びゅ":"byu","びょ":"byo",
+  "ぴゃ":"pya","ぴゅ":"pyu","ぴょ":"pyo",
+  // カタカナ
+  "キャ":"kya","キュ":"kyu","キョ":"kyo",
+  "シャ":"sha","シュ":"shu","ショ":"sho",
+  "チャ":"cha","チュ":"chu","チョ":"cho",
+  "ニャ":"nya","ニュ":"nyu","ニョ":"nyo",
+  "ヒャ":"hya","ヒュ":"hyu","ヒョ":"hyo",
+  "ミャ":"mya","ミュ":"myu","ミョ":"myo",
+  "リャ":"rya","リュ":"ryu","リョ":"ryo",
+  "ギャ":"gya","ギュ":"gyu","ギョ":"gyo",
+  "ジャ":"ja","ジュ":"ju","ジョ":"jo",
+  "ビャ":"bya","ビュ":"byu","ビョ":"byo",
+  "ピャ":"pya","ピュ":"pyu","ピョ":"pyo",
+};
+
+function isVowel(ch){ return ["a","i","u","e","o"].includes(ch); }
+
+function kanaToRomaji(input){
+  // Lightweight fallback: convert kana -> romaji, and avoid mixing kanji into the romaji field.
+  // For accurate romaji (incl. kanji), we request `user_romaji` from the API after "送信".
+  if(!input) return "";
+  const s = normalizeJP(input);
+
+  let out = "";
+  let i = 0;
+
+  const isKana = (ch)=> /[ぁ-ゖァ-ヺー]/.test(ch);
+  const isLatinOrNum = (ch)=> /[A-Za-z0-9]/.test(ch);
+
+  while(i < s.length){
+    const c = s[i];
+
+    // Keep ASCII spaces/punct as separators
+    if(/[\s.,!?;:()\[\]{}"'-]/.test(c)){
+      out += c;
+      i++;
+      continue;
     }
-  } else {
-    if (Array.isArray(pe[cat])) pool.push(...pe[cat]);
+
+    // Keep latin/nums (user may type romaji already)
+    if(isLatinOrNum(c)){
+      out += c;
+      i++;
+      continue;
+    }
+
+    // Convert kana
+    if(isKana(c)){
+      const next2 = (s[i] || "") + (s[i+1] || "");
+      const next1 = s[i+1] || "";
+
+      let r = DIGRAPH_MAP[next2] || DIGRAPH_MAP[normalizeJP(next2)] || null;
+      if(r){
+        out += r;
+        i += 2;
+        continue;
+      }
+
+      r = KANA_MAP[c] || KANA_MAP[normalizeJP(c)] || "";
+      if(c === "っ" || c === "ッ"){
+        // small tsu: double the next consonant if possible
+        const look2 = (s[i+1] || "") + (s[i+2] || "");
+        const look1 = s[i+1] || "";
+        const nextRoma = DIGRAPH_MAP[look2] || KANA_MAP[look1] || "";
+        out += (nextRoma && nextRoma[0]) ? nextRoma[0] : "";
+        i += 1;
+        continue;
+      }
+
+      // long vowel mark
+      if(c === "ー"){
+        out += "-";
+        i += 1;
+        continue;
+      }
+
+      out += r;
+      i += 1;
+      continue;
+    }
+
+    // Any other char (kanji, emoji, etc.) -> separator
+    out += " ";
+    i++;
   }
 
-  // そのscene/persona配下で0件なら、最低限 fallback（calling/anxiety/report 等）を総当たり
-  if (pool.length === 0) {
-    const fallbackCats = ["calling","anxiety","report","emergency","fall","safety"];
-    fallbackCats.forEach(k=>{ if (Array.isArray(pe[k])) pool.push(...pe[k]); });
-  }
-
-  // レベル絞り込み（allならそのまま）
-  if (level !== "all") {
-    const filtered = pool.filter(x => !x.level || x.level === "all" || x.level === level);
-    if (filtered.length > 0) pool = filtered;
-  }
-
-  return pool;
+  // Tidy: collapse spaces
+  out = out.replace(/\s+/g, " ").trim();
+  return out;
 }
 
-function pickOne(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+/** ==========
+ *  examples選択ロジック
+ *  ========== */
+const exampleCursor = new Map(); // key -> idx
 
-function insertExample(){
-  const pool = getFilteredExamples();
-  if (!pool || pool.length === 0) {
-    alert("この条件の例文はまだありません。\n自由入力で続けましょう。");
-    return;
+function getExamplesFor(cfg){
+  const {scene, persona, category} = cfg;
+  const byScene = EXAMPLES[scene] || {};
+  const byPersona = byScene[persona] || {};
+
+  // category が all の場合は、全カテゴリをフラットに
+  if(category === "all"){
+    const arr = [];
+    Object.keys(byPersona).forEach(cat=>{
+      (byPersona[cat] || []).forEach(ex=>arr.push({ ...ex, _cat: cat }));
+    });
+    return arr;
   }
-  const ex = pickOne(pool);
-  $("jpInput").value = ex.jp || "";
-  $("romaInput").value = ex.roma || "";
-  // 例文プレビュー（Stage2欄に表示）
-  $("suggestedRoma").textContent = ex.roma || "";
-  $("suggestedID").textContent = ex.id || "";
-  $("statusMsg").textContent = `例文: ${pool.length}件（直書き）`;
+  return (byPersona[category] || []);
 }
 
-function speak(text, lang){
-  try{
-    if (!("speechSynthesis" in window)) return;
-    const u = new SpeechSynthesisUtterance(text);
-    if (lang) u.lang = lang;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  }catch(_){}
+function pickNextExample(){
+  const cfg = getConfig();
+  const list = getExamplesFor(cfg);
+  if(!list.length) return null;
+  const key = `${cfg.scene}|${cfg.persona}|${cfg.category}`;
+  const idx = (exampleCursor.get(key) ?? -1) + 1;
+  const next = list[idx % list.length];
+  exampleCursor.set(key, idx % list.length);
+  return next;
 }
 
-$("speakRoma").addEventListener("click", ()=> speak($("suggestedRoma").textContent || "", "ja-JP"));
-$("speakID").addEventListener("click", ()=> speak($("suggestedID").textContent || "", "id-ID"));
+function setInputJP(text){
+  const jp = $("jpInput");
+  if(!jp) return;
+  jp.value = text || "";
+  updateRomaFromJP();
+}
 
-$("btnExample").addEventListener("click", insertExample);
+function updateRomaFromJP(){
+  const jp = $("jpInput")?.value?.trim() || "";
+  const roma = kanaToRomaji(jp);
+  const el = $("romaInput");
+  if(el) el.textContent = roma || "";
+}
 
-// 例文ボタン（サブ）
-$("btnExampleJA").addEventListener("click", ()=> {
-  const pool = getFilteredExamples();
-  const ex = pool.length ? pickOne(pool) : null;
-  if (!ex) return alert("この条件の例文はまだありません。");
-  $("jpInput").value = ex.jp || "";
-});
-$("btnExampleRoma").addEventListener("click", ()=> {
-  const pool = getFilteredExamples();
-  const ex = pool.length ? pickOne(pool) : null;
-  if (!ex) return alert("この条件の例文はまだありません。");
-  $("romaInput").value = ex.roma || "";
-});
-$("btnExampleID").addEventListener("click", ()=> {
-  const pool = getFilteredExamples();
-  const ex = pool.length ? pickOne(pool) : null;
-  if (!ex) return alert("この条件の例文はまだありません。");
-  $("suggestedID").textContent = ex.id || "";
-});
+/** ==========
+ *  Stage2: APIレスポンスのキー揺れ対策
+ *  ========== */
+function pick(obj, keys){
+  if(!obj) return "";
+  for(const k of keys){
+    if(Object.prototype.hasOwnProperty.call(obj,k) && obj[k] != null && String(obj[k]).trim() !== ""){
+      return String(obj[k]);
+    }
+  }
+  return "";
+}
 
-async function callApi(payload){
-  const r = await fetch("/api/chat", {
+function parseMaybeJSON(txt){
+  if(!txt) return null;
+  try{ return JSON.parse(txt); }catch(_){ return null; }
+}
+
+/** ==========
+ *  API呼び出し（/api/chat）
+ *  ==========
+ *  期待：JSON
+ *  - ai_reply_jp
+ *  - feedback_jp
+ *  - suggested_reply_jp
+ *  追加があれば：
+ *  - suggested_reply_romaji / romaji_reply / romaji
+ *  - suggested_reply_id / indonesian / id_reply
+ */
+async function callChatAPI(payload){
+  const res = await fetch("/api/chat", {
     method:"POST",
-    headers: {"Content-Type":"application/json"},
+    headers:{"Content-Type":"application/json"},
     body: JSON.stringify(payload)
   });
-  let data = {};
-  try{ data = await r.json(); }catch(_){}
-  if (!r.ok) {
-    const msg = data?.error || data?.message || `HTTP ${r.status}`;
+  const text = await res.text();
+  const data = parseMaybeJSON(text);
+  if(!res.ok){
+    const msg = data?.error || data?.message || text || ("HTTP " + res.status);
     throw new Error(msg);
   }
-  return data;
+  return data || {};
 }
 
-function safeText(x){
-  if (x == null) return "";
-  if (typeof x === "string") return x;
-  try{ return JSON.stringify(x); }catch(_){ return String(x); }
+function buildPromptForStage1(jpText, cfg){
+  // Stage1: AI側の返答(日本語) + フィードバック(日本語) + 推奨返答(日本語)
+  // さらに「あなたの発話」をローマ字化して返す（教材品質の安定化用）
+  return [
+`あなたは介護現場のロールプレイAIです。以下の条件で、必ずJSONだけを返してください（説明文は禁止）。`,
+``,
+`【設定】`,
+`scene: ${cfg.scene}`,
+`persona: ${cfg.persona}`,
+`category: ${cfg.category}`,
+`level: ${cfg.level}`,
+``,
+`【介護士（あなた）の発話（日本語）】`,
+jpText,
+``,
+`【出力JSONの形式】`,
+`{`,
+`  "ai_reply_jp": "相手（AI側）の返答（日本語）",`,
+`  "feedback_jp": "あなたの発話への短いフィードバック（日本語、1〜2文）",`,
+`  "suggested_reply_jp": "次にあなたが言う推奨返答（日本語、1文）",`,
+`  "user_romaji": "上の『介護士の発話』をローマ字にしたもの（ヘボン式寄り、単語の間はスペースで区切る。句読点は残す）"`,
+`}`,
+``,
+`【ルール】`,
+`- 必ず有効なJSONのみ返す。コードフェンス禁止。`,
+`- user_romajiは、漢字も含めて読みを推定してローマ字化する（分からない場合は、ひらがなにしてからローマ字化してよい）。`,
+`- 施設の会話として丁寧で自然な日本語にする。`,
+  ].join("\n");
 }
 
-async function runStage1(){
-  const scene = $("sceneSel").value;
-  const persona = $("personaSel").value;
-  const category = $("catSel").value;
-  const level = $("levelSel").value;
-  const jp = $("jpInput").value.trim();
-  const roma = $("romaInput").value.trim();
+function buildPromptForStage2(suggestedJp, cfg){
+  return [
+    "あなたは日本語→ローマ字、日本語→インドネシア語の変換アシスタントです。",
+    "次の『推奨返答（日本語）』を、(A)ローマ字（ヘボン式っぽく、読みやすく）、(B)インドネシア語に変換してください。",
+    "出力はJSONのみで、キーは suggested_reply_romaji と suggested_reply_id を必ず含めてください。",
+    "",
+    "推奨返答（日本語）:",
+    suggestedJp
+  ].join("\n");
+}
 
-  if (!jp) { alert("日本語入力が空です"); return; }
+async function runStage1AndMaybeStage2(){
+  const cfg = getConfig();
+  const jpText = $("jpInput")?.value?.trim() || "";
+  if(!jpText){
+    alert("日本語の発話を入力してください。");
+    return;
+  }
 
-  $("statusMsg").textContent = "送信中…";
-  const payload = { track:"ssw", stage:1, scene, persona, category, level, jp, roma };
+  setStatus("実行中…");
+  $("btnSend")?.setAttribute("disabled","disabled");
+  $("btnStage2Only")?.setAttribute("disabled","disabled");
 
   try{
-    const data = await callApi(payload);
+    const stage1 = await callChatAPI({
+      prompt: buildPromptForStage1(jpText, cfg),
+      trace: cfg
+    });
 
-    $("aiReplyJp").textContent = safeText(data.aiReplyJp ?? data.reply_jp ?? data.reply ?? data.stage1 ?? data.message);
-    $("feedbackJp").textContent = safeText(data.feedbackJp ?? data.feedback ?? "");
-    $("suggestedJp").value = safeText(data.suggestedJp ?? data.suggested_jp ?? data.suggestion_jp ?? "");
+    const ai = pick(stage1, ["ai_reply_jp","aiReplyJp","ai_reply","reply"]);
+    const fb = pick(stage1, ["feedback_jp","feedback","coach_jp"]);
+    const sug = pick(stage1, ["suggested_reply_jp","suggestedJp","suggested_reply","suggested"]);
 
-    // Stage2候補（返ってきたら反映）
-    $("suggestedRoma").textContent = safeText(data.suggestedRoma ?? data.suggested_roma ?? "");
-    $("suggestedID").textContent = safeText(data.suggestedID ?? data.suggested_id ?? data.suggested_idn ?? "");
+    if($("aiReplyJp")) $("aiReplyJp").textContent = ai || "";
+    if($("feedbackJp")) $("feedbackJp").textContent = fb || "";
+    if($("suggestedJp")) $("suggestedJp").textContent = sug || "";
 
-    $("statusMsg").textContent = "送信OK";
-    if ($("autoStage2").checked) await runStage2();
-  }catch(e){
-    $("statusMsg").textContent = "送信失敗: " + e.message;
+    // Stage2
+    if($("autoStage2")?.checked){
+      await runStage2FromSuggested(sug || jpText, cfg);
+    }else{
+      // ローマ字は最低限ローカル変換で表示
+      if($("suggestedRoma")) $("suggestedRoma").textContent = kanaToRomaji(sug || jpText);
+    }
+
+    setStatus("完了");
+  }catch(err){
+    console.error(err);
+    setStatus("エラー");
+    alert("エラー: " + (err?.message || err));
+  }finally{
+    $("btnSend")?.removeAttribute("disabled");
+    $("btnStage2Only")?.removeAttribute("disabled");
+    setTimeout(()=>setStatus(""), 2500);
   }
 }
 
-async function runStage2(){
-  const scene = $("sceneSel").value;
-  const persona = $("personaSel").value;
-  const category = $("catSel").value;
-  const level = $("levelSel").value;
-
-  const baseJp = $("suggestedJp").value.trim() || $("jpInput").value.trim();
-  if (!baseJp) { return; }
-
-  $("statusMsg").textContent = "Stage2中…";
-  const payload = { track:"ssw", stage:2, scene, persona, category, level, jp: baseJp };
-
+async function runStage2Only(){
+  const cfg = getConfig();
+  const sug = ($("suggestedJp")?.textContent || "").trim();
+  const jpText = ($("jpInput")?.value || "").trim();
+  const base = sug || jpText;
+  if(!base){
+    alert("Stage2の元になる日本語がありません（入力 or Stage1 実行）。");
+    return;
+  }
+  setStatus("Stage2中…");
+  $("btnStage2Only")?.setAttribute("disabled","disabled");
   try{
-    const data = await callApi(payload);
-    $("suggestedRoma").textContent = safeText(data.roma ?? data.suggestedRoma ?? data.suggested_roma ?? "");
-    $("suggestedID").textContent = safeText(data.id ?? data.idn ?? data.suggestedID ?? data.suggested_id ?? "");
-    $("statusMsg").textContent = "Stage2 OK";
-  }catch(e){
-    // APIがStage2未対応でも、例文モードは壊さない
-    $("statusMsg").textContent = "Stage2失敗: " + e.message;
+    await runStage2FromSuggested(base, cfg);
+    setStatus("完了");
+  }catch(err){
+    console.error(err);
+    setStatus("エラー");
+    alert("Stage2 エラー: " + (err?.message || err));
+  }finally{
+    $("btnStage2Only")?.removeAttribute("disabled");
+    setTimeout(()=>setStatus(""), 2500);
   }
 }
 
-$("btnSend").addEventListener("click", runStage1);
-$("btnStage2Only").addEventListener("click", runStage2);
+async function runStage2FromSuggested(suggestedJp, cfg){
+  // まずローカルでローマ字（表示の最低保証）
+  const localRoma = kanaToRomaji(suggestedJp);
+  if($("suggestedRoma")) $("suggestedRoma").textContent = localRoma;
 
-// 初期化
-fillSelect("sceneSel", OPTIONS.scene, "night");
-fillSelect("personaSel", OPTIONS.persona, "user_calm");
-fillSelect("catSel", OPTIONS.category, "calling");
-fillSelect("levelSel", OPTIONS.level, "basic");
-
-// セレクト変更時にステータス更新
-["sceneSel","personaSel","catSel","levelSel"].forEach(id=>{
-  $(id).addEventListener("change", ()=> {
-    const pool = getFilteredExamples();
-    $("statusMsg").textContent = `例文: ${pool.length}件（直書き）`;
+  // APIが対応していればID訳も取得
+  const stage2 = await callChatAPI({
+    prompt: buildPromptForStage2(suggestedJp, cfg),
+    trace: cfg
   });
-});
+
+  const roma = pick(stage2, ["suggested_reply_romaji","romaji_reply","romaji","suggestedRoma"]);
+  const id = pick(stage2, ["suggested_reply_id","indonesian_reply","indonesian","id_reply","suggestedID"]);
+
+  if($("suggestedRoma")) $("suggestedRoma").textContent = roma || localRoma || "";
+  if($("suggestedID")) $("suggestedID").textContent = id || "";
+}
+
+/** ==========
+ *  音声（SpeechSynthesis）
+ *  ========== */
+function speak(text, lang){
+  if(!text) return;
+  if(!("speechSynthesis" in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || "ja-JP";
+    u.rate = 1.0;
+    window.speechSynthesis.speak(u);
+  }catch(e){
+    console.warn(e);
+  }
+}
+
+function bind(){
+  // select初期化
+  fillSelect("sceneSel", OPTIONS.scene, "bath");
+  fillSelect("personaSel", OPTIONS.persona, "user_calm");
+  fillSelect("catSel", OPTIONS.category, "calling");
+  fillSelect("levelSel", OPTIONS.level, "basic");
+
+  // 入力→ローマ字自動更新
+  $("jpInput")?.addEventListener("input", updateRomaFromJP);
+
+  // 例文ボタン
+  $("btnExample")?.addEventListener("click", ()=>{
+    const ex = pickNextExample();
+    if(!ex){
+      alert("この条件の例文がありません（scene/persona/カテゴリを変えてください）。");
+      return;
+    }
+    setInputJP(ex.jp);
+    $("hint").textContent = `例文を入力しました`;
+    // Stage2自動なら、例文IDも先に表示しておく（学習導線）
+    if($("autoStage2")?.checked && $("suggestedID")){
+      $("suggestedID").textContent = ex.id || "";
+    }
+  });
+
+  $("btnExampleJA")?.addEventListener("click", ()=>{
+    const ex = pickNextExample();
+    if(!ex){ alert("例文なし"); return; }
+    setInputJP(ex.jp);
+  });
+
+  $("btnExampleRoma")?.addEventListener("click", ()=>{
+    // 入力文のローマ字を確実に表示する（ボタンの存在意義：見せる）
+    updateRomaFromJP();
+  });
+
+  $("btnExampleID")?.addEventListener("click", ()=>{
+    const cfg = getConfig();
+    const list = getExamplesFor(cfg);
+    if(!list.length){ alert("例文なし"); return; }
+    const ex = pickNextExample() || list[0];
+    if($("suggestedID")) $("suggestedID").textContent = ex.id || "";
+  });
+
+  $("btnTest")?.addEventListener("click", ()=>{
+    setInputJP("大丈夫です。ここは安全です。");
+    $("aiReplyJp").textContent = "（テスト）相手の返答がここに表示されます。";
+    $("feedbackJp").textContent = "（テスト）フィードバックがここに表示されます。";
+    $("suggestedJp").textContent = "（テスト）推奨返答（日本語）がここに表示されます。";
+    $("suggestedRoma").textContent = kanaToRomaji($("suggestedJp").textContent);
+    $("suggestedID").textContent = "（テスト）Terjemahan bahasa Indonesia akan muncul di sini.";
+  });
+
+  // 実行ボタン
+  $("btnSend")?.addEventListener("click", runStage1AndMaybeStage2);
+  $("btnStage2Only")?.addEventListener("click", runStage2Only);
+
+  // 読み上げ
+  $("speakRoma")?.addEventListener("click", ()=> speak($("suggestedRoma")?.textContent || "", "ja-JP"));
+  $("speakID")?.addEventListener("click", ()=> speak($("suggestedID")?.textContent || "", "id-ID"));
+
+  // selectが変わったらヒントだけ更新（例文の取り違え防止）
+  ["sceneSel","personaSel","catSel","levelSel"].forEach(id=>{
+    $(id)?.addEventListener("change", ()=>{
+      $("hint").textContent = "";
+    });
+  });
+
+  updateRomaFromJP();
+}
+
+document.addEventListener("DOMContentLoaded", bind);
 </script>
 
 </body>
