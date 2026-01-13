@@ -686,10 +686,21 @@ function bind(){
   $("jpInput")?.addEventListener("input", updateRomaFromJP);
 
   // 例文ボタン
-  $("btnExample")?.addEventListener("click", ()=>{
-    const ex = pickNextExample();
+  $("btnExample")?.addEventListener("click", async ()=>{
+    let ex = pickNextExample();
     if(!ex){
-      alert("この条件の例文がありません（scene/persona/カテゴリを変えてください）。");
+      // JSON例文が無い条件でも、AIで例文を生成して埋める
+      try{
+        $("hint").textContent = "AIで例文を作成中…";
+        const cfg = getCfg();
+        await generateExamplesAI(cfg);
+        ex = pickNextExample();
+      }catch(e){
+        console.error(e);
+      }
+    }
+    if(!ex){
+      alert("この条件の例文がありません（scene/persona/カテゴリを変えるか、例文AIを押してください）。");
       return;
     }
     setInputJP(ex.jp);
@@ -801,20 +812,22 @@ function bind(){
     }
   });
 
-  // 既存の例文リストにもAIキャッシュ分を混ぜる（例文が少ない問題を解消）
-  const _getExamplesForCurrent = getExamplesForCurrent;
-  getExamplesForCurrent = function(){
-    const base = _getExamplesForCurrent();
-    const cfg = getCfg();
-    const ai = getAIExampleCache(cfg);
-    const map = new Map();
-    [...(base||[]), ...(ai||[])].forEach(ex=>{
-      const c = cleanExample(ex);
-      if(c && !map.has(c.jp)) map.set(c.jp, c);
-    });
-    return Array.from(map.values());
-  };
+  // 現在の選択条件の例文リスト（JSON例文 + AI例文キャッシュ）を返す
+function getExamplesForCurrent() {
+  const cfg = getCfg();
+  const base = getExamplesFor(cfg) || [];
+  const ai = getAIExampleCache(cfg) || [];
+  const merged = [...base, ...ai];
 
+  // jpで重複排除（同じ日本語なら1つにする）
+  const map = new Map();
+  for (const ex of merged) {
+    const key = normalizeJP(ex?.jp || "");
+    if (!key) continue;
+    if (!map.has(key)) map.set(key, ex);
+  }
+  return Array.from(map.values());
+}
 
   $("btnExampleJA")?.addEventListener("click", ()=>{
     const ex = pickNextExample();
