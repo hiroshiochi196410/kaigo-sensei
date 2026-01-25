@@ -16,7 +16,7 @@ function verifyStripeSignature(rawBody, signatureHeader, secret) {
 
   const parts = signatureHeader.split(",").reduce((acc, kv) => {
     const [k, v] = kv.split("=");
-    acc[k] = v;
+    acc[k] = v; // ★ここ重要（=）
     return acc;
   }, {});
 
@@ -25,13 +25,17 @@ function verifyStripeSignature(rawBody, signatureHeader, secret) {
   if (!t || !v1) return false;
 
   const payload = `${t}.${rawBody}`;
-  const expected = crypto.createHmac("sha256", secret).update(payload, "utf8").digest("hex");
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(payload, "utf8")
+    .digest("hex");
 
-  try {
-    return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+  // timingSafeEqual は同じ長さのBufferが必要
+  const a = Buffer.from(v1, "hex");        // ★ここ重要（hex）
+  const b = Buffer.from(expected, "hex");  // ★ここ重要（hex）
+  if (a.length !== b.length) return false;
+
+  return crypto.timingSafeEqual(a, b);
 }
 
 export default async function handler(req, res) {
@@ -48,9 +52,8 @@ export default async function handler(req, res) {
   const ok = verifyStripeSignature(rawBody, sig, secret);
   if (!ok) return res.status(400).send("Invalid signature");
 
-  // ここまで来たらStripeからの本物の通知
   const event = JSON.parse(rawBody);
   console.log("✅ Stripe Webhook received:", event.type);
 
-  return res.status(200).json({ received: true });
+  return res.status(200).json({ received: true, type: event.type });
 }
