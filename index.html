@@ -48,6 +48,21 @@
     .footerBar{ position:fixed; left:0; right:0; bottom:0; border-top:1px solid var(--bd); background:#fff; padding:10px 12px; z-index:10;}
     .footerBar .wrap{ max-width:980px; margin:0 auto; display:flex; justify-content:space-between; gap:10px; align-items:center; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  
+    /* ===== TTS / highlight / stats ===== */
+    .kRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .kBtns{ display:flex; gap:6px; }
+    .ttsBtn{ border:1px solid var(--bd); background:#fff; padding:4px 8px; border-radius:999px; font-size:12px; cursor:pointer; }
+    .ttsBtn:active{ transform: translateY(1px); }
+    mark.hlDanger{ background:#ffe4e6; padding:0 2px; border-radius:6px; }
+    mark.hlKeigo{ background:#dbeafe; padding:0 2px; border-radius:6px; }
+    .annoList{ margin:0; padding-left:18px; }
+    .annoList li{ margin:4px 0; }
+    .statRow{ display:grid; grid-template-columns: 72px 1fr 52px; gap:8px; align-items:center; margin:6px 0; }
+    .statBar{ height:10px; border:1px solid var(--bd); border-radius:999px; background:#fff; overflow:hidden; }
+    .statFill{ height:100%; background:#111827; width:0%; }
+    .statVal{ text-align:right; font-variant-numeric: tabular-nums; }
+
   </style>
 </head>
 <body>
@@ -104,6 +119,42 @@
         </div>
       </div>
 
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>音声読み上げ（TTS）</label>
+          <select id="ttsSel">
+            <option value="off">OFF</option>
+            <option value="hira" selected>ひらがな</option>
+            <option value="roma">ローマ字</option>
+            <option value="both">両方</option>
+          </select>
+        </div>
+        <div>
+          <label>速度</label>
+          <select id="ttsRate">
+            <option value="0.8">ゆっくり</option>
+            <option value="1" selected>ふつう</option>
+            <option value="1.2">はやめ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>自動読み上げ</label>
+          <select id="ttsAuto">
+            <option value="off" selected>OFF</option>
+            <option value="ai">AIの返事だけ</option>
+            <option value="both">あなた＋AI</option>
+          </select>
+        </div>
+        <div>
+          <label>読み上げ停止</label>
+          <button id="btnStopTts" type="button">停止</button>
+        </div>
+      </div>
+
       <div class="btnRow">
         <button id="btnExample" type="button">例文を入れる</button>
         <button id="btnClear" type="button">履歴クリア</button>
@@ -128,7 +179,17 @@
         <div class="card" style="margin:0;">
           <label>次に言うと良い一言（3段）</label>
           <div id="suggestBox" class="small" style="white-space:pre-wrap;">—</div>
+          <div class="btnRow" style="margin-top:8px;">
+            <button class="ttsBtn" id="btnSpeakSuggestHira" type="button">▶ ひらがな</button>
+            <button class="ttsBtn" id="btnSpeakSuggestRoma" type="button">▶ ローマ字</button>
+          </div>
+
         </div>
+      </div>
+
+      <div class="card" style="margin-top:10px;">
+        <label>注釈（危険ワード／敬語ポイント）</label>
+        <div id="annoBox" class="small" style="white-space:pre-wrap;">—</div>
       </div>
     </section>
 
@@ -137,7 +198,16 @@
         <div class="pill">会話履歴</div>
         <div class="small" id="statusPill" style="margin-left:auto;">準備中…</div>
       </div>
-      <div class="history" id="history"></div>
+      
+      <div class="card" style="margin:10px 0;">
+        <div class="row" style="align-items:center;">
+          <div class="pill">学習ログ</div>
+          <button id="btnResetLog" type="button" style="margin-left:auto;">リセット</button>
+        </div>
+        <div id="logBox" class="small">—</div>
+      </div>
+
+<div class="history" id="history"></div>
     </section>
   </main>
 
@@ -189,12 +259,265 @@ function detectLangAuto(text){
   return "auto";
 }
 
+/* ========= TTS / annotation / stats helpers ========= */
+const DEFAULT_SETTINGS = { ttsSel:"hira", ttsRate:"1", ttsAuto:"off" };
+let _voices = [];
+function refreshVoices(){
+  try{ _voices = (window.speechSynthesis ? window.speechSynthesis.getVoices() : []) || []; }catch(e){ _voices=[]; }
+}
+if (window.speechSynthesis){
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
+}
+
+function stopTts(){
+  try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+}
+
+function pickVoice(langPrefix){
+  if (!_voices || !_voices.length) refreshVoices();
+  return (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith(langPrefix.toLowerCase())) || null;
+}
+
+function speakOnce(text, lang="ja-JP"){
+  const t = String(text || "").trim();
+  if (!t) return;
+  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  stopTts();
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = lang;
+  const rate = Number($("ttsRate")?.value || 1);
+  if (!Number.isNaN(rate)) u.rate = rate;
+  const v = pickVoice(lang.split("-")[0]);
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+
+function speakSequence(texts, lang="ja-JP"){
+  const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
+  if (!arr.length) return;
+  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  stopTts();
+  const rate = Number($("ttsRate")?.value || 1);
+  const v = pickVoice(lang.split("-")[0]);
+  let i = 0;
+  const speakNext = ()=>{
+    if (i >= arr.length) return;
+    const u = new SpeechSynthesisUtterance(arr[i]);
+    u.lang = lang;
+    if (!Number.isNaN(rate)) u.rate = rate;
+    if (v) u.voice = v;
+    u.onend = ()=>{ i++; speakNext(); };
+    window.speechSynthesis.speak(u);
+  };
+  speakNext();
+}
+
+// 危険ワード（ひらがなベース）: 必要なら追加してOK
+const DANGER_DICT = [
+  { hira:"ごえん", note:"誤嚥リスク。姿勢・一口量・むせを確認。" },
+  { hira:"むせ", note:"むせ（誤嚥のサイン）。食事を止めて落ち着かせる。" },
+  { hira:"てんとう", note:"転倒リスク。立ち上がり・移乗は介助と確認。" },
+  { hira:"ころぶ", note:"転倒リスク。ゆっくり動く・見守り強化。" },
+  { hira:"すべる", note:"すべり（転倒）注意。床や足元を確認。" },
+  { hira:"ちっそく", note:"窒息の危険。すぐに看護師/上司へ。" },
+  { hira:"いきがくるしい", note:"呼吸苦。すぐに看護師/上司へ。" },
+  { hira:"しゅっけつ", note:"出血。状態確認→上席へ。" },
+  { hira:"こっせつ", note:"骨折の疑い。動かさず報告。" }
+];
+
+const KEIGO_DICT = [
+  { hira:"ください", note:"丁寧な依頼（〜してください）。" },
+  { hira:"おねがいします", note:"丁寧な依頼（お願いします）。" },
+  { hira:"いただけますか", note:"より丁寧な依頼（〜していただけますか）。" },
+  { hira:"いたします", note:"丁寧な表現（〜いたします）。" },
+  { hira:"でしょうか", note:"丁寧な確認（〜でしょうか）。" },
+  { hira:"すみません", note:"配慮のクッション（すみません）。" }
+];
+
+function uniqSort(arr){
+  return [...new Set((arr||[]).filter(Boolean))].sort((a,b)=>String(b).length-String(a).length);
+}
+
+function heuristicAnnotations(tri){
+  const hira = String(tri?.hira || tri?.jp || "");
+  const danger = [];
+  for (const d of DANGER_DICT){
+    if (hira.includes(d.hira)) danger.push({ hira: d.hira, level:"high", note_jp: d.note });
+  }
+  const keigo = [];
+  for (const k of KEIGO_DICT){
+    if (hira.includes(k.hira)) keigo.push({ phrase_hira: k.hira, note_jp: k.note });
+  }
+  return { danger_words: danger.slice(0,5), keigo_points: keigo.slice(0,5), vocab: [] };
+}
+
+function normalizeAnnotations(ann, tri){
+  // AIが返さない場合はヒューリスティックで補う
+  const base = ann && typeof ann === "object" ? ann : heuristicAnnotations(tri || {});
+  base.danger_words = Array.isArray(base.danger_words) ? base.danger_words : [];
+  base.keigo_points = Array.isArray(base.keigo_points) ? base.keigo_points : [];
+  base.vocab = Array.isArray(base.vocab) ? base.vocab : [];
+  return base;
+}
+
+function getHighlightsForAnn(ann, tri){
+  const a = normalizeAnnotations(ann, tri || {});
+  const danger = uniqSort(a.danger_words.map(x=>x.hira || x.word_hira || x.word || ""));
+  const keigo = uniqSort(a.keigo_points.map(x=>x.phrase_hira || x.phrase || ""));
+  // ローマ字側は、危険/敬語の「ローマ字表記」があれば使う（なければ空）
+  const dangerRoma = uniqSort(a.danger_words.map(x=>x.romaji || ""));
+  const keigoRoma = uniqSort(a.keigo_points.map(x=>x.phrase_romaji || ""));
+  return { danger, keigo, dangerRoma, keigoRoma };
+}
+
+function applyHighlights(text, dangerArr, keigoArr){
+  let out = esc(String(text || ""));
+  const danger = uniqSort(dangerArr || []);
+  const keigo = uniqSort(keigoArr || []);
+  for (const w of danger){
+    const ew = esc(w);
+    if (!ew) continue;
+    out = out.split(ew).join(`<mark class="hlDanger">${ew}</mark>`);
+  }
+  for (const w of keigo){
+    const ew = esc(w);
+    if (!ew) continue;
+    out = out.split(ew).join(`<mark class="hlKeigo">${ew}</mark>`);
+  }
+  return out;
+}
+
+function renderAnno(ann){
+  const box = $("annoBox");
+  if (!box) return;
+  if (!ann){
+    box.textContent = "—";
+    return;
+  }
+  const danger = ann.danger_words || [];
+  const keigo = ann.keigo_points || [];
+  const vocab = ann.vocab || [];
+
+  const parts = [];
+  parts.push(`<div class="small"><b>危険ワード</b></div>`);
+  if (!danger.length){
+    parts.push(`<div class="small">なし</div>`);
+  } else {
+    parts.push(`<ul class="annoList">` + danger.map(d=>`<li><span class="mono">${esc(d.hira || "")}</span>：${esc(d.note_jp || "")}</li>`).join("") + `</ul>`);
+  }
+
+  parts.push(`<div class="small" style="margin-top:8px;"><b>敬語ポイント</b></div>`);
+  if (!keigo.length){
+    parts.push(`<div class="small">なし</div>`);
+  } else {
+    parts.push(`<ul class="annoList">` + keigo.map(k=>`<li><span class="mono">${esc(k.phrase_hira || "")}</span>：${esc(k.note_jp || "")}</li>`).join("") + `</ul>`);
+  }
+
+  if (vocab.length){
+    parts.push(`<div class="small" style="margin-top:8px;"><b>覚える単語</b></div>`);
+    parts.push(`<ul class="annoList">` + vocab.slice(0,6).map(v=>`<li>${esc(v.hira||"")}（${esc(v.romaji||"")}）：${esc(v.id||"")} <span class="small">${esc(v.note_jp||"")}</span></li>`).join("") + `</ul>`);
+  }
+
+  box.innerHTML = parts.join("");
+}
+
+// ===== stats (local) =====
+function updateStats(scene, category, scoreVal){
+  if (!scoreVal || scoreVal < 1 || scoreVal > 5) return;
+  STATS.scenes = STATS.scenes || {};
+  STATS.categories = STATS.categories || {};
+
+  const s = STATS.scenes[scene] || { count:0, sum:0 };
+  s.count += 1;
+  s.sum += scoreVal;
+  STATS.scenes[scene] = s;
+
+  const c = STATS.categories[category] || { count:0, sum:0 };
+  c.count += 1;
+  c.sum += scoreVal;
+  STATS.categories[category] = c;
+
+  ls.set("aiga_stats_"+VARIANT, STATS);
+}
+
+function avgOf(obj){ return obj && obj.count ? (obj.sum / obj.count) : 0; }
+
+function renderStats(){
+  const box = $("logBox");
+  if (!box) return;
+  const sceneKeys = Object.keys(EX?.scenes || {});
+  if (!sceneKeys.length){
+    box.textContent = "—";
+    return;
+  }
+  const rows = sceneKeys.map(k=>{
+    const st = (STATS.scenes || {})[k] || {count:0, sum:0};
+    const avg = avgOf(st);
+    return { key:k, label:getSceneLabel(k), avg, count:st.count };
+  });
+
+  const practiced = rows.filter(r=>r.count>0);
+  const weak = practiced.slice().sort((a,b)=>a.avg-b.avg)[0];
+
+  const head = [];
+  if (!practiced.length){
+    head.push(`<div class="small">まだログがありません。会話すると自動で蓄積します。</div>`);
+  } else {
+    head.push(`<div class="small">弱いシーン：<b>${esc(weak.label)}</b>（平均 ${weak.avg.toFixed(1)}/5、回数 ${weak.count}）</div>`);
+  }
+
+  const body = rows.map(r=>{
+    const pct = Math.max(0, Math.min(100, (r.avg/5)*100));
+    return `
+      <div class="statRow">
+        <div class="small">${esc(r.label)}</div>
+        <div class="statBar"><div class="statFill" style="width:${pct}%;"></div></div>
+        <div class="statVal small">${r.count ? r.avg.toFixed(1) : "—"}</div>
+      </div>
+    `;
+  }).join("");
+
+  box.innerHTML = head.join("") + `<div style="margin-top:6px;">${body}</div>`;
+}
+
+function saveSettings(){
+  SETTINGS = {
+    ttsSel: $("ttsSel")?.value || "off",
+    ttsRate: $("ttsRate")?.value || "1",
+    ttsAuto: $("ttsAuto")?.value || "off"
+  };
+  ls.set("aiga_settings_"+VARIANT, SETTINGS);
+}
+
+function runAutoTts(userTri, aiTri){
+  const mode = $("ttsAuto")?.value || "off";
+  const ttsMode = $("ttsSel")?.value || "off";
+  if (mode === "off" || ttsMode === "off") return;
+
+  const userText = (ttsMode === "roma") ? (userTri?.romaji || "") : (userTri?.hira || "");
+  const aiText = (ttsMode === "roma") ? (aiTri?.romaji || "") : (aiTri?.hira || "");
+
+  if (mode === "both"){
+    speakSequence([userText, aiText], "ja-JP");
+  } else if (mode === "ai"){
+    speakSequence([aiText], "ja-JP");
+  }
+}
+
 function setStatus(msg){ $("statusPill").textContent = msg; }
 
 /* ========= global state ========= */
 let CFG = null;
 let EX = null;
 let VARIANT = detectVariantFromPath();
+
+let SETTINGS = Object.assign({}, DEFAULT_SETTINGS, ls.get("aiga_settings_"+VARIANT, {}));
+let STATS = ls.get("aiga_stats_"+VARIANT, { scenes:{}, categories:{} });
+
+let lastSuggested = null;
+let lastAi = null;
+let lastAnnotations = null;
 
 let history = ls.get("aiga_history_"+VARIANT, []);
 let unlocked = ls.get("aiga_unlocked_"+VARIANT, false);
@@ -292,17 +615,55 @@ function insertExample(){
 }
 
 /* ========= render ========= */
-function triHtml(tri){
+function triHtml(tri, opts = {}){
   const mode = $("displayMode").value;
+  const idx = (typeof opts.idx === "number") ? opts.idx : -1;
+  const ann = opts.ann || null;
+
+  const ttsMode = ($("ttsSel")?.value || "off");
+  const canHira = (ttsMode === "both" || ttsMode === "hira");
+  const canRoma = (ttsMode === "both" || ttsMode === "roma");
+
+  const hl = getHighlightsForAnn(ann, tri);
   const lines = [];
+
+  const hiraText = tri?.hira || tri?.jp || "";
+  const romaText = tri?.romaji || "";
+  const idText = tri?.id || "";
+
   if (mode === "all" || mode === "ja"){
-    lines.push(`<div class="line"><div class="k">日本語（ひらがな）</div><div class="v">${esc(tri?.hira || tri?.jp || "")}</div></div>`);
+    lines.push(`
+      <div class="line">
+        <div class="kRow">
+          <div class="k">日本語（ひらがな）</div>
+          <div class="kBtns">
+            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
+          </div>
+        </div>
+        <div class="v">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>
+      </div>
+    `);
   }
   if (mode === "all" || mode === "roma"){
-    lines.push(`<div class="line"><div class="k">ローマ字</div><div class="v">${esc(tri?.romaji || "")}</div></div>`);
+    lines.push(`
+      <div class="line">
+        <div class="kRow">
+          <div class="k">ローマ字</div>
+          <div class="kBtns">
+            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="romaji" ${canRoma ? "" : "disabled"} title="読み上げ">▶</button>
+          </div>
+        </div>
+        <div class="v">${applyHighlights(romaText, hl.dangerRoma, hl.keigoRoma)}</div>
+      </div>
+    `);
   }
   if (mode === "all" || mode === "id"){
-    lines.push(`<div class="line"><div class="k">インドネシア語</div><div class="v">${esc(tri?.id || "")}</div></div>`);
+    lines.push(`
+      <div class="line">
+        <div class="k">インドネシア語</div>
+        <div class="v">${esc(idText)}</div>
+      </div>
+    `);
   }
   return `<div class="tri">${lines.join("")}</div>`;
 }
@@ -315,18 +676,21 @@ function renderHistory(){
     box.innerHTML = `<div class="small" style="padding:10px;">まだ会話がありません。左で例文→送信から始めてください。</div>`;
     return;
   }
-  for (const it of items){
+  items.forEach((it, i)=>{
     const div = document.createElement("div");
     div.className = "msg";
     const meta = it.meta || {};
     const title = it.role === "user" ? "あなた" : "AI（利用者/家族）";
     const tag = `${getSceneLabel(meta.scene)} / ${meta.persona} / ${meta.category} / ${meta.level}`;
     div.innerHTML = `
-      <div class="who"><span>${esc(title)}</span><span class="mono">${esc(tag)}</span></div>
-      ${triHtml(it.tri)}
+      <div class="who">
+        <span>${esc(title)}</span>
+        <span class="mono">${esc(tag)}</span>
+      </div>
+      ${triHtml(it.tri, { idx:i, ann: it.ann || null })}
     `;
     box.appendChild(div);
-  }
+  });
   box.scrollTop = box.scrollHeight;
 }
 
@@ -387,21 +751,37 @@ async function send(){
       setTrialInfo();
     }
 
+    // annotations & score
+    const ann = normalizeAnnotations(out.annotations || null, out.ai || {});
+    const scoreVal = Number(out.score?.scene_skill || 0);
+
+    lastAi = out.ai || null;
+    lastSuggested = out.suggested || null;
+    lastAnnotations = ann;
+
     // add to history: user + ai
-    history.push({ role:"user", tri: out.user || out.user_tri || out.user_text || { hira:"", romaji:"", id:"" }, meta:{ scene, persona, category, level } });
-    history.push({ role:"ai", tri: out.ai || out.ai_reply || { hira:"", romaji:"", id:"" }, meta:{ scene, persona, category, level } });
+    history.push({ role:"user", tri: out.user || {}, meta:{ scene, persona, category, level } });
+    history.push({ role:"ai", tri: out.ai || {}, ann, score: out.score || null, meta:{ scene, persona, category, level } });
+
     // persist
     ls.set("aiga_history_"+VARIANT, history);
 
     // UI
     $("feedbackBox").textContent = out.feedback_jp || out.feedback || "—";
-    setSuggestBox(out.suggested || out.suggested_reply || null);
+    setSuggestBox(out.suggested || null);
+    renderAnno(ann);
+    if (scoreVal > 0) updateStats(scene, category, scoreVal);
+    renderStats();
+
     $("userInput").value = "";
     renderHistory();
     setStatus("完了");
     $("okBox").style.display="block";
     $("okBox").textContent = "OK。続けて入力できます。";
     setTimeout(()=>{$("okBox").style.display="none";}, 1200);
+
+    // auto TTS (optional)
+    runAutoTts(out.user || null, out.ai || null);
 
     // lock if just reached limit
     maybeLock();
@@ -492,8 +872,17 @@ async function init(){
     }
 
     populate();
+
+    // apply settings to UI
+    if ($("ttsSel")) $("ttsSel").value = SETTINGS.ttsSel || "off";
+    if ($("ttsRate")) $("ttsRate").value = SETTINGS.ttsRate || "1";
+    if ($("ttsAuto")) $("ttsAuto").value = SETTINGS.ttsAuto || "off";
+
     setTrialInfo();
+
     renderHistory();
+    renderStats();
+    renderAnno(lastAnnotations);
     setStatus("準備OK");
 
     await verifyFromUrl();
@@ -514,6 +903,36 @@ async function init(){
     $("btnPay").addEventListener("click", startCheckout);
     $("btnCloseLock").addEventListener("click", ()=>{ $("lock").style.display="none"; });
     $("btnUnlock").addEventListener("click", unlockByCode);
+    // TTS controls
+    $("btnStopTts")?.addEventListener("click", stopTts);
+    $("ttsSel")?.addEventListener("change", ()=>{ saveSettings(); renderHistory(); });
+    $("ttsRate")?.addEventListener("change", saveSettings);
+    $("ttsAuto")?.addEventListener("change", saveSettings);
+
+    // Speak suggested
+    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
+    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });
+
+    // Click-to-speak in history (event delegation)
+    $("history")?.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".ttsBtn");
+      if (!btn) return;
+      const idx = Number(btn.dataset.idx || -1);
+      const field = btn.dataset.field || "";
+      const item = (history || [])[idx];
+      const text = item?.tri?.[field] || "";
+      if (field === "hira") speakOnce(text, "ja-JP");
+      else if (field === "romaji") speakOnce(text, "ja-JP");
+    });
+
+    // Reset learning log
+    $("btnResetLog")?.addEventListener("click", ()=>{
+      if (!confirm("学習ログをリセットしますか？")) return;
+      STATS = { scenes:{}, categories:{} };
+      ls.set("aiga_stats_"+VARIANT, STATS);
+      renderStats();
+    });
+
   }catch(e){
     setStatus("起動失敗");
     $("errBox").style.display="block";

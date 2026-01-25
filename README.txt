@@ -1,27 +1,29 @@
-AIGA（介護ロールプレイAI）ファイル配置
+AIGA（介護 日本語×ローマ字×インドネシア語）アプリ v2
+=================================================
 
-推奨フォルダ構成（リポジトリ直下）:
-/
-  index.html
-  config.json
-  examples.json
-  vercel.json
-  .env.local          ← Vercelの環境変数でもOK（例は .env.example 参照）
-  /api
-    chat.js
-    create-checkout-session.js
-    verify-session.js
+✅ 追加した機能
+1) 音声（TTS）
+- ひらがな／ローマ字を読み上げ（スマホ対応・ブラウザ標準機能）
+- 速度調整、AIの返事だけ自動読み上げ など
 
-使い方:
-1) Vercel Project の Environment Variables に以下を設定
+2) 語彙ハイライト + 注釈
+- 危険ワード（誤嚥・転倒など）や敬語ポイントを自動抽出
+- 会話履歴内でハイライト表示、左側に注釈欄を表示
+
+3) 学習ログ
+- シーン別に「平均スコア（1-5）」を自動集計
+- 弱いシーンを表示（学習の優先順位が見える）
+
+-------------------------------------------------
+デプロイ（Vercel想定）
+1. このフォルダをGitHubにアップ
+2. VercelでImport
+3. 環境変数を設定:
    - OPENAI_API_KEY
-   - OPENAI_MODEL (例: gpt-4o-mini)
-   - STRIPE_SECRET_KEY（Stripe利用する場合）
-   - STRIPE_PRICE_ID_TRAINEE / STRIPE_PRICE_ID_SSW（サブスクPrice ID）
-   - SITE_URL（あれば）
-2) デプロイ後、以下URLでアクセス
-   - /   （trainee）
-   - /app/ssw  （ssw想定。表示上のvariantがsswになる）
-3) 画面左でシーン等を選び、例文→送信で会話開始
-   - Ctrl+Enter でも送信できます
-4) お試し回数を超えると解除画面（Stripe or 解除コード）が出ます
+   - OPENAI_MODEL（任意。例: gpt-4o-mini）
+   - STRIPE_SECRET_KEY（Stripe決済を使う場合）
+   - STRIPE_PRICE_ID（Stripe決済を使う場合）
+
+補足
+- TTSは端末/ブラウザにより音声が異なります（iPhone Safariは挙動が制限される場合あり）。
+- 危険ワード/敬語ポイントは、AIの注釈＋簡易ルールの両方で補完します。

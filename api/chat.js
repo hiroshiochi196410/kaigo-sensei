@@ -188,12 +188,24 @@ You must produce:
   "user": { "hira": "", "romaji": "", "id": "" },
   "ai": { "hira": "", "romaji": "", "id": "" },
   "feedback_jp": "",
-  "suggested": { "hira": "", "romaji": "", "id": "" }
+  "suggested": { "hira": "", "romaji": "", "id": "" },
+  "annotations": {
+    "danger_words": [ { "hira": "", "romaji": "", "level": "high|medium|low", "note_jp": "" } ],
+    "keigo_points": [ { "phrase_hira": "", "phrase_romaji": "", "note_jp": "" } ],
+    "vocab": [ { "hira": "", "romaji": "", "id": "", "note_jp": "" } ]
+  },
+  "score": { "scene_skill": 1, "reason_jp": "", "next_focus_hira": [""] }
 }
 Notes:
 - "user" should be the user's utterance normalized into the 3 languages:
   - If user wrote Indonesian: create a natural caregiver Japanese equivalent (hira) + romaji + original meaning in Indonesian (id).
   - If user wrote Japanese: convert it to hiragana (hira) + romaji + Indonesian translation (id).
+- "annotations" helps learning:
+  - danger_words: choking/fall/pain etc related words that appear or are important for the scene (max 5). "hira" must be hiragana only.
+  - keigo_points: polite phrases used or recommended for the scene (max 5). "phrase_hira" must be hiragana only.
+  - vocab: useful new words for this scene (max 6). "hira" must be hiragana only.
+  - If nothing, use empty arrays.
+- "score.scene_skill": 1–5 score of the user's utterance appropriateness/politeness for this scene (5 is best).
       `.trim();
 
       const userPayload = {
@@ -218,6 +230,8 @@ Notes:
         ai: out.ai || {},
         feedback_jp: out.feedback_jp || "",
         suggested: out.suggested || {},
+        annotations: out.annotations || { danger_words: [], keigo_points: [], vocab: [] },
+        score: out.score || {},
         trace: { persona, scene, category, level, variant }
       });
     }
