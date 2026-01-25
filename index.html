@@ -1,13 +1,527 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI</title>
-  <meta http-equiv="refresh" content="0; url=/app/ssw/" />
-  <script>location.replace("/app/ssw/");</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>介護ロールプレイAI（日本語×ローマ字×インドネシア語）</title>
+  <style>
+    :root{
+      --bg:#fafafa; --card:#fff; --bd:#e5e7eb; --txt:#111827; --muted:#6b7280;
+      --btn:#111827; --btnTxt:#fff; --btn2:#f3f4f6;
+    }
+    body{ margin:0; background:var(--bg); color:var(--txt); font-family: system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Meiryo",sans-serif;}
+    header{ padding:14px 16px; border-bottom:1px solid var(--bd); background:#fff; position:sticky; top:0; z-index:5;}
+    header h1{ margin:0; font-size:18px; }
+    header .sub{ margin-top:4px; color:var(--muted); font-size:12px;}
+    main{ max-width:980px; margin:0 auto; padding:14px 12px 70px;}
+    .grid{ display:grid; gap:10px; }
+    @media(min-width:900px){ .grid{ grid-template-columns: 360px 1fr; align-items:start; } }
+    .card{ background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:12px; box-shadow: 0 1px 0 rgba(0,0,0,.02);}
+    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px;}
+    select, textarea, input[type="text"]{ width:100%; padding:10px; border:1px solid var(--bd); border-radius:10px; font-size:14px; background:#fff;}
+    textarea{ min-height:92px; resize: vertical;}
+    .row{ display:flex; gap:10px; }
+    .row > *{ flex:1; }
+    .btnRow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+    button{ border:1px solid var(--bd); background:var(--btn2); padding:10px 12px; border-radius:10px; cursor:pointer; font-size:14px; }
+    button.primary{ background:var(--btn); color:var(--btnTxt); border-color:var(--btn); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    .pill{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--bd); padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted); background:#fff;}
+    .history{ display:flex; flex-direction:column; gap:10px; }
+    .msg{ border:1px solid var(--bd); border-radius:12px; padding:10px; background:#fff; }
+    .msg .who{ font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px;}
+    .msg .tri{ margin-top:8px; display:grid; gap:8px;}
+    .tri .line{ padding:8px; border:1px dashed var(--bd); border-radius:10px; }
+    .tri .k{ font-size:11px; color:var(--muted); margin-bottom:4px;}
+    .tri .v{ white-space:pre-wrap; font-size:14px; }
+    .small{ font-size:12px; color:var(--muted); }
+    .err{ color:#b91c1c; font-size:12px; white-space:pre-wrap; }
+    .ok{ color:#065f46; font-size:12px; }
+    .split{ display:grid; gap:10px; }
+    @media(min-width:900px){ .split{ grid-template-columns: 1fr 1fr; } }
+    .lock{ position:fixed; inset:0; background:rgba(17,24,39,.65); display:none; align-items:center; justify-content:center; padding:14px; z-index:99;}
+    .lock .panel{ width:min(560px, 100%); background:#fff; border-radius:14px; padding:14px; border:1px solid var(--bd);}
+    .lock h2{ margin:0 0 6px; font-size:18px;}
+    .lock p{ margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.5;}
+    .lock .codeRow{ display:flex; gap:8px; margin-top:10px;}
+    .lock .codeRow input{ flex:1; }
+    .footerBar{ position:fixed; left:0; right:0; bottom:0; border-top:1px solid var(--bd); background:#fff; padding:10px 12px; z-index:10;}
+    .footerBar .wrap{ max-width:980px; margin:0 auto; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
 </head>
 <body>
-  <p>移動中… <a href="/app/ssw/">/app/ssw/</a></p>
+  <header>
+    <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span></h1>
+    <div class="sub">日本語（ひらがな）・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <div class="row">
+        <div>
+          <label>シーン</label>
+          <select id="sceneSel"></select>
+        </div>
+        <div>
+          <label>相手（ペルソナ）</label>
+          <select id="personaSel"></select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>カテゴリ</label>
+          <select id="catSel"></select>
+        </div>
+        <div>
+          <label>レベル</label>
+          <select id="levelSel">
+            <option value="beginner">初級</option>
+            <option value="intermediate">中級</option>
+            <option value="advanced">上級</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>入力言語</label>
+          <select id="langSel">
+            <option value="auto">自動判定</option>
+            <option value="ja">日本語</option>
+            <option value="id">インドネシア語</option>
+          </select>
+        </div>
+        <div>
+          <label>表示</label>
+          <select id="displayMode">
+            <option value="all">3段（推奨）</option>
+            <option value="ja">日本語のみ</option>
+            <option value="id">インドネシア語のみ</option>
+            <option value="roma">ローマ字のみ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button id="btnExample" type="button">例文を入れる</button>
+        <button id="btnClear" type="button">履歴クリア</button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <label>あなたの発話（日本語 or インドネシア語）</label>
+        <textarea id="userInput" placeholder="例：ゆっくりで大丈夫ですよ。 / Pelan-pelan saja ya."></textarea>
+        <div class="btnRow">
+          <button class="primary" id="btnSend" type="button">送信</button>
+          <span class="small" id="trialInfo"></span>
+        </div>
+        <div class="err" id="errBox" style="display:none;"></div>
+        <div class="ok" id="okBox" style="display:none;"></div>
+      </div>
+
+      <div style="margin-top:10px;" class="split">
+        <div class="card" style="margin:0;">
+          <label>AIからのフィードバック（日本語）</label>
+          <div id="feedbackBox" class="small" style="white-space:pre-wrap;">—</div>
+        </div>
+        <div class="card" style="margin:0;">
+          <label>次に言うと良い一言（3段）</label>
+          <div id="suggestBox" class="small" style="white-space:pre-wrap;">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row" style="align-items:center;">
+        <div class="pill">会話履歴</div>
+        <div class="small" id="statusPill" style="margin-left:auto;">準備中…</div>
+      </div>
+      <div class="history" id="history"></div>
+    </section>
+  </main>
+
+  <div class="footerBar">
+    <div class="wrap">
+      <div class="small">Tip: 日本語は「ひらがな」にもして出すので、読み上げ練習に使えます。</div>
+      <div class="small mono" id="apiState">api: /api/chat</div>
+    </div>
+  </div>
+
+  <!-- Paywall -->
+  <div class="lock" id="lock">
+    <div class="panel">
+      <h2>お試し回数を使い切りました</h2>
+      <p>続きは有料（Stripe）で解除できます。<br>もしくは管理者用の解除コードでも解除できます。</p>
+      <div class="btnRow">
+        <button class="primary" id="btnPay">Stripeで購読して解除</button>
+        <button id="btnCloseLock">閉じる</button>
+      </div>
+      <div class="codeRow">
+        <input type="text" id="unlockCode" placeholder="解除コードを入力" />
+        <button id="btnUnlock">解除</button>
+      </div>
+      <div class="small" id="lockMsg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+<script>
+/* ========= helpers ========= */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+const ls = {
+  get(k, d=null){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+};
+
+function detectVariantFromPath(){
+  const p = location.pathname || "/";
+  const m = p.match(/\/app\/(trainee|ssw)(\/|$)/);
+  return m ? m[1] : "trainee";
+}
+
+function detectLangAuto(text){
+  // ざっくり：ひらがな・カタカナ・漢字が含まれれば ja
+  if (/[ぁ-んァ-ヶ一-龠]/.test(text)) return "ja";
+  // a-z の比率が高ければ id とみなす（ざっくり）
+  if (/[a-zA-Z]/.test(text)) return "id";
+  return "auto";
+}
+
+function setStatus(msg){ $("statusPill").textContent = msg; }
+
+/* ========= global state ========= */
+let CFG = null;
+let EX = null;
+let VARIANT = detectVariantFromPath();
+
+let history = ls.get("aiga_history_"+VARIANT, []);
+let unlocked = ls.get("aiga_unlocked_"+VARIANT, false);
+let trialUsed = ls.get("aiga_trialUsed_"+VARIANT, 0);
+
+/* ========= load config/examples ========= */
+async function loadJson(path){
+  const r = await fetch(path, { cache: "no-store" });
+  if (!r.ok) throw new Error(`${path} load failed: ${r.status}`);
+  return await r.json();
+}
+
+function setTrialInfo(){
+  const limit = CFG?.trial_limit ?? 3;
+  const remain = Math.max(0, limit - trialUsed);
+  $("trialInfo").textContent = unlocked ? "✅ 解除済み" : `お試し残り: ${remain}/${limit}`;
+}
+
+function maybeLock(){
+  if (unlocked) return false;
+  const limit = CFG?.trial_limit ?? 3;
+  if (trialUsed >= limit){
+    $("lock").style.display = "flex";
+    return true;
+  }
+  return false;
+}
+
+/* ========= select population ========= */
+function fillSelect(selectEl, items, getVal, getLabel){
+  selectEl.innerHTML = "";
+  for (const it of items){
+    const opt = document.createElement("option");
+    opt.value = getVal(it);
+    opt.textContent = getLabel(it);
+    selectEl.appendChild(opt);
+  }
+}
+
+function getSceneLabel(sceneKey){
+  const map = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
+  return map[sceneKey] || sceneKey;
+}
+
+function populate(){
+  // scenes
+  const sceneKeys = Object.keys(EX.scenes || {});
+  fillSelect($("sceneSel"), sceneKeys, k=>k, k=>getSceneLabel(k));
+  // personas
+  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>p.label);
+
+  // defaults
+  $("sceneSel").value = (CFG.default_scene || "meal");
+  $("personaSel").value = (CFG.default_persona || "user_calm");
+  $("levelSel").value = (CFG.default_level || "beginner");
+
+  updateCategories();
+}
+
+function updateCategories(){
+  const scene = $("sceneSel").value;
+  const cats = EX.scenes?.[scene] || [];
+  fillSelect($("catSel"), cats, c=>c.key, c=>c.label);
+}
+
+/* ========= examples ========= */
+function pickExample(scene, persona, category, level){
+  try{
+    const arr = EX.examples?.[scene]?.[persona]?.[category] || [];
+    const filtered = (level === "beginner") ? arr.filter(x=>x.level==="beginner") :
+                     (level === "intermediate") ? arr.filter(x=>x.level==="intermediate") :
+                     (level === "advanced") ? arr.filter(x=>x.level==="advanced") : arr;
+    const pool = filtered.length ? filtered : arr;
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random()*pool.length)];
+  }catch(e){ return null; }
+}
+
+function insertExample(){
+  const scene = $("sceneSel").value;
+  const persona = $("personaSel").value;
+  const category = $("catSel").value;
+  const level = $("levelSel").value;
+
+  const ex = pickExample(scene, persona, category, level);
+  if (!ex){
+    $("userInput").value = "ゆっくりで大丈夫ですよ。";
+    return;
+  }
+  // 日本語例文を入れる（ローマ字やIDは履歴表示側で出す）
+  $("userInput").value = ex.jp || "";
+  $("okBox").style.display="block";
+  $("okBox").textContent = "例文を入力しました。送信して会話を続けられます。";
+  setTimeout(()=>{$("okBox").style.display="none";}, 1800);
+}
+
+/* ========= render ========= */
+function triHtml(tri){
+  const mode = $("displayMode").value;
+  const lines = [];
+  if (mode === "all" || mode === "ja"){
+    lines.push(`<div class="line"><div class="k">日本語（ひらがな）</div><div class="v">${esc(tri?.hira || tri?.jp || "")}</div></div>`);
+  }
+  if (mode === "all" || mode === "roma"){
+    lines.push(`<div class="line"><div class="k">ローマ字</div><div class="v">${esc(tri?.romaji || "")}</div></div>`);
+  }
+  if (mode === "all" || mode === "id"){
+    lines.push(`<div class="line"><div class="k">インドネシア語</div><div class="v">${esc(tri?.id || "")}</div></div>`);
+  }
+  return `<div class="tri">${lines.join("")}</div>`;
+}
+
+function renderHistory(){
+  const box = $("history");
+  box.innerHTML = "";
+  const items = history || [];
+  if (!items.length){
+    box.innerHTML = `<div class="small" style="padding:10px;">まだ会話がありません。左で例文→送信から始めてください。</div>`;
+    return;
+  }
+  for (const it of items){
+    const div = document.createElement("div");
+    div.className = "msg";
+    const meta = it.meta || {};
+    const title = it.role === "user" ? "あなた" : "AI（利用者/家族）";
+    const tag = `${getSceneLabel(meta.scene)} / ${meta.persona} / ${meta.category} / ${meta.level}`;
+    div.innerHTML = `
+      <div class="who"><span>${esc(title)}</span><span class="mono">${esc(tag)}</span></div>
+      ${triHtml(it.tri)}
+    `;
+    box.appendChild(div);
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function setSuggestBox(tri){
+  if (!tri){ $("suggestBox").textContent="—"; return; }
+  const mode = $("displayMode").value;
+  const parts=[];
+  if (mode==="all" || mode==="ja") parts.push(`日本語（ひらがな）:\n${tri.hira || tri.jp || ""}`);
+  if (mode==="all" || mode==="roma") parts.push(`\nローマ字:\n${tri.romaji || ""}`);
+  if (mode==="all" || mode==="id") parts.push(`\nインドネシア語:\n${tri.id || ""}`);
+  $("suggestBox").textContent = parts.join("\n");
+}
+
+/* ========= API ========= */
+async function postChat({ text, meta }){
+  const r = await fetch("/api/chat", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ prompt: text, meta })
+  });
+  const j = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(j?.error ? `${j.error}\n${JSON.stringify(j, null, 2)}` : `HTTP ${r.status}`);
+  return j;
+}
+
+async function send(){
+  $("errBox").style.display="none";
+  $("okBox").style.display="none";
+
+  if (maybeLock()) return;
+
+  const text = $("userInput").value.trim();
+  if (!text){ alert("入力が空です"); return; }
+
+  const scene = $("sceneSel").value;
+  const persona = $("personaSel").value;
+  const category = $("catSel").value;
+  const level = $("levelSel").value;
+  const langSel = $("langSel").value;
+  const user_lang = (langSel === "auto") ? detectLangAuto(text) : langSel;
+
+  // client-side history to help context (last 6 turns)
+  const ctx = (history || []).slice(-6).map(x=>({
+    role: x.role, hira: x.tri?.hira || "", romaji: x.tri?.romaji || "", id: x.tri?.id || ""
+  }));
+
+  $("btnSend").disabled = true;
+  setStatus("AI応答中…");
+
+  try{
+    const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, ctx };
+    const out = await postChat({ text, meta });
+
+    // trial count
+    if (!unlocked){
+      trialUsed += 1;
+      ls.set("aiga_trialUsed_"+VARIANT, trialUsed);
+      setTrialInfo();
+    }
+
+    // add to history: user + ai
+    history.push({ role:"user", tri: out.user || out.user_tri || out.user_text || { hira:"", romaji:"", id:"" }, meta:{ scene, persona, category, level } });
+    history.push({ role:"ai", tri: out.ai || out.ai_reply || { hira:"", romaji:"", id:"" }, meta:{ scene, persona, category, level } });
+    // persist
+    ls.set("aiga_history_"+VARIANT, history);
+
+    // UI
+    $("feedbackBox").textContent = out.feedback_jp || out.feedback || "—";
+    setSuggestBox(out.suggested || out.suggested_reply || null);
+    $("userInput").value = "";
+    renderHistory();
+    setStatus("完了");
+    $("okBox").style.display="block";
+    $("okBox").textContent = "OK。続けて入力できます。";
+    setTimeout(()=>{$("okBox").style.display="none";}, 1200);
+
+    // lock if just reached limit
+    maybeLock();
+  }catch(e){
+    $("errBox").style.display="block";
+    $("errBox").textContent = String(e.message || e);
+    setStatus("エラー");
+  }finally{
+    $("btnSend").disabled = false;
+  }
+}
+
+/* ========= Stripe unlock ========= */
+async function startCheckout(){
+  try{
+    const r = await fetch("/api/create-checkout-session", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ variant: VARIANT })
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error || "checkout error");
+    location.href = j.url;
+  }catch(e){
+    $("lockMsg").textContent = "決済リンク作成に失敗: " + String(e.message || e);
+  }
+}
+
+async function verifyFromUrl(){
+  const url = new URL(location.href);
+  const sessionId = url.searchParams.get("session_id");
+  const success = url.searchParams.get("success");
+  if (!sessionId || success !== "1") return;
+
+  setStatus("決済確認中…");
+  try{
+    const r = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error || "verify error");
+    if (j.paid){
+      unlocked = true;
+      ls.set("aiga_unlocked_"+VARIANT, true);
+      $("okBox").style.display="block";
+      $("okBox").textContent = "✅ 解除しました（決済確認済み）";
+      $("lock").style.display="none";
+      setTrialInfo();
+    }else{
+      $("lockMsg").textContent = "決済はまだ確認できませんでした。少し待って再読み込みしてください。";
+    }
+  }catch(e){
+    $("lockMsg").textContent = "決済確認に失敗: " + String(e.message || e);
+  }finally{
+    // clean URL (keep path)
+    url.searchParams.delete("success");
+    url.searchParams.delete("session_id");
+    history.replaceState({}, "", url.pathname + url.search);
+    setStatus("準備OK");
+  }
+}
+
+function unlockByCode(){
+  const code = $("unlockCode").value.trim();
+  if (!code) return;
+  if (code === (CFG.unlock_code || "")){
+    unlocked = true;
+    ls.set("aiga_unlocked_"+VARIANT, true);
+    $("lock").style.display="none";
+    $("lockMsg").textContent = "";
+    setTrialInfo();
+  }else{
+    $("lockMsg").textContent = "解除コードが違います。";
+  }
+}
+
+/* ========= init ========= */
+async function init(){
+  try{
+    $("variantPill").textContent = VARIANT;
+    setStatus("データ読込中…");
+
+    // load json
+    CFG = await loadJson("/config.json");
+    EX = await loadJson("/examples.json");
+
+    // allow override by path variant (so /app/ssw でもOK)
+    if (VARIANT !== CFG.variant && (VARIANT === "ssw" || VARIANT === "trainee")){
+      // config.json の内容は共通で使い、variantだけは表示上切替
+    }
+
+    populate();
+    setTrialInfo();
+    renderHistory();
+    setStatus("準備OK");
+
+    await verifyFromUrl();
+
+    // events
+    $("sceneSel").addEventListener("change", updateCategories);
+    $("btnExample").addEventListener("click", insertExample);
+    $("btnClear").addEventListener("click", ()=>{
+      if (!confirm("履歴を消しますか？")) return;
+      history = [];
+      ls.set("aiga_history_"+VARIANT, history);
+      renderHistory();
+    });
+    $("btnSend").addEventListener("click", send);
+    $("userInput").addEventListener("keydown", (e)=>{
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") send();
+    });
+    $("btnPay").addEventListener("click", startCheckout);
+    $("btnCloseLock").addEventListener("click", ()=>{ $("lock").style.display="none"; });
+    $("btnUnlock").addEventListener("click", unlockByCode);
+  }catch(e){
+    setStatus("起動失敗");
+    $("errBox").style.display="block";
+    $("errBox").textContent = "初期化エラー: " + String(e.message || e);
+  }
+}
+
+init();
+</script>
 </body>
 </html>

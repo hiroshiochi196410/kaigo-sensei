@@ -1,11 +1,27 @@
-Kaigo Sensei（復元版：LP + UI + B/C統合 + OpenAI）
-- ルート / : LP
-- /app : Roleplayアプリ（無料→本稼働のスイッチ表示あり）
-- /api/chat : OpenAI API（JSON返却：日本語/ローマ字/インドネシア語）
+AIGA（介護ロールプレイAI）ファイル配置
 
-Vercel環境変数:
-- OPENAI_API_KEY を必ず設定
-- （任意）OPENAI_MODEL
+推奨フォルダ構成（リポジトリ直下）:
+/
+  index.html
+  config.json
+  examples.json
+  vercel.json
+  .env.local          ← Vercelの環境変数でもOK（例は .env.example 参照）
+  /api
+    chat.js
+    create-checkout-session.js
+    verify-session.js
 
-Stripeリンク:
-- /app/index.html の STRIPE_PAYMENT_LINK を差し替え
+使い方:
+1) Vercel Project の Environment Variables に以下を設定
+   - OPENAI_API_KEY
+   - OPENAI_MODEL (例: gpt-4o-mini)
+   - STRIPE_SECRET_KEY（Stripe利用する場合）
+   - STRIPE_PRICE_ID_TRAINEE / STRIPE_PRICE_ID_SSW（サブスクPrice ID）
+   - SITE_URL（あれば）
+2) デプロイ後、以下URLでアクセス
+   - /   （trainee）
+   - /app/ssw  （ssw想定。表示上のvariantがsswになる）
+3) 画面左でシーン等を選び、例文→送信で会話開始
+   - Ctrl+Enter でも送信できます
+4) お試し回数を超えると解除画面（Stripe or 解除コード）が出ます
