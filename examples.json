@@ -3,134 +3,164 @@
   "personas": [
     {
       "key": "user_calm",
-      "label": "利用者：穏やか"
+      "label": "利用者：穏やか",
+      "label_id": "Pengguna: Tenang"
     },
     {
       "key": "user_angry",
-      "label": "利用者：怒り"
+      "label": "利用者：怒り",
+      "label_id": "Pengguna: Marah"
     },
     {
       "key": "dementia",
-      "label": "利用者：少し混乱"
+      "label": "利用者：少し混乱",
+      "label_id": "Pengguna: Bingung"
     },
     {
       "key": "family_anxious",
-      "label": "家族：不安"
+      "label": "家族：不安",
+      "label_id": "Keluarga: Cemas"
     },
     {
       "key": "family_complaint",
-      "label": "家族：クレーム"
+      "label": "家族：クレーム",
+      "label_id": "Keluarga: Keluhan"
     }
   ],
   "scenes": {
     "bath": [
       {
         "key": "voice",
-        "label": "声かけ"
+        "label": "声かけ",
+        "label_id": "Menyapa"
       },
       {
         "key": "temperature",
-        "label": "温度確認"
+        "label": "温度確認",
+        "label_id": "Cek suhu"
       },
       {
         "key": "privacy",
-        "label": "羞恥配慮"
+        "label": "羞恥配慮",
+        "label_id": "Menjaga privasi"
       },
       {
         "key": "refusal",
-        "label": "拒否対応"
+        "label": "拒否対応",
+        "label_id": "Menangani penolakan"
       },
       {
         "key": "safety",
-        "label": "安全配慮"
+        "label": "安全配慮",
+        "label_id": "Keamanan"
       }
     ],
     "meal": [
       {
         "key": "start",
-        "label": "開始/準備"
+        "label": "開始/準備",
+        "label_id": "Mulai/persiapan"
       },
       {
         "key": "swallow",
-        "label": "嚥下/むせ"
+        "label": "嚥下/むせ",
+        "label_id": "Menelan/tersedak"
       },
       {
         "key": "pace",
-        "label": "ペース調整"
+        "label": "ペース調整",
+        "label_id": "Atur tempo"
       },
       {
         "key": "refusal",
-        "label": "拒否/好み"
+        "label": "拒否/好み",
+        "label_id": "Penolakan/selera"
       },
       {
         "key": "safety",
-        "label": "安全/誤嚥予防"
+        "label": "安全/誤嚥予防",
+        "label_id": "Keamanan/pencegahan aspirasi"
       }
     ],
     "toilet": [
       {
         "key": "urge",
-        "label": "誘導/声かけ"
+        "label": "誘導/声かけ",
+        "label_id": "Mengajak/menyapa"
       },
       {
         "key": "transfer",
-        "label": "移乗/立位"
+        "label": "移乗/立位",
+        "label_id": "Pindah/berdiri"
       },
       {
         "key": "privacy",
-        "label": "プライバシー"
+        "label": "プライバシー",
+        "label_id": "Menjaga privasi"
       },
       {
         "key": "accident",
-        "label": "失敗/汚染"
+        "label": "失敗/汚染",
+        "label_id": "Kecelakaan (inkontinensia)"
       },
       {
         "key": "hygiene",
-        "label": "清潔/後始末"
+        "label": "清潔/後始末",
+        "label_id": "Kebersihan"
       }
     ],
     "night": [
       {
         "key": "sleep",
-        "label": "眠れない"
+        "label": "眠れない",
+        "label_id": "Tidur"
       },
       {
         "key": "anxiety",
-        "label": "不安/混乱"
+        "label": "不安/混乱",
+        "label_id": "Cemas"
       },
       {
         "key": "pain",
-        "label": "痛み/体調"
+        "label": "痛み/体調",
+        "label_id": "Nyeri"
       },
       {
         "key": "wander",
-        "label": "徘徊/起き上がり"
+        "label": "徘徊/起き上がり",
+        "label_id": "Berkeliaran"
       },
       {
         "key": "safety",
-        "label": "転倒/環境"
+        "label": "転倒/環境",
+        "label_id": "Keamanan"
       }
     ],
     "complaint": [
       {
         "key": "apology",
-        "label": "謝罪/受容"
+        "label": "謝罪/受容",
+        "label_id": "Permintaan maaf"
       },
       {
         "key": "fact",
-        "label": "事実確認"
+        "label": "事実確認",
+        "label_id": "Konfirmasi fakta"
       },
       {
         "key": "plan",
-        "label": "対応方針"
+        "label": "対応方針",
+        "label_id": "Rencana tindak lanjut"
       },
       {
         "key": "escalate",
-        "label": "上席/連携"
+        "label": "上席/連携",
+        "label_id": "Eskalasi ke atasan"
       },
       {
         "key": "followup",
-        "label": "報告/再発防止"
+        "label": "報告/再発防止",
+        "label_id": "Tindak lanjut"
       }
     ]
   },
@@ -4194,6 +4224,28 @@
           }
         ]
       }
+    }
+  },
+  "scene_labels": {
+    "bath": {
+      "jp": "入浴",
+      "id": "Mandi"
+    },
+    "meal": {
+      "jp": "食事",
+      "id": "Makan"
+    },
+    "toilet": {
+      "jp": "排泄",
+      "id": "Toilet"
+    },
+    "night": {
+      "jp": "夜間",
+      "id": "Malam"
+    },
+    "complaint": {
+      "jp": "クレーム対応",
+      "id": "Keluhan"
     }
   }
 }

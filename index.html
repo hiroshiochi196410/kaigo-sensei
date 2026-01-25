@@ -122,6 +122,22 @@
 
       <div class="row" style="margin-top:10px;">
         <div>
+          <label>選択肢の表示（UI）</label>
+          <select id="uiLabelMode">
+            <option value="jp_id">日本語＋ID（推奨）</option>
+            <option value="jp">日本語のみ</option>
+            <option value="id">インドネシア語のみ</option>
+          </select>
+        </div>
+        <div>
+          <label>母国語（表示）</label>
+          <input type="text" value="インドネシア語" disabled />
+        </div>
+      </div>
+
+
+      <div class="row" style="margin-top:10px;">
+        <div>
           <label>音声読み上げ（TTS）</label>
           <select id="ttsSel">
             <option value="off">OFF</option>
@@ -260,7 +276,7 @@ function detectLangAuto(text){
 }
 
 /* ========= TTS / annotation / stats helpers ========= */
-const DEFAULT_SETTINGS = { ttsSel:"hira", ttsRate:"1", ttsAuto:"off" };
+const DEFAULT_SETTINGS = { ttsSel:"hira", ttsRate:"1", ttsAuto:"off", uiLabelMode:"jp_id" };
 let _voices = [];
 function refreshVoices(){
   try{ _voices = (window.speechSynthesis ? window.speechSynthesis.getVoices() : []) || []; }catch(e){ _voices=[]; }
@@ -485,7 +501,8 @@ function saveSettings(){
   SETTINGS = {
     ttsSel: $("ttsSel")?.value || "off",
     ttsRate: $("ttsRate")?.value || "1",
-    ttsAuto: $("ttsAuto")?.value || "off"
+    ttsAuto: $("ttsAuto")?.value || "off",
+    uiLabelMode: $("uiLabelMode")?.value || "jp_id"
   };
   ls.set("aiga_settings_"+VARIANT, SETTINGS);
 }
@@ -557,9 +574,56 @@ function fillSelect(selectEl, items, getVal, getLabel){
   }
 }
 
+
+function uiMode(){
+  return $("uiLabelMode")?.value || SETTINGS?.uiLabelMode || "jp_id";
+}
+function fmtLabel(jp, id){
+  const mode = uiMode();
+  const a = (jp || "").trim();
+  const b = (id || "").trim();
+  if (mode === "jp") return a || b || "";
+  if (mode === "id") return b || a || "";
+  if (a && b && a !== b) return `${a}（${b}）`;
+  return a || b || "";
+}
+
+const FALLBACK_SCENE_LABELS = {
+  bath:{ jp:"入浴", id:"Mandi" },
+  meal:{ jp:"食事", id:"Makan" },
+  toilet:{ jp:"排泄", id:"Toilet" },
+  night:{ jp:"夜間", id:"Malam" },
+  complaint:{ jp:"クレーム対応", id:"Keluhan" }
+};
+const FALLBACK_PERSONA_ID = {
+  user_calm:"Pengguna: Tenang",
+  user_angry:"Pengguna: Marah",
+  dementia:"Pengguna: Bingung",
+  family_anxious:"Keluarga: Cemas",
+  family_complaint:"Keluarga: Keluhan"
+};
+const FALLBACK_CAT_ID = {
+  bath:{ voice:"Menyapa", temperature:"Cek suhu", privacy:"Menjaga privasi", refusal:"Menangani penolakan", safety:"Keamanan" },
+  meal:{ start:"Mulai/persiapan", swallow:"Menelan/tersedak", pace:"Atur tempo", refusal:"Penolakan/selera", safety:"Keamanan/pencegahan aspirasi" },
+  toilet:{ urge:"Mengajak/menyapa", transfer:"Pindah/berdiri", privacy:"Menjaga privasi", accident:"Kecelakaan (inkontinensia)", hygiene:"Kebersihan" },
+  night:{ sleep:"Tidur", anxiety:"Cemas", pain:"Nyeri", wander:"Berkeliaran", safety:"Keamanan" },
+  complaint:{ apology:"Permintaan maaf", fact:"Konfirmasi fakta", plan:"Rencana tindak lanjut", escalate:"Eskalasi ke atasan", followup:"Tindak lanjut" }
+};
+
 function getSceneLabel(sceneKey){
-  const map = { bath:"入浴", meal:"食事", toilet:"排泄", night:"夜間", complaint:"クレーム対応" };
-  return map[sceneKey] || sceneKey;
+  const o = (EX && EX.scene_labels && EX.scene_labels[sceneKey]) ? EX.scene_labels[sceneKey] : (FALLBACK_SCENE_LABELS[sceneKey] || {jp:sceneKey, id:sceneKey});
+  return fmtLabel(o.jp || sceneKey, o.id || sceneKey);
+}
+function getPersonaLabelByKey(personaKey){
+  const p = (EX?.personas || []).find(x=>x.key===personaKey);
+  const jp = p?.label || personaKey;
+  const id = p?.label_id || FALLBACK_PERSONA_ID[personaKey] || "";
+  return fmtLabel(jp, id);
+}
+function getCategoryLabel(sceneKey, cat){
+  const jp = cat?.label || cat?.key || "";
+  const id = cat?.label_id || (FALLBACK_CAT_ID[sceneKey]?.[cat?.key] || "");
+  return fmtLabel(jp, id);
 }
 
 function populate(){
@@ -567,7 +631,7 @@ function populate(){
   const sceneKeys = Object.keys(EX.scenes || {});
   fillSelect($("sceneSel"), sceneKeys, k=>k, k=>getSceneLabel(k));
   // personas
-  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>p.label);
+  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>getPersonaLabelByKey(p.key));
 
   // defaults
   $("sceneSel").value = (CFG.default_scene || "meal");
@@ -580,7 +644,25 @@ function populate(){
 function updateCategories(){
   const scene = $("sceneSel").value;
   const cats = EX.scenes?.[scene] || [];
-  fillSelect($("catSel"), cats, c=>c.key, c=>c.label);
+  fillSelect($("catSel"), cats, c=>c.key, c=>getCategoryLabel(scene, c));
+}
+
+function rebuildSelectLabels(){
+  const sceneVal = $("sceneSel")?.value;
+  const personaVal = $("personaSel")?.value;
+  const catVal = $("catSel")?.value;
+
+  // scenes
+  const sceneKeys = Object.keys(EX.scenes || {});
+  fillSelect($("sceneSel"), sceneKeys, k=>k, k=>getSceneLabel(k));
+  // personas
+  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>getPersonaLabelByKey(p.key));
+
+  if (sceneVal) $("sceneSel").value = sceneVal;
+  if (personaVal) $("personaSel").value = personaVal;
+
+  updateCategories();
+  if (catVal) $("catSel").value = catVal;
 }
 
 /* ========= examples ========= */
@@ -681,7 +763,7 @@ function renderHistory(){
     div.className = "msg";
     const meta = it.meta || {};
     const title = it.role === "user" ? "あなた" : "AI（利用者/家族）";
-    const tag = `${getSceneLabel(meta.scene)} / ${meta.persona} / ${meta.category} / ${meta.level}`;
+    const tag = `${getSceneLabel(meta.scene)} / ${getPersonaLabelByKey(meta.persona)} / ${getCategoryLabel(meta.scene, {key: meta.category, label: (EX?.scenes?.[meta.scene]||[]).find(x=>x.key===meta.category)?.label || meta.category, label_id: (EX?.scenes?.[meta.scene]||[]).find(x=>x.key===meta.category)?.label_id || ""})} / ${meta.level}`;
     div.innerHTML = `
       <div class="who">
         <span>${esc(title)}</span>
@@ -877,6 +959,7 @@ async function init(){
     if ($("ttsSel")) $("ttsSel").value = SETTINGS.ttsSel || "off";
     if ($("ttsRate")) $("ttsRate").value = SETTINGS.ttsRate || "1";
     if ($("ttsAuto")) $("ttsAuto").value = SETTINGS.ttsAuto || "off";
+    if ($("uiLabelMode")) $("uiLabelMode").value = SETTINGS.uiLabelMode || "jp_id";
 
     setTrialInfo();
 
@@ -908,6 +991,7 @@ async function init(){
     $("ttsSel")?.addEventListener("change", ()=>{ saveSettings(); renderHistory(); });
     $("ttsRate")?.addEventListener("change", saveSettings);
     $("ttsAuto")?.addEventListener("change", saveSettings);
+    $("uiLabelMode")?.addEventListener("change", ()=>{ saveSettings(); rebuildSelectLabels(); renderHistory(); renderStats(); });
 
     // Speak suggested
     $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
