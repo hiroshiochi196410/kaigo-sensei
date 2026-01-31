@@ -282,44 +282,6 @@ const ls = {
   set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 };
 
-// --- debug / toast ---
-function showErr(msg){
-  const el = $("errBox");
-  if (!el) return;
-  el.style.display = "block";
-  el.textContent = String(msg || "");
-}
-function showOk(msg){
-  const el = $("okBox");
-  if (!el) return;
-  el.style.display = "block";
-  el.textContent = String(msg || "");
-}
-window.addEventListener("error", (e)=>{ try{ showErr("JSエラー: " + (e.message||e.error||"")); }catch(_){ } });
-window.addEventListener("unhandledrejection", (e)=>{ try{ showErr("Promiseエラー: " + (e.reason?.message||e.reason||"")); }catch(_){ } });
-
-const IS_IOS = /iP(hone|od|ad)/.test(navigator.userAgent);
-let _ttsUnlocked = false;
-function unlockTts(){
-  if (_ttsUnlocked) return;
-  if (!window.speechSynthesis) return;
-  try{
-    // iOS Safariは最初のユーザー操作で一度 speak/resume を通すと安定しやすい
-    window.speechSynthesis.resume?.();
-    const u = new SpeechSynthesisUtterance(" ");
-    u.volume = 0; // 無音で解錠
-    u.onend = ()=>{ _ttsUnlocked = true; };
-    u.onerror = ()=>{ _ttsUnlocked = true; };
-    window.speechSynthesis.speak(u);
-    // すぐ止めてもOK（解錠だけ）
-    window.speechSynthesis.cancel();
-    _ttsUnlocked = true;
-  }catch(e){
-    _ttsUnlocked = true;
-  }
-}
-
-
 function detectVariantFromPath(){
   const p = location.pathname || "/";
   const m = p.match(/\/app\/(trainee|ssw)(\/|$)/);
@@ -345,8 +307,34 @@ if (window.speechSynthesis){
   window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
+let _ttsUnlocked = false;
+function isIOS(){ return /iP(hone|od|ad)/.test(navigator.userAgent || ""); }
+
+function unlockTtsOnce(){
+  if (_ttsUnlocked) return;
+  if (!window.speechSynthesis) return;
+  try{
+    // iOS Safari: speechSynthesis is often locked until the first user gesture.
+    const u = new SpeechSynthesisUtterance(" ");
+    u.lang = "ja-JP";
+    u.volume = 0;
+    u.rate = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+    setTimeout(()=>{ try{ window.speechSynthesis.cancel(); }catch(e){} }, 80);
+  }catch(e){}
+  _ttsUnlocked = true;
+}
+document.addEventListener("touchstart", unlockTtsOnce, { once:true, passive:true });
+document.addEventListener("click", unlockTtsOnce, { once:true });
+
 function stopTts(){
-  try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+  try{
+    if (window.speechSynthesis){
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
+    }
+  }catch(e){}
 }
 
 function pickVoice(langPrefix){
@@ -359,41 +347,41 @@ function speakOnce(text, lang="ja-JP"){
   if (!t) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
 
-  // iOS Safari対策：最初に解錠、cancel直後は少し待つ
-  unlockTts();
-  try{ window.speechSynthesis.resume?.(); }catch(e){}
-  try{ window.speechSynthesis.cancel(); }catch(e){}
+  unlockTtsOnce();
 
-  const u = new SpeechSynthesisUtterance(t);
-  u.lang = lang;
+  const run = ()=>{
+    try{
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = lang;
+      const rate = Number($("ttsRate")?.value || 1);
+      if (!Number.isNaN(rate)) u.rate = rate;
+      const v = pickVoice(lang.split("-")[0]);
+      if (v) u.voice = v;
 
-  const rate = Number($("ttsRate")?.value || 1);
-  if (!Number.isNaN(rate)) u.rate = rate;
-
-  const v = pickVoice(lang.split("-")[0]);
-  if (v) u.voice = v;
-
-  u.onstart = ()=>{ /*showOk("🔊 再生中…");*/ };
-  u.onerror = (ev)=>{ showErr("音声エラー: " + (ev?.error || "unknown")); };
-
-  const doSpeak = ()=>{
-    try{ window.speechSynthesis.resume?.(); }catch(e){}
-    try{ window.speechSynthesis.speak(u); }catch(e){ showErr("音声エラー: " + (e.message||e)); }
+      // iOS Safari sometimes stays paused after cancel()
+      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
+      window.speechSynthesis.speak(u);
+    }catch(e){
+      try{ setStatus("音声エラー: " + (e?.message || e)); }catch(_){}
+    }
   };
 
-  if (IS_IOS) setTimeout(doSpeak, 150);
-  else doSpeak();
+  // iOS Safari bug: calling speak() immediately after cancel() can do nothing.
+  stopTts();
+  if (isIOS()){
+    setTimeout(run, 180);
+  }else{
+    run();
+  }
 }
-
 
 function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
 
-  unlockTts();
-  try{ window.speechSynthesis.resume?.(); }catch(e){}
-  try{ window.speechSynthesis.cancel(); }catch(e){}
+  unlockTtsOnce();
+  stopTts();
 
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
@@ -401,25 +389,29 @@ function speakSequence(texts, lang="ja-JP"){
 
   const speakNext = ()=>{
     if (i >= arr.length) return;
-    const u = new SpeechSynthesisUtterance(arr[i]);
-    u.lang = lang;
-    if (!Number.isNaN(rate)) u.rate = rate;
-    if (v) u.voice = v;
-    u.onerror = (ev)=>{ showErr("音声エラー: " + (ev?.error || "unknown")); };
-    u.onend = ()=>{ i++; setTimeout(speakNext, IS_IOS ? 120 : 0); };
+    try{
+      const u = new SpeechSynthesisUtterance(arr[i]);
+      u.lang = lang;
+      if (!Number.isNaN(rate)) u.rate = rate;
+      if (v) u.voice = v;
+      u.onend = ()=>{ i++; speakNext(); };
 
-    const doSpeak = ()=>{
-      try{ window.speechSynthesis.resume?.(); }catch(e){}
-      try{ window.speechSynthesis.speak(u); }catch(e){ showErr("音声エラー: " + (e.message||e)); }
-    };
-    if (IS_IOS) setTimeout(doSpeak, 150);
-    else doSpeak();
+      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
+      window.speechSynthesis.speak(u);
+    }catch(e){
+      try{ setStatus("音声エラー: " + (e?.message || e)); }catch(_){}
+    }
   };
-  speakNext();
+
+  if (isIOS()){
+    setTimeout(speakNext, 180);
+  }else{
+    speakNext();
+  }
 }
 
-
-// 危険ワード（ひらがなベース）: 必要なら追加してOK
+// 危険ワード
+（ひらがなベース）: 必要なら追加してOK
 const DANGER_DICT = [
   { hira:"ごえん", note:"誤嚥リスク。姿勢・一口量・むせを確認。" },
   { hira:"むせ", note:"むせ（誤嚥のサイン）。食事を止めて落ち着かせる。" },
@@ -1099,13 +1091,12 @@ async function init(){
     $("uiLabelMode")?.addEventListener("change", ()=>{ saveSettings(); rebuildSelectLabels(); renderHistory(); renderStats(); });
 
     // Speak suggested
-    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ unlockTts(); if (lastSuggested) speakOnce(lastSuggested.hira || ""); else showErr("まだ提案文がありません"); });
-    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ unlockTts(); if (lastSuggested) speakOnce(lastSuggested.romaji || ""); else showErr("まだ提案文がありません"); });
+    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
+    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });
 
     // Click-to-speak in history (event delegation)
     $("history")?.addEventListener("click", (e)=>{
       const btn = e.target.closest(".ttsBtn");
-      unlockTts();
       if (!btn) return;
       const idx = Number(btn.dataset.idx || -1);
       const field = btn.dataset.field || "";
