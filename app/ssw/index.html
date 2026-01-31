@@ -53,7 +53,6 @@
     .kRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
     .kBtns{ display:flex; gap:6px; }
     .ttsBtn{ border:1px solid var(--bd); background:#fff; padding:4px 8px; border-radius:999px; font-size:12px; cursor:pointer; }
-.ttsBtn.isDisabled{opacity:.35;}
     .ttsBtn:active{ transform: translateY(1px); }
     mark.hlDanger{ background:#ffe4e6; padding:0 2px; border-radius:6px; }
     mark.hlKeigo{ background:#dbeafe; padding:0 2px; border-radius:6px; }
@@ -283,6 +282,44 @@ const ls = {
   set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 };
 
+// --- debug / toast ---
+function showErr(msg){
+  const el = $("errBox");
+  if (!el) return;
+  el.style.display = "block";
+  el.textContent = String(msg || "");
+}
+function showOk(msg){
+  const el = $("okBox");
+  if (!el) return;
+  el.style.display = "block";
+  el.textContent = String(msg || "");
+}
+window.addEventListener("error", (e)=>{ try{ showErr("JSエラー: " + (e.message||e.error||"")); }catch(_){ } });
+window.addEventListener("unhandledrejection", (e)=>{ try{ showErr("Promiseエラー: " + (e.reason?.message||e.reason||"")); }catch(_){ } });
+
+const IS_IOS = /iP(hone|od|ad)/.test(navigator.userAgent);
+let _ttsUnlocked = false;
+function unlockTts(){
+  if (_ttsUnlocked) return;
+  if (!window.speechSynthesis) return;
+  try{
+    // iOS Safariは最初のユーザー操作で一度 speak/resume を通すと安定しやすい
+    window.speechSynthesis.resume?.();
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0; // 無音で解錠
+    u.onend = ()=>{ _ttsUnlocked = true; };
+    u.onerror = ()=>{ _ttsUnlocked = true; };
+    window.speechSynthesis.speak(u);
+    // すぐ止めてもOK（解錠だけ）
+    window.speechSynthesis.cancel();
+    _ttsUnlocked = true;
+  }catch(e){
+    _ttsUnlocked = true;
+  }
+}
+
+
 function detectVariantFromPath(){
   const p = location.pathname || "/";
   const m = p.match(/\/app\/(trainee|ssw)(\/|$)/);
@@ -321,35 +358,66 @@ function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-  stopTts();
+
+  // iOS Safari対策：最初に解錠、cancel直後は少し待つ
+  unlockTts();
+  try{ window.speechSynthesis.resume?.(); }catch(e){}
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+
   const u = new SpeechSynthesisUtterance(t);
   u.lang = lang;
+
   const rate = Number($("ttsRate")?.value || 1);
   if (!Number.isNaN(rate)) u.rate = rate;
+
   const v = pickVoice(lang.split("-")[0]);
   if (v) u.voice = v;
-  window.speechSynthesis.speak(u);
+
+  u.onstart = ()=>{ /*showOk("🔊 再生中…");*/ };
+  u.onerror = (ev)=>{ showErr("音声エラー: " + (ev?.error || "unknown")); };
+
+  const doSpeak = ()=>{
+    try{ window.speechSynthesis.resume?.(); }catch(e){}
+    try{ window.speechSynthesis.speak(u); }catch(e){ showErr("音声エラー: " + (e.message||e)); }
+  };
+
+  if (IS_IOS) setTimeout(doSpeak, 150);
+  else doSpeak();
 }
+
 
 function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-  stopTts();
+
+  unlockTts();
+  try{ window.speechSynthesis.resume?.(); }catch(e){}
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
   let i = 0;
+
   const speakNext = ()=>{
     if (i >= arr.length) return;
     const u = new SpeechSynthesisUtterance(arr[i]);
     u.lang = lang;
     if (!Number.isNaN(rate)) u.rate = rate;
     if (v) u.voice = v;
-    u.onend = ()=>{ i++; speakNext(); };
-    window.speechSynthesis.speak(u);
+    u.onerror = (ev)=>{ showErr("音声エラー: " + (ev?.error || "unknown")); };
+    u.onend = ()=>{ i++; setTimeout(speakNext, IS_IOS ? 120 : 0); };
+
+    const doSpeak = ()=>{
+      try{ window.speechSynthesis.resume?.(); }catch(e){}
+      try{ window.speechSynthesis.speak(u); }catch(e){ showErr("音声エラー: " + (e.message||e)); }
+    };
+    if (IS_IOS) setTimeout(doSpeak, 150);
+    else doSpeak();
   };
   speakNext();
 }
+
 
 // 危険ワード（ひらがなベース）: 必要なら追加してOK
 const DANGER_DICT = [
@@ -746,7 +814,7 @@ function triHtml(tri, opts = {}){
         <div class="kRow">
           <div class="k">日本語（ひらがな）</div>
           <div class="kBtns">
-            <button class="ttsBtn ${canHira ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="hira" data-allow="${canHira ? 1 : 0}" aria-disabled="${canHira ? "false" : "true"}" title="読み上げ">▶</button>
+            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>
@@ -759,7 +827,7 @@ function triHtml(tri, opts = {}){
         <div class="kRow">
           <div class="k">ローマ字</div>
           <div class="kBtns">
-            <button class="ttsBtn ${canRoma ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="romaji" data-allow="${canRoma ? 1 : 0}" aria-disabled="${canRoma ? "false" : "true"}" title="読み上げ">▶</button>
+            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="romaji" ${canRoma ? "" : "disabled"} title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(romaText, hl.dangerRoma, hl.keigoRoma)}</div>
@@ -1031,28 +1099,14 @@ async function init(){
     $("uiLabelMode")?.addEventListener("change", ()=>{ saveSettings(); rebuildSelectLabels(); renderHistory(); renderStats(); });
 
     // Speak suggested
-    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
-    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });
+    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ unlockTts(); if (lastSuggested) speakOnce(lastSuggested.hira || ""); else showErr("まだ提案文がありません"); });
+    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ unlockTts(); if (lastSuggested) speakOnce(lastSuggested.romaji || ""); else showErr("まだ提案文がありません"); });
 
     // Click-to-speak in history (event delegation)
     $("history")?.addEventListener("click", (e)=>{
       const btn = e.target.closest(".ttsBtn");
+      unlockTts();
       if (!btn) return;
-      const ttsMode = ($("ttsSel")?.value || "off");
-      if (ttsMode === "off"){
-        setStatus("音声読み上げ（TTS）がOFFです");
-        $("okBox").style.display="block";
-        $("okBox").textContent = "音声読み上げ（TTS）がOFFです。上の設定でONにしてください。";
-        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
-        return;
-      }
-      if (btn.dataset.allow === "0"){
-        setStatus("この表示の読み上げは無効です");
-        $("okBox").style.display="block";
-        $("okBox").textContent = "この表示の読み上げは無効です（TTS設定を「両方」にすると使えます）。";
-        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
-        return;
-      }
       const idx = Number(btn.dataset.idx || -1);
       const field = btn.dataset.field || "";
       const item = (history || [])[idx];
