@@ -53,6 +53,7 @@
     .kRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
     .kBtns{ display:flex; gap:6px; }
     .ttsBtn{ border:1px solid var(--bd); background:#fff; padding:4px 8px; border-radius:999px; font-size:12px; cursor:pointer; }
+.ttsBtn.isDisabled{opacity:.35;}
     .ttsBtn:active{ transform: translateY(1px); }
     mark.hlDanger{ background:#ffe4e6; padding:0 2px; border-radius:6px; }
     mark.hlKeigo{ background:#dbeafe; padding:0 2px; border-radius:6px; }
@@ -311,76 +312,30 @@ function stopTts(){
   try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
 }
 
-
-function ttsResumeSafe(){
-  try{ if (window.speechSynthesis) window.speechSynthesis.resume(); }catch(e){}
-}
-
-function ensureVoicesReady(timeoutMs=1200){
-  return new Promise(resolve=>{
-    if (!window.speechSynthesis) return resolve([]);
-    const start = Date.now();
-    const check = ()=>{
-      try{ refreshVoices(); }catch(e){}
-      if ((_voices && _voices.length) || (Date.now() - start) > timeoutMs){
-        return resolve(_voices || []);
-      }
-      setTimeout(check, 100);
-    };
-    check();
-  });
-}
-
-// iOS Safari 対策：ユーザー操作後に TTS を一度だけアンロック
-let _ttsUnlocked = false;
-function unlockTtsOnce(){
-  if (_ttsUnlocked) return;
-  _ttsUnlocked = true;
-  try{
-    if (!window.speechSynthesis) return;
-    refreshVoices();
-    const u = new SpeechSynthesisUtterance(" . ");
-    u.volume = 0;
-    u.rate = 1;
-    window.speechSynthesis.speak(u);
-    window.speechSynthesis.cancel();
-  }catch(e){}
-}
-window.addEventListener("pointerdown", unlockTtsOnce, { once:true });
-window.addEventListener("touchend", unlockTtsOnce, { once:true });
-
 function pickVoice(langPrefix){
   if (!_voices || !_voices.length) refreshVoices();
   return (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith(langPrefix.toLowerCase())) || null;
 }
 
-async function speakOnce(text, lang="ja-JP"){
+function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-  unlockTtsOnce();
   stopTts();
-  ttsResumeSafe();
-  await ensureVoicesReady();
   const u = new SpeechSynthesisUtterance(t);
   u.lang = lang;
   const rate = Number($("ttsRate")?.value || 1);
   if (!Number.isNaN(rate)) u.rate = rate;
   const v = pickVoice(lang.split("-")[0]);
   if (v) u.voice = v;
-  // iOS は cancel() 直後に speak すると無音になることがあるので少し待つ
-  setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 30);
+  window.speechSynthesis.speak(u);
 }
 
-
-async function speakSequence(texts, lang="ja-JP"){
+function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-  unlockTtsOnce();
   stopTts();
-  ttsResumeSafe();
-  await ensureVoicesReady();
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
   let i = 0;
@@ -391,8 +346,7 @@ async function speakSequence(texts, lang="ja-JP"){
     if (!Number.isNaN(rate)) u.rate = rate;
     if (v) u.voice = v;
     u.onend = ()=>{ i++; speakNext(); };
-    // iOS 対策：次も少し待ってから speak
-    setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 30);
+    window.speechSynthesis.speak(u);
   };
   speakNext();
 }
@@ -792,7 +746,7 @@ function triHtml(tri, opts = {}){
         <div class="kRow">
           <div class="k">日本語（ひらがな）</div>
           <div class="kBtns">
-            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
+            <button class="ttsBtn ${canHira ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="hira" data-allow="${canHira ? 1 : 0}" aria-disabled="${canHira ? "false" : "true"}" title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>
@@ -805,7 +759,7 @@ function triHtml(tri, opts = {}){
         <div class="kRow">
           <div class="k">ローマ字</div>
           <div class="kBtns">
-            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="romaji" ${canRoma ? "" : "disabled"} title="読み上げ">▶</button>
+            <button class="ttsBtn ${canRoma ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="romaji" data-allow="${canRoma ? 1 : 0}" aria-disabled="${canRoma ? "false" : "true"}" title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(romaText, hl.dangerRoma, hl.keigoRoma)}</div>
@@ -1084,6 +1038,21 @@ async function init(){
     $("history")?.addEventListener("click", (e)=>{
       const btn = e.target.closest(".ttsBtn");
       if (!btn) return;
+      const ttsMode = ($("ttsSel")?.value || "off");
+      if (ttsMode === "off"){
+        setStatus("音声読み上げ（TTS）がOFFです");
+        $("okBox").style.display="block";
+        $("okBox").textContent = "音声読み上げ（TTS）がOFFです。上の設定でONにしてください。";
+        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+        return;
+      }
+      if (btn.dataset.allow === "0"){
+        setStatus("この表示の読み上げは無効です");
+        $("okBox").style.display="block";
+        $("okBox").textContent = "この表示の読み上げは無効です（TTS設定を「両方」にすると使えます）。";
+        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+        return;
+      }
       const idx = Number(btn.dataset.idx || -1);
       const field = btn.dataset.field || "";
       const item = (history || [])[idx];
