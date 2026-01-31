@@ -282,15 +282,6 @@ const ls = {
   set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 };
 
-// Safari/埋め込みブラウザ対策: replaceState が使えない/例外になる環境がある
-function safeReplaceState(urlStr){
-  try{
-    if (window.history && typeof window.history.replaceState === "function") {
-      window.history.replaceState({}, "", urlStr);
-    }
-  }catch(e){}
-}
-
 function detectVariantFromPath(){
   const p = location.pathname || "/";
   const m = p.match(/\/app\/(trainee|ssw)(\/|$)/);
@@ -320,30 +311,76 @@ function stopTts(){
   try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
 }
 
+
+function ttsResumeSafe(){
+  try{ if (window.speechSynthesis) window.speechSynthesis.resume(); }catch(e){}
+}
+
+function ensureVoicesReady(timeoutMs=1200){
+  return new Promise(resolve=>{
+    if (!window.speechSynthesis) return resolve([]);
+    const start = Date.now();
+    const check = ()=>{
+      try{ refreshVoices(); }catch(e){}
+      if ((_voices && _voices.length) || (Date.now() - start) > timeoutMs){
+        return resolve(_voices || []);
+      }
+      setTimeout(check, 100);
+    };
+    check();
+  });
+}
+
+// iOS Safari 対策：ユーザー操作後に TTS を一度だけアンロック
+let _ttsUnlocked = false;
+function unlockTtsOnce(){
+  if (_ttsUnlocked) return;
+  _ttsUnlocked = true;
+  try{
+    if (!window.speechSynthesis) return;
+    refreshVoices();
+    const u = new SpeechSynthesisUtterance(" . ");
+    u.volume = 0;
+    u.rate = 1;
+    window.speechSynthesis.speak(u);
+    window.speechSynthesis.cancel();
+  }catch(e){}
+}
+window.addEventListener("pointerdown", unlockTtsOnce, { once:true });
+window.addEventListener("touchend", unlockTtsOnce, { once:true });
+
 function pickVoice(langPrefix){
   if (!_voices || !_voices.length) refreshVoices();
   return (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith(langPrefix.toLowerCase())) || null;
 }
 
-function speakOnce(text, lang="ja-JP"){
+async function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  unlockTtsOnce();
   stopTts();
+  ttsResumeSafe();
+  await ensureVoicesReady();
   const u = new SpeechSynthesisUtterance(t);
   u.lang = lang;
   const rate = Number($("ttsRate")?.value || 1);
   if (!Number.isNaN(rate)) u.rate = rate;
   const v = pickVoice(lang.split("-")[0]);
   if (v) u.voice = v;
-  window.speechSynthesis.speak(u);
+  // iOS は cancel() 直後に speak すると無音になることがあるので少し待つ
+  setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 30);
 }
 
-function speakSequence(texts, lang="ja-JP"){
+
+async function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  unlockTtsOnce();
   stopTts();
+  ttsResumeSafe();
+  await ensureVoicesReady();
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
   let i = 0;
@@ -354,7 +391,8 @@ function speakSequence(texts, lang="ja-JP"){
     if (!Number.isNaN(rate)) u.rate = rate;
     if (v) u.voice = v;
     u.onend = ()=>{ i++; speakNext(); };
-    window.speechSynthesis.speak(u);
+    // iOS 対策：次も少し待ってから speak
+    setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 30);
   };
   speakNext();
 }
@@ -951,9 +989,6 @@ async function verifyFromUrl(){
     if (j.paid){
       unlocked = true;
       ls.set("aiga_unlocked_"+VARIANT, true);
-      if (j.subscription_id){
-        ls.set("aiga_sub_"+VARIANT, j.subscription_id);
-      }
       $("okBox").style.display="block";
       $("okBox").textContent = "✅ 解除しました（決済確認済み）";
       $("lock").style.display="none";
@@ -967,32 +1002,8 @@ async function verifyFromUrl(){
     // clean URL (keep path)
     url.searchParams.delete("success");
     url.searchParams.delete("session_id");
-    safeReplaceState(url.pathname + url.search);
+    history.replaceState({}, "", url.pathname + url.search);
     setStatus("準備OK");
-  }
-}
-
-// 解約/期限切れを Stripe 側で検知して自動ロック（解除フラグを更新）
-async function syncUnlockWithStripe(){
-  const subId = ls.get("aiga_sub_"+VARIANT, null);
-  if (!subId) return;
-  try{
-    const r = await fetch(`/api/subscription-status?subscription_id=${encodeURIComponent(subId)}`, { cache: "no-store" });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j?.error || "status error");
-    if (j.active){
-      if (!unlocked){
-        unlocked = true;
-        ls.set("aiga_unlocked_"+VARIANT, true);
-      }
-    }else{
-      if (unlocked){
-        unlocked = false;
-        ls.set("aiga_unlocked_"+VARIANT, false);
-      }
-    }
-  }catch(e){
-    // 通信失敗時は現状維持（オフライン等）
   }
 }
 
@@ -1033,7 +1044,6 @@ async function init(){
     if ($("ttsAuto")) $("ttsAuto").value = SETTINGS.ttsAuto || "off";
     if ($("uiLabelMode")) $("uiLabelMode").value = SETTINGS.uiLabelMode || "jp_id";
 
-    // まずローカル解除状態を表示しつつ、Stripe側の状態で補正する
     setTrialInfo();
 
     renderHistory();
@@ -1042,10 +1052,6 @@ async function init(){
     setStatus("準備OK");
 
     await verifyFromUrl();
-    await syncUnlockWithStripe();
-    setTrialInfo();
-    // 解除が外れた & 試用回数を使い切っているなら、起動時にロックを出す
-    maybeLock();
 
     // events
     $("sceneSel").addEventListener("change", updateCategories);
