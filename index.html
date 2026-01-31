@@ -955,10 +955,14 @@ async function verifyFromUrl(){
     // clean URL (keep path)
     url.searchParams.delete("success");
     url.searchParams.delete("session_id");
-    if (window.history && typeof window.history.replaceState === "function") {
-      window.history.replaceState({}, "", url.pathname + url.search);
-    }
-    setStatus("準備OK");
+    // clean URL (keep path) - Safari-safe
+try {
+  const _h = window.history;
+  if (_h && typeof _h.replaceState === "function") {
+    _h.replaceState.call(_h, {}, "", url.pathname + url.search);
+  }
+} catch (_) { /* ignore */ }
+setStatus("準備OK");
   }
 }
 
