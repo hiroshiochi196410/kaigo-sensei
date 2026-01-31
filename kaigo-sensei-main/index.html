@@ -317,24 +317,42 @@ function ensureVoicesLoaded(callback) {
     return;
   }
   
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    _voices = voices;
+  // iOS Safari: getVoices()を複数回呼ぶ必要がある
+  const loadVoices = () => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      _voices = voices;
+      console.log('Voices available:', voices.length, voices.map(v => v.lang).join(', '));
+      return true;
+    }
+    return false;
+  };
+  
+  // すぐに取得を試みる
+  if (loadVoices()) {
     if (callback) callback();
     return;
   }
   
-  // 音声リストが空の場合、イベントを待つ
+  // iOS Safari: onvoiceschangedイベントを待つ
+  let fired = false;
   window.speechSynthesis.onvoiceschanged = () => {
-    refreshVoices();
+    if (fired) return;
+    fired = true;
+    loadVoices();
     if (callback) callback();
   };
   
-  // タイムアウト設定（念のため）
-  setTimeout(() => {
-    refreshVoices();
-    if (callback) callback();
-  }, 1000);
+  // フォールバック: 定期的に確認
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    if (loadVoices() || attempts > 10) {
+      clearInterval(interval);
+      if (!fired && callback) callback();
+      fired = true;
+    }
+  }, 100);
 }
 
 // モバイル対策: 最初のユーザーインタラクションで音声を初期化
@@ -342,13 +360,33 @@ function initTtsOnFirstInteraction() {
   if (_ttsInitialized || !window.speechSynthesis) return;
   
   try {
-    // ダミーの短い発話で初期化（無音）
-    const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0;
+    // iOS対策: getVoices()を明示的に呼ぶ
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      _voices = voices;
+      console.log('Voices loaded:', voices.length);
+    }
+    
+    // iOS Safari: 極短い発話で初期化（重要）
+    const u = new SpeechSynthesisUtterance('　'); // 全角スペース
+    u.volume = 0.01; // 完全な0だと効果がない場合がある
+    u.rate = 10; // 高速で終わらせる
+    u.lang = 'ja-JP';
+    
+    u.onend = () => {
+      _ttsInitialized = true;
+      console.log('TTS initialized successfully');
+    };
+    
+    u.onerror = (e) => {
+      console.log('TTS init error (expected on some devices):', e.error);
+      _ttsInitialized = true; // エラーでも初期化済みとする
+    };
+    
     window.speechSynthesis.speak(u);
-    _ttsInitialized = true;
   } catch(e) {
     console.log('TTS initialization failed:', e);
+    _ttsInitialized = true; // 失敗しても初期化済みとする
   }
 }
 
@@ -383,43 +421,62 @@ function pickVoice(langPrefix){
 function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
-  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  if (!window.speechSynthesis){ 
+    console.error("speechSynthesis not available");
+    return; 
+  }
   
-  // iOS対策: cancel後すぐにspeakすると失敗することがあるため、小さな遅延を入れる
-  const doSpeak = () => {
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = lang;
-    const rate = Number($("ttsRate")?.value || 1);
-    if (!Number.isNaN(rate)) u.rate = rate;
-    const v = pickVoice(lang.split("-")[0]);
-    if (v) u.voice = v;
-    
-    // iOS対策: エラーハンドリングを追加
-    u.onerror = (event) => {
-      console.error('TTS Error:', event);
-      // エラー時は再試行
-      if (event.error === 'canceled' || event.error === 'interrupted') {
-        setTimeout(() => window.speechSynthesis.speak(u), 100);
-      }
-    };
-    
-    window.speechSynthesis.speak(u);
+  // iOS対策: 音声リストを明示的に取得
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) _voices = voices;
+  
+  // iOS Safari重要: 既存の発話を停止（同期的に）
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+  }
+  
+  // iOS Safari重要: setTimeoutを使わず即座に実行
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = lang;
+  const rate = Number($("ttsRate")?.value || 1);
+  if (!Number.isNaN(rate)) u.rate = rate;
+  
+  // iOS対策: 音声を明示的に設定
+  const v = pickVoice(lang.split("-")[0]);
+  if (v) u.voice = v;
+  
+  // デバッグ用
+  u.onstart = () => { console.log('TTS started:', t.substring(0, 20)); };
+  u.onend = () => { console.log('TTS ended'); };
+  u.onerror = (event) => { 
+    console.error('TTS Error:', event.error, event); 
   };
   
-  // 既存の読み上げを停止
-  if (window.speechSynthesis.speaking) {
-    stopTts();
-    // iOS Safari対策: cancel後に少し待つ
-    setTimeout(doSpeak, 100);
-  } else {
-    doSpeak();
+  // iOS Safari重要: ユーザーインタラクションから直接呼ぶ
+  try {
+    window.speechSynthesis.speak(u);
+    console.log('TTS speak called');
+  } catch(e) {
+    console.error('TTS speak failed:', e);
   }
 }
 
 function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
-  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
+  if (!window.speechSynthesis){ 
+    console.error("speechSynthesis not available");
+    return; 
+  }
+  
+  // iOS対策: 音声リストを明示的に取得
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) _voices = voices;
+  
+  // iOS Safari重要: 既存の発話を停止（同期的に）
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+  }
   
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
@@ -427,37 +484,32 @@ function speakSequence(texts, lang="ja-JP"){
   
   const speakNext = ()=>{
     if (i >= arr.length) return;
+    
     const u = new SpeechSynthesisUtterance(arr[i]);
     u.lang = lang;
     if (!Number.isNaN(rate)) u.rate = rate;
     if (v) u.voice = v;
     
-    // iOS対策: エラーハンドリング
-    u.onerror = (event) => {
-      console.error('TTS Sequence Error:', event);
-      if (event.error === 'canceled' || event.error === 'interrupted') {
-        // エラー時は次の項目へ
-        i++;
-        setTimeout(speakNext, 100);
-      }
-    };
-    
     u.onend = ()=>{ 
       i++; 
-      // iOS対策: 次の発話まで少し間隔を空ける
-      setTimeout(speakNext, 50); 
+      speakNext(); // iOS Safari: onendから直接呼ぶのはOK
     };
     
-    window.speechSynthesis.speak(u);
+    u.onerror = (event) => {
+      console.error('TTS Sequence Error:', event.error);
+      i++;
+      speakNext();
+    };
+    
+    try {
+      window.speechSynthesis.speak(u);
+    } catch(e) {
+      console.error('TTS speak failed:', e);
+    }
   };
   
-  // 既存の読み上げを停止してから開始
-  if (window.speechSynthesis.speaking) {
-    stopTts();
-    setTimeout(speakNext, 100);
-  } else {
-    speakNext();
-  }
+  // iOS Safari重要: ユーザーインタラクションから直接最初を呼ぶ
+  speakNext();
 }
 
 // 危険ワード（ひらがなベース）: 必要なら追加してOK
