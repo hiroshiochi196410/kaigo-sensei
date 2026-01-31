@@ -559,7 +559,10 @@ let lastAnnotations = null;
 
 let history = ls.get("aiga_history_"+VARIANT, []);
 let unlocked = ls.get("aiga_unlocked_"+VARIANT, false);
+let unlockSource = ls.get("aiga_unlockSource_"+VARIANT, ""); // "stripe" or "code"
+let subscriptionId = ls.get("aiga_subscriptionId_"+VARIANT, "");
 let trialUsed = ls.get("aiga_trialUsed_"+VARIANT, 0);
+
 
 /* ========= load config/examples ========= */
 async function loadJson(path){
@@ -903,6 +906,37 @@ async function send(){
 }
 
 /* ========= Stripe unlock ========= */
+
+async function checkSubscriptionStatusOnLoad(){
+  // Stripe決済で解除した人だけ、起動時に購読状態を確認する
+  if (!unlocked) return;
+  if (unlockSource !== "stripe") return;
+  if (!subscriptionId) return; // 旧データ互換：IDが無ければ何もしない
+
+  try{
+    const r = await fetch(`/api/subscription-status?subscription_id=${encodeURIComponent(subscriptionId)}`, { cache: "no-store" });
+    const j = await r.json().catch(()=>({}));
+    if (!r.ok) return; // 失敗時はロックしない（ネットワーク/Stripe障害で誤ロック防止）
+
+    if (!j.active){
+      // 解約・失効：強制ロック（お試し回数も使い切った扱いにする）
+      unlocked = false;
+      unlockSource = "";
+      ls.set("aiga_unlocked_"+VARIANT, false);
+      ls.set("aiga_unlockSource_"+VARIANT, "");
+      // 失効後は再購読が必要なので trialも終了扱いにして確実にロック表示
+      const limit = CFG?.trial_limit ?? 3;
+      trialUsed = limit;
+      ls.set("aiga_trialUsed_"+VARIANT, trialUsed);
+
+      $("lock").style.display = "flex";
+      $("lockMsg").textContent = "購読が無効になりました。再度 Stripe で購読して解除してください。";
+      setTrialInfo();
+    }
+  }catch(_){
+    // 失敗時は何もしない（誤ロック防止）
+  }
+}
 async function startCheckout() {
   const msg = $("lockMsg");
   const plan = document.querySelector('input[name="plan"]:checked')?.value || ((VARIANT === "ssw") ? "pro" : "light");
@@ -939,9 +973,16 @@ async function verifyFromUrl(){
     const r = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error || "verify error");
+
     if (j.paid){
       unlocked = true;
+      unlockSource = "stripe";
+      subscriptionId = j.subscription_id || subscriptionId || "";
+
       ls.set("aiga_unlocked_"+VARIANT, true);
+      ls.set("aiga_unlockSource_"+VARIANT, unlockSource);
+      if (subscriptionId) ls.set("aiga_subscriptionId_"+VARIANT, subscriptionId);
+
       $("okBox").style.display="block";
       $("okBox").textContent = "✅ 解除しました（決済確認済み）";
       $("lock").style.display="none";
@@ -952,17 +993,16 @@ async function verifyFromUrl(){
   }catch(e){
     $("lockMsg").textContent = "決済確認に失敗: " + String(e.message || e);
   }finally{
-    // clean URL (keep path)
-    url.searchParams.delete("success");
-    url.searchParams.delete("session_id");
-    // clean URL (keep path) - Safari-safe
-try {
-  const _h = window.history;
-  if (_h && typeof _h.replaceState === "function") {
-    _h.replaceState.call(_h, {}, "", url.pathname + url.search);
-  }
-} catch (_) { /* ignore */ }
-setStatus("準備OK");
+    // clean URL (keep path) - Safari safe
+    try{
+      url.searchParams.delete("success");
+      url.searchParams.delete("session_id");
+      const _h = window.history;
+      if (_h && typeof _h.replaceState === "function") {
+        _h.replaceState.call(_h, {}, "", url.pathname + url.search);
+      }
+    }catch(_){}
+    setStatus("準備OK");
   }
 }
 
@@ -971,7 +1011,11 @@ function unlockByCode(){
   if (!code) return;
   if (code === (CFG.unlock_code || "")){
     unlocked = true;
+    unlockSource = "code";
+    subscriptionId = "";
     ls.set("aiga_unlocked_"+VARIANT, true);
+    ls.set("aiga_unlockSource_"+VARIANT, unlockSource);
+    ls.set("aiga_subscriptionId_"+VARIANT, "");
     $("lock").style.display="none";
     $("lockMsg").textContent = "";
     setTrialInfo();
@@ -1011,6 +1055,8 @@ async function init(){
     setStatus("準備OK");
 
     await verifyFromUrl();
+
+    await checkSubscriptionStatusOnLoad();
 
     // events
     $("sceneSel").addEventListener("change", updateCategories);
