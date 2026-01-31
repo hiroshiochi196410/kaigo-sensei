@@ -956,8 +956,8 @@ async function verifyFromUrl(){
     url.searchParams.delete("success");
     url.searchParams.delete("session_id");
     if (window.history && typeof window.history.replaceState === "function") {
-  window.history.replaceState({}, "", url.pathname + url.search);
-}
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
     setStatus("準備OK");
   }
 }
