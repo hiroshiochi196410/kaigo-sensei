@@ -275,6 +275,8 @@
 <script>
 /* ========= helpers ========= */
 const $ = (id) => document.getElementById(id);
+
+const strVal = (v) => String(v ?? "");
 const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 const ls = {
@@ -307,34 +309,8 @@ if (window.speechSynthesis){
   window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
-let _ttsUnlocked = false;
-function isIOS(){ return /iP(hone|od|ad)/.test(navigator.userAgent || ""); }
-
-function unlockTtsOnce(){
-  if (_ttsUnlocked) return;
-  if (!window.speechSynthesis) return;
-  try{
-    // iOS Safari: speechSynthesis is often locked until the first user gesture.
-    const u = new SpeechSynthesisUtterance(" ");
-    u.lang = "ja-JP";
-    u.volume = 0;
-    u.rate = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-    setTimeout(()=>{ try{ window.speechSynthesis.cancel(); }catch(e){} }, 80);
-  }catch(e){}
-  _ttsUnlocked = true;
-}
-document.addEventListener("touchstart", unlockTtsOnce, { once:true, passive:true });
-document.addEventListener("click", unlockTtsOnce, { once:true });
-
 function stopTts(){
-  try{
-    if (window.speechSynthesis){
-      window.speechSynthesis.cancel();
-      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
-    }
-  }catch(e){}
+  try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
 }
 
 function pickVoice(langPrefix){
@@ -346,72 +322,37 @@ function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-
-  unlockTtsOnce();
-
-  const run = ()=>{
-    try{
-      const u = new SpeechSynthesisUtterance(t);
-      u.lang = lang;
-      const rate = Number($("ttsRate")?.value || 1);
-      if (!Number.isNaN(rate)) u.rate = rate;
-      const v = pickVoice(lang.split("-")[0]);
-      if (v) u.voice = v;
-
-      // iOS Safari sometimes stays paused after cancel()
-      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
-      window.speechSynthesis.speak(u);
-    }catch(e){
-      try{ setStatus("音声エラー: " + (e?.message || e)); }catch(_){}
-    }
-  };
-
-  // iOS Safari bug: calling speak() immediately after cancel() can do nothing.
   stopTts();
-  if (isIOS()){
-    setTimeout(run, 180);
-  }else{
-    run();
-  }
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = lang;
+  const rate = Number($("ttsRate")?.value || 1);
+  if (!Number.isNaN(rate)) u.rate = rate;
+  const v = pickVoice(lang.split("-")[0]);
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
 }
 
 function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
   if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
-
-  unlockTtsOnce();
   stopTts();
-
   const rate = Number($("ttsRate")?.value || 1);
   const v = pickVoice(lang.split("-")[0]);
   let i = 0;
-
   const speakNext = ()=>{
     if (i >= arr.length) return;
-    try{
-      const u = new SpeechSynthesisUtterance(arr[i]);
-      u.lang = lang;
-      if (!Number.isNaN(rate)) u.rate = rate;
-      if (v) u.voice = v;
-      u.onend = ()=>{ i++; speakNext(); };
-
-      if (window.speechSynthesis.resume) window.speechSynthesis.resume();
-      window.speechSynthesis.speak(u);
-    }catch(e){
-      try{ setStatus("音声エラー: " + (e?.message || e)); }catch(_){}
-    }
+    const u = new SpeechSynthesisUtterance(arr[i]);
+    u.lang = lang;
+    if (!Number.isNaN(rate)) u.rate = rate;
+    if (v) u.voice = v;
+    u.onend = ()=>{ i++; speakNext(); };
+    window.speechSynthesis.speak(u);
   };
-
-  if (isIOS()){
-    setTimeout(speakNext, 180);
-  }else{
-    speakNext();
-  }
+  speakNext();
 }
 
-// 危険ワード
-（ひらがなベース）: 必要なら追加してOK
+// 危険ワード（ひらがなベース）: 必要なら追加してOK
 const DANGER_DICT = [
   { hira:"ごえん", note:"誤嚥リスク。姿勢・一口量・むせを確認。" },
   { hira:"むせ", note:"むせ（誤嚥のサイン）。食事を止めて落ち着かせる。" },

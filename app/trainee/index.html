@@ -275,6 +275,8 @@
 <script>
 /* ========= helpers ========= */
 const $ = (id) => document.getElementById(id);
+
+const strVal = (v) => String(v ?? "");
 const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 const ls = {
@@ -297,97 +299,60 @@ function detectLangAuto(text){
 }
 
 /* ========= TTS / annotation / stats helpers ========= */
-/* ========= TTS / annotation / stats helpers ========= */
 const DEFAULT_SETTINGS = { ttsSel:"hira", ttsRate:"1", ttsAuto:"off", uiLabelMode:"jp_id" };
-
-// ---- Google TTS(mp3) 再生：Safariでも安定 ----
-let _ttsAbort = false;
-let _ttsAudio = null;
+let _voices = [];
+function refreshVoices(){
+  try{ _voices = (window.speechSynthesis ? window.speechSynthesis.getVoices() : []) || []; }catch(e){ _voices=[]; }
+}
+if (window.speechSynthesis){
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
+}
 
 function stopTts(){
-  _ttsAbort = true;
-  try{
-    if (_ttsAudio){
-      _ttsAudio.pause();
-      _ttsAudio.currentTime = 0;
-    }
-  }catch(e){}
-  _ttsAudio = null;
+  try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
 }
 
-// /api/tts から mp3 を取得して再生（再生終了まで待つ）
-async function playTTS(text, lang="ja-JP"){
+function pickVoice(langPrefix){
+  if (!_voices || !_voices.length) refreshVoices();
+  return (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith(langPrefix.toLowerCase())) || null;
+}
+
+function speakOnce(text, lang="ja-JP"){
   const t = String(text || "").trim();
   if (!t) return;
-
-  // いまのUIの速度（0.8 / 1 / 1.2）をそのままAPIへ渡す
-  const rate = Number($("ttsRate")?.value || 1);
-  const payload = { text: t, rate: (Number.isNaN(rate) ? 1 : rate) };
-
-  const res = await fetch("/api/tts", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok){
-    const msg = await res.text();
-    throw new Error("TTS API error: " + msg);
-  }
-
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-
-  // 既に鳴っていたら停止して入れ替える
+  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
   stopTts();
-  _ttsAbort = false;
-
-  _ttsAudio = new Audio(url);
-  _ttsAudio.preload = "auto";
-
-  await new Promise((resolve, reject) => {
-    _ttsAudio.onended = () => {
-      try{ URL.revokeObjectURL(url); }catch(e){}
-      resolve();
-    };
-    _ttsAudio.onerror = (e) => {
-      try{ URL.revokeObjectURL(url); }catch(e){}
-      reject(new Error("audio error"));
-    };
-
-    // iPhone Safariは「タップ直後の呼び出し」なら再生OK
-    _ttsAudio.play().catch(reject);
-  });
-}
-
-// 既存コードが speakOnce/speakSequence を呼んでいるので、名前は維持
-function speakOnce(text, lang="ja-JP"){
-  playTTS(text, lang).catch((e)=>{
-    console.warn(e);
-    alert("おんせいのさいせいにしっぱいしました。設定や通信をかくにんしてください。");
-  });
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = lang;
+  const rate = Number($("ttsRate")?.value || 1);
+  if (!Number.isNaN(rate)) u.rate = rate;
+  const v = pickVoice(lang.split("-")[0]);
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
 }
 
 function speakSequence(texts, lang="ja-JP"){
   const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
   if (!arr.length) return;
-
+  if (!window.speechSynthesis){ alert("この端末は音声読み上げに対応していません"); return; }
   stopTts();
-  _ttsAbort = false;
-
-  (async()=>{
-    for (const s of arr){
-      if (_ttsAbort) break;
-      await playTTS(s, lang);
-    }
-  })().catch((e)=>{
-    console.warn(e);
-  });
+  const rate = Number($("ttsRate")?.value || 1);
+  const v = pickVoice(lang.split("-")[0]);
+  let i = 0;
+  const speakNext = ()=>{
+    if (i >= arr.length) return;
+    const u = new SpeechSynthesisUtterance(arr[i]);
+    u.lang = lang;
+    if (!Number.isNaN(rate)) u.rate = rate;
+    if (v) u.voice = v;
+    u.onend = ()=>{ i++; speakNext(); };
+    window.speechSynthesis.speak(u);
+  };
+  speakNext();
 }
 
-
-// 危険ワード
-（ひらがなベース）: 必要なら追加してOK
+// 危険ワード（ひらがなベース）: 必要なら追加してOK
 const DANGER_DICT = [
   { hira:"ごえん", note:"誤嚥リスク。姿勢・一口量・むせを確認。" },
   { hira:"むせ", note:"むせ（誤嚥のサイン）。食事を止めて落ち着かせる。" },
