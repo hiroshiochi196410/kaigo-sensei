@@ -1051,48 +1051,6 @@ async function startCheckout() {
   }
 }
 
-
-async function checkSubscriptionOnStart(opts = {silent:true}){
-  // Stripe決済ユーザーは起動時に必ず状態を確認し、active以外はロックに寄せる
-  const method = ls.get("aiga_unlock_method_"+VARIANT, "");
-  if (method !== "stripe") return;
-
-  const sessionId = ls.get("aiga_stripe_session_"+VARIANT, "");
-  if (!sessionId){
-    unlocked = false;
-    ls.set("aiga_unlocked_"+VARIANT, false);
-    return;
-  }
-
-  try{
-    if (!opts?.silent) setStatus("購読状態を確認中…");
-    const r = await fetch(`/api/subscription-status?session_id=${encodeURIComponent(sessionId)}`);
-    const j = await r.json();
-    if (!r.ok) throw new Error(j?.error || "subscription-status error");
-
-    if (j.active){
-      unlocked = true;
-      ls.set("aiga_unlocked_"+VARIANT, true);
-      if (j.plan) ls.set("aiga_plan_"+VARIANT, j.plan);
-      $("lock").style.display = "none";
-      $("lockMsg").textContent = "";
-    }else{
-      unlocked = false;
-      ls.set("aiga_unlocked_"+VARIANT, false);
-      // お試し回数を使い切っていたら即ロック表示
-      maybeLock();
-    }
-  }catch(e){
-    // 通信失敗時は安全側（ロック寄せ）にする
-    unlocked = false;
-    ls.set("aiga_unlocked_"+VARIANT, false);
-    if (!opts?.silent) $("lockMsg").textContent = "こうどくのかくにんにしっぱいしました。つうしんをかくにんして、さいよみこみしてください。";
-    maybeLock();
-  }finally{
-    if (!opts?.silent) setStatus("準備OK");
-  }
-}
-
 async function verifyFromUrl(){
   const url = new URL(location.href);
   const sessionId = url.searchParams.get("session_id");
@@ -1107,8 +1065,6 @@ async function verifyFromUrl(){
     if (j.paid){
       unlocked = true;
       ls.set("aiga_unlocked_"+VARIANT, true);
-      ls.set("aiga_unlock_method_"+VARIANT, "stripe");
-      ls.set("aiga_stripe_session_"+VARIANT, sessionId);
       $("okBox").style.display="block";
       $("okBox").textContent = "✅ 解除しました（決済確認済み）";
       $("lock").style.display="none";
@@ -1133,11 +1089,8 @@ function unlockByCode(){
   if (code === (CFG.unlock_code || "")){
     unlocked = true;
     ls.set("aiga_unlocked_"+VARIANT, true);
-    ls.set("aiga_unlock_method_"+VARIANT, "code");
-    ls.set("aiga_stripe_session_"+VARIANT, "");
     $("lock").style.display="none";
     $("lockMsg").textContent = "";
-    await checkSubscriptionOnStart();
     setTrialInfo();
   }else{
     $("lockMsg").textContent = "解除コードが違います。";
@@ -1151,8 +1104,8 @@ async function init(){
     setStatus("データ読込中…");
 
     // load json
-    CFG = await loadJson("/config.json");
-    EX = await loadJson("/examples.json");
+    CFG = await loadJson("./config.json");
+    EX = await loadJson("./examples.json");
 
     // allow override by path variant (so /app/ssw でもOK)
     if (VARIANT !== CFG.variant && (VARIANT === "ssw" || VARIANT === "trainee")){
@@ -1175,10 +1128,6 @@ async function init(){
     setStatus("準備OK");
 
     await verifyFromUrl();
-    // 画面に戻ってきた時も再確認（解約後の自動ロックを反映）
-    document.addEventListener('visibilitychange', ()=>{
-      if (!document.hidden) checkSubscriptionOnStart({silent:true});
-    });
 
     // events
     $("sceneSel").addEventListener("change", updateCategories);
