@@ -275,8 +275,6 @@
 <script>
 /* ========= helpers ========= */
 const $ = (id) => document.getElementById(id);
-
-const strVal = (v) => String(v ?? "");
 const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 const ls = {

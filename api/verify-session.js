@@ -30,8 +30,6 @@ export default async function handler(req, res) {
       status: data.status,
       payment_status: data.payment_status,
       subscription_status: data.subscription?.status,
-      // 重要: 解約後に自動ロック判定するため、Subscription ID (sub_...) を返す
-      subscription_id: data.subscription?.id || null,
     });
   } catch (e) {
     console.error(e);
