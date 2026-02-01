@@ -53,6 +53,7 @@
     .kRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
     .kBtns{ display:flex; gap:6px; }
     .ttsBtn{ border:1px solid var(--bd); background:#fff; padding:4px 8px; border-radius:999px; font-size:12px; cursor:pointer; }
+.ttsBtn.isDisabled{opacity:.35;}
     .ttsBtn:active{ transform: translateY(1px); }
     mark.hlDanger{ background:#ffe4e6; padding:0 2px; border-radius:6px; }
     mark.hlKeigo{ background:#dbeafe; padding:0 2px; border-radius:6px; }
@@ -76,7 +77,7 @@
 <body>
   <header>
     <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span></h1>
-    <div class="sub">日本語・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
+    <div class="sub">日本語（ひらがな）・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
   </header>
 
   <main class="grid">
@@ -279,8 +280,7 @@ const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",
 const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 const ls = {
   get(k, d=null){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
-  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); },
-  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 };
 
 function detectVariantFromPath(){
@@ -300,179 +300,217 @@ function detectLangAuto(text){
 /* ========= TTS / annotation / stats helpers ========= */
 const DEFAULT_SETTINGS = { ttsSel:"hira", ttsRate:"1", ttsAuto:"off", uiLabelMode:"jp_id" };
 let _voices = [];
+let _ttsInitialized = false;
 
-// ==============================
-// Google TTS（MP3生成→audio再生 + IndexedDBキャッシュ）
-// 使い方：既存の「▶」ボタンは speakOnce / speakSequence を呼ぶ設計のまま動きます
-// ==============================
-
-let __ttsAudio = null;
-let __ttsAbort = null;
-
-function stopTTS() {
-  try {
-    if (__ttsAbort) __ttsAbort.abort();
-  } catch (e) {}
-  __ttsAbort = null;
-
-  if (__ttsAudio) {
-    try { __ttsAudio.pause(); } catch (e) {}
-    try { __ttsAudio.currentTime = 0; } catch (e) {}
+function refreshVoices(){
+  try{ 
+    _voices = (window.speechSynthesis ? window.speechSynthesis.getVoices() : []) || []; 
+  }catch(e){ 
+    _voices=[]; 
   }
-  __ttsAudio = null;
-
-  // 念のため（旧ブラウザTTSが残っている場合）
-  try {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-  } catch (e) {}
 }
 
-// 旧コード互換：初期化で stopTts を参照する箇所があるため
+// iOS対策: 音声リストの読み込みを確実にする
+function ensureVoicesLoaded(callback) {
+  if (!window.speechSynthesis) {
+    if (callback) callback();
+    return;
+  }
+  
+  // iOS Safari: getVoices()を複数回呼ぶ必要がある
+  const loadVoices = () => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      _voices = voices;
+      console.log('Voices available:', voices.length, voices.map(v => v.lang).join(', '));
+      return true;
+    }
+    return false;
+  };
+  
+  // すぐに取得を試みる
+  if (loadVoices()) {
+    if (callback) callback();
+    return;
+  }
+  
+  // iOS Safari: onvoiceschangedイベントを待つ
+  let fired = false;
+  window.speechSynthesis.onvoiceschanged = () => {
+    if (fired) return;
+    fired = true;
+    loadVoices();
+    if (callback) callback();
+  };
+  
+  // フォールバック: 定期的に確認
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    if (loadVoices() || attempts > 10) {
+      clearInterval(interval);
+      if (!fired && callback) callback();
+      fired = true;
+    }
+  }, 100);
+}
+
+// モバイル対策: 最初のユーザーインタラクションで音声を初期化
+function initTtsOnFirstInteraction() {
+  if (_ttsInitialized || !window.speechSynthesis) return;
+  
+  try {
+    // iOS対策: getVoices()を明示的に呼ぶ
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      _voices = voices;
+      console.log('Voices loaded:', voices.length);
+    }
+    
+    // iOS Safari: 極短い発話で初期化（重要）
+    const u = new SpeechSynthesisUtterance('　'); // 全角スペース
+    u.volume = 0.01; // 完全な0だと効果がない場合がある
+    u.rate = 10; // 高速で終わらせる
+    u.lang = 'ja-JP';
+    
+    u.onend = () => {
+      _ttsInitialized = true;
+      console.log('TTS initialized successfully');
+    };
+    
+    u.onerror = (e) => {
+      console.log('TTS init error (expected on some devices):', e.error);
+      _ttsInitialized = true; // エラーでも初期化済みとする
+    };
+    
+    window.speechSynthesis.speak(u);
+  } catch(e) {
+    console.log('TTS initialization failed:', e);
+    _ttsInitialized = true; // 失敗しても初期化済みとする
+  }
+}
+
+if (window.speechSynthesis){
+  ensureVoicesLoaded();
+}
+
 function stopTts(){
-  return stopTTS();
+  try{ if (window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
 }
 
-function speedLabelToRate(label) {
-  // UIの値に合わせて調整
-  if (label === 'ゆっくり') return 0.85;
-  if (label === 'はやめ') return 1.15;
-  return 1.0; // ふつう
-}
-
-// --- IndexedDB（シンプル実装）
-const TTS_DB_NAME = 'kaigo_sensei_tts_db';
-const TTS_STORE = 'audio';
-const TTS_DB_VER = 1;
-
-function openTtsDb() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(TTS_DB_NAME, TTS_DB_VER);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(TTS_STORE)) {
-        db.createObjectStore(TTS_STORE);
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbGet(key) {
-  const db = await openTtsDb();
-  return new Promise((resolve) => {
-    const tx = db.transaction(TTS_STORE, 'readonly');
-    const st = tx.objectStore(TTS_STORE);
-    const req = st.get(key);
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = () => resolve(null);
-  });
-}
-
-async function idbSet(key, value) {
-  const db = await openTtsDb();
-  return new Promise((resolve) => {
-    const tx = db.transaction(TTS_STORE, 'readwrite');
-    const st = tx.objectStore(TTS_STORE);
-    const req = st.put(value, key);
-    req.onsuccess = () => resolve(true);
-    req.onerror = () => resolve(false);
-  });
-}
-
-// --- ハッシュキー作成（テキストが長いので短くする）
-async function sha256Hex(str) {
-  const enc = new TextEncoder().encode(str);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  const arr = Array.from(new Uint8Array(buf));
-  return arr.map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-async function fetchTtsMp3Blob(text, rate, signal) {
-  const resp = await fetch('/api/tts', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, rate }),
-    signal
-  });
-
-  if (!resp.ok) {
-    const msg = await resp.text().catch(() => '');
-    throw new Error(msg || ('TTS error: ' + resp.status));
+function pickVoice(langPrefix){
+  if (!_voices || !_voices.length) refreshVoices();
+  
+  // まず完全一致を探す
+  let voice = (_voices || []).find(v => (v.lang || "").toLowerCase() === langPrefix.toLowerCase());
+  if (voice) return voice;
+  
+  // 次に前方一致を探す
+  voice = (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith(langPrefix.toLowerCase()));
+  if (voice) return voice;
+  
+  // iOS対策: ja-JP が見つからない場合、ja で始まる任意の音声を返す
+  if (langPrefix.toLowerCase().startsWith('ja')) {
+    voice = (_voices || []).find(v => (v.lang || "").toLowerCase().startsWith('ja'));
+    if (voice) return voice;
   }
-
-  const blob = await resp.blob();
-  if (!blob || blob.size === 0) throw new Error('TTS error: empty audio');
-  return blob;
+  
+  return null;
 }
 
-function playBlob(blob) {
-  return new Promise((resolve, reject) => {
-    stopTTS();
-
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    __ttsAudio = audio;
-
-    audio.onended = () => {
-      try { URL.revokeObjectURL(url); } catch (e) {}
-      resolve();
-    };
-    audio.onerror = () => {
-      try { URL.revokeObjectURL(url); } catch (e) {}
-      reject(new Error('audio play error'));
-    };
-
-    // iOS Safari対策：ユーザー操作（クリック）から直で呼ばれる前提
-    audio.play().then(() => {
-      // OK
-    }).catch(err => {
-      try { URL.revokeObjectURL(url); } catch (e) {}
-      reject(err);
-    });
-  });
-}
-
-// 既存UI互換：単発再生
-async function speakOnce(text, speedLabel='ふつう') {
+function speakOnce(text, lang="ja-JP"){
+  const t = String(text || "").trim();
+  if (!t) return;
+  if (!window.speechSynthesis){ 
+    console.error("speechSynthesis not available");
+    return; 
+  }
+  
+  // iOS対策: 音声リストを明示的に取得
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) _voices = voices;
+  
+  // iOS Safari重要: 既存の発話を停止（同期的に）
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+  }
+  
+  // iOS Safari重要: setTimeoutを使わず即座に実行
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = lang;
+  const rate = Number($("ttsRate")?.value || 1);
+  if (!Number.isNaN(rate)) u.rate = rate;
+  
+  // iOS対策: 音声を明示的に設定
+  const v = pickVoice(lang.split("-")[0]);
+  if (v) u.voice = v;
+  
+  // デバッグ用
+  u.onstart = () => { console.log('TTS started:', t.substring(0, 20)); };
+  u.onend = () => { console.log('TTS ended'); };
+  u.onerror = (event) => { 
+    console.error('TTS Error:', event.error, event); 
+  };
+  
+  // iOS Safari重要: ユーザーインタラクションから直接呼ぶ
   try {
-    if (!text || !text.trim()) return;
-    const rate = speedLabelToRate(speedLabel);
-
-    // キャッシュキー（rateも含める）
-    const key = await sha256Hex('ja|' + rate + '|' + text.trim());
-    let cached = await idbGet(key);
-
-    if (!cached) {
-      __ttsAbort = new AbortController();
-      const blob = await fetchTtsMp3Blob(text.trim(), rate, __ttsAbort.signal);
-      __ttsAbort = null;
-      cached = blob;
-      // 失敗しても再生は続ける
-      idbSet(key, blob).catch(() => {});
-    }
-
-    await playBlob(cached);
-  } catch (e) {
-    console.error('[TTS] speakOnce error', e);
-    alert('音声再生エラー：' + (e && e.message ? e.message : e));
+    window.speechSynthesis.speak(u);
+    console.log('TTS speak called');
+  } catch(e) {
+    console.error('TTS speak failed:', e);
   }
 }
 
-// 既存UI互換：連続再生
-async function speakSequence(texts, speedLabel='ふつう') {
-  try {
-    if (!Array.isArray(texts) || texts.length === 0) return;
-    for (const t of texts) {
-      if (!t || !t.trim()) continue;
-      await speakOnce(t, speedLabel);
-    }
-  } catch (e) {
-    console.error('[TTS] speakSequence error', e);
+function speakSequence(texts, lang="ja-JP"){
+  const arr = (texts || []).map(x=>String(x||"").trim()).filter(Boolean);
+  if (!arr.length) return;
+  if (!window.speechSynthesis){ 
+    console.error("speechSynthesis not available");
+    return; 
   }
+  
+  // iOS対策: 音声リストを明示的に取得
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) _voices = voices;
+  
+  // iOS Safari重要: 既存の発話を停止（同期的に）
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+  }
+  
+  const rate = Number($("ttsRate")?.value || 1);
+  const v = pickVoice(lang.split("-")[0]);
+  let i = 0;
+  
+  const speakNext = ()=>{
+    if (i >= arr.length) return;
+    
+    const u = new SpeechSynthesisUtterance(arr[i]);
+    u.lang = lang;
+    if (!Number.isNaN(rate)) u.rate = rate;
+    if (v) u.voice = v;
+    
+    u.onend = ()=>{ 
+      i++; 
+      speakNext(); // iOS Safari: onendから直接呼ぶのはOK
+    };
+    
+    u.onerror = (event) => {
+      console.error('TTS Sequence Error:', event.error);
+      i++;
+      speakNext();
+    };
+    
+    try {
+      window.speechSynthesis.speak(u);
+    } catch(e) {
+      console.error('TTS speak failed:', e);
+    }
+  };
+  
+  // iOS Safari重要: ユーザーインタラクションから直接最初を呼ぶ
+  speakNext();
 }
-
-
 
 // 危険ワード（ひらがなベース）: 必要なら追加してOK
 const DANGER_DICT = [
@@ -840,7 +878,7 @@ function insertExample(){
     return;
   }
   // 日本語例文を入れる（ローマ字やIDは履歴表示側で出す）
-  $("userInput").value = (ex.hira || ex.jp || "");
+  $("userInput").value = ex.jp || "";
   $("okBox").style.display="block";
   $("okBox").textContent = "例文を入力しました。送信して会話を続けられます。";
   setTimeout(()=>{$("okBox").style.display="none";}, 1800);
@@ -867,9 +905,9 @@ function triHtml(tri, opts = {}){
     lines.push(`
       <div class="line">
         <div class="kRow">
-          <div class="k">日本語</div>
+          <div class="k">日本語（ひらがな）</div>
           <div class="kBtns">
-            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
+            <button class="ttsBtn ${canHira ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="hira" data-allow="${canHira ? 1 : 0}" aria-disabled="${canHira ? "false" : "true"}" title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>
@@ -882,7 +920,7 @@ function triHtml(tri, opts = {}){
         <div class="kRow">
           <div class="k">ローマ字</div>
           <div class="kBtns">
-            <button class="ttsBtn" type="button" data-idx="${idx}" data-field="romaji" ${canRoma ? "" : "disabled"} title="読み上げ">▶</button>
+            <button class="ttsBtn ${canRoma ? "" : "isDisabled"}" type="button" data-idx="${idx}" data-field="romaji" data-allow="${canRoma ? 1 : 0}" aria-disabled="${canRoma ? "false" : "true"}" title="読み上げ">▶</button>
           </div>
         </div>
         <div class="v">${applyHighlights(romaText, hl.dangerRoma, hl.keigoRoma)}</div>
@@ -930,7 +968,7 @@ function setSuggestBox(tri){
   if (!tri){ $("suggestBox").textContent="—"; return; }
   const mode = $("displayMode").value;
   const parts=[];
-  if (mode==="all" || mode==="ja") parts.push(`日本語:\n${tri.hira || tri.jp || ""}`);
+  if (mode==="all" || mode==="ja") parts.push(`日本語（ひらがな）:\n${tri.hira || tri.jp || ""}`);
   if (mode==="all" || mode==="roma") parts.push(`\nローマ字:\n${tri.romaji || ""}`);
   if (mode==="all" || mode==="id") parts.push(`\nインドネシア語:\n${tri.id || ""}`);
   $("suggestBox").textContent = parts.join("\n");
@@ -1063,23 +1101,14 @@ async function verifyFromUrl(){
     const r = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error || "verify error");
-    if (j.active && !j.cancel_at_period_end){
+    if (j.paid){
       unlocked = true;
       ls.set("aiga_unlocked_"+VARIANT, true);
-      if (j.subscription_id) ls.set("stripe_sub_id_"+VARIANT, j.subscription_id);
-      if (sessionId) ls.set("stripe_session_id_"+VARIANT, sessionId);
-
       $("okBox").style.display="block";
-      $("okBox").textContent = "✅ 解除しました（有効な購読を確認）";
+      $("okBox").textContent = "✅ 解除しました（決済確認済み）";
       $("lock").style.display="none";
       setTrialInfo();
     }else{
-      // active でない（または解約予約）ならロック寄せ
-      unlocked = false;
-      ls.del("aiga_unlocked_"+VARIANT);
-      ls.del("stripe_sub_id_"+VARIANT);
-      ls.del("stripe_session_id_"+VARIANT);
-
       $("lockMsg").textContent = "決済はまだ確認できませんでした。少し待って再読み込みしてください。";
     }
   }catch(e){
@@ -1092,40 +1121,6 @@ async function verifyFromUrl(){
     setStatus("準備OK");
   }
 }
-
-async function syncSubscriptionStatus(){
-  try{
-    const subId = ls.get("stripe_sub_id_"+VARIANT, null);
-    const sessId = ls.get("stripe_session_id_"+VARIANT, null);
-    if (!subId && !sessId) return;
-
-    const qs = subId ? `subscription_id=${encodeURIComponent(subId)}` : `session_id=${encodeURIComponent(sessId)}`;
-    const r = await fetch(`/api/subscription-status?${qs}`);
-    const j = await r.json();
-    if (!r.ok) throw new Error(j?.error || "status error");
-
-    if (j.active){
-      unlocked = true;
-      ls.set("aiga_unlocked_"+VARIANT, true);
-      if (j.subscription_id) ls.set("stripe_sub_id_"+VARIANT, j.subscription_id);
-      if (sessId) ls.set("stripe_session_id_"+VARIANT, sessId);
-      $("lock").style.display="none";
-    }else{
-      unlocked = false;
-      ls.del("aiga_unlocked_"+VARIANT);
-      // 混乱を避けて key も消す
-      ls.del("stripe_sub_id_"+VARIANT);
-      ls.del("stripe_session_id_"+VARIANT);
-    }
-    setTrialInfo();
-  }catch(e){
-    // 取れないときは「解除しない」側に倒す（無料枠は使える）
-    unlocked = false;
-    ls.del("aiga_unlocked_"+VARIANT);
-    setTrialInfo();
-  }
-}
-
 
 function unlockByCode(){
   const code = $("unlockCode").value.trim();
@@ -1148,8 +1143,8 @@ async function init(){
     setStatus("データ読込中…");
 
     // load json
-    CFG = await loadJson("./config.json");
-    EX = await loadJson("./examples.json");
+    CFG = await loadJson("/config.json");
+    EX = await loadJson("/examples.json");
 
     // allow override by path variant (so /app/ssw でもOK)
     if (VARIANT !== CFG.variant && (VARIANT === "ssw" || VARIANT === "trainee")){
@@ -1172,8 +1167,6 @@ async function init(){
     setStatus("準備OK");
 
     await verifyFromUrl();
-
-    await syncSubscriptionStatus();
 
     // events
     $("sceneSel").addEventListener("change", updateCategories);
@@ -1199,44 +1192,44 @@ async function init(){
     $("uiLabelMode")?.addEventListener("change", ()=>{ saveSettings(); rebuildSelectLabels(); renderHistory(); renderStats(); });
 
     // Speak suggested
-    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
-    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });    // Click-to-speak in history (event delegation)
-    // - data-idx / data-field が取れない時や、triのキー違いでも再生できるようにフォールバック
-    document.addEventListener("click", (e)=>{
+    $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ 
+      initTtsOnFirstInteraction();
+      if (lastSuggested) speakOnce(lastSuggested.hira || ""); 
+    });
+    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ 
+      initTtsOnFirstInteraction();
+      if (lastSuggested) speakOnce(strVal(lastSuggested.romaji || "")); 
+    });
+
+    // Click-to-speak in history (event delegation)
+    $("history")?.addEventListener("click", (e)=>{
       const btn = e.target.closest(".ttsBtn");
       if (!btn) return;
-      // 例: 無効ボタンは反応しない
-      if (btn.disabled) return;
-
-      const field = (btn.dataset.field || "").trim();
-      const idxRaw = (btn.dataset.idx ?? "").trim();
-      let text = "";
-
-      // 1) history配列から拾う
-      if (idxRaw !== "") {
-        const idx = Number(idxRaw);
-        const item = (history || [])[idx];
-        if (item && item.tri) {
-          if (field === "hira") text = item.tri.hira || item.tri.jp || item.tri.text || "";
-          else if (field === "romaji") text = item.tri.romaji || "";
-          else if (field) text = item.tri[field] || "";
-        }
-      }
-
-      // 2) DOMから拾う（data-idxがズレてもOK）
-      if (!text) {
-        const row = btn.closest(".triRow");
-        const t = row ? row.querySelector(".triText") : null;
-        text = (t ? t.textContent : "").trim();
-      }
-
-      if (!text) {
-        console.warn("TTS: no text to speak", { field, idxRaw, btn });
+      
+      // モバイル対応: 最初のクリックでTTSを初期化
+      initTtsOnFirstInteraction();
+      
+      const ttsMode = ($("ttsSel")?.value || "off");
+      if (ttsMode === "off"){
+        setStatus("音声読み上げ（TTS）がOFFです");
+        $("okBox").style.display="block";
+        $("okBox").textContent = "音声読み上げ（TTS）がOFFです。上の設定でONにしてください。";
+        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
         return;
       }
-
-      // 日本語で読み上げ（ひらがな/ローマ字ともに ja-JP でOK）
-      speakOnce(text, "ja-JP");
+      if (btn.dataset.allow === "0"){
+        setStatus("この表示の読み上げは無効です");
+        $("okBox").style.display="block";
+        $("okBox").textContent = "この表示の読み上げは無効です(TTS設定を「両方」にすると使えます)。";
+        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+        return;
+      }
+      const idx = Number(btn.dataset.idx || -1);
+      const field = btn.dataset.field || "";
+      const item = (history || [])[idx];
+      const text = strVal(item?.tri?.[field] || "");
+      if (field === "hira") speakOnce(text, "ja-JP");
+      else if (field === "romaji") speakOnce(text, "ja-JP");
     });
 
     // Reset learning log
@@ -1246,6 +1239,10 @@ async function init(){
       ls.set("aiga_stats_"+VARIANT, STATS);
       renderStats();
     });
+    
+    // モバイル対応: ページ全体で最初のタップ/クリック時にTTSを初期化
+    document.addEventListener('click', initTtsOnFirstInteraction, { once: true });
+    document.addEventListener('touchstart', initTtsOnFirstInteraction, { once: true });
 
   }catch(e){
     setStatus("起動失敗");
