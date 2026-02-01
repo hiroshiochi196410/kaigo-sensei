@@ -326,6 +326,11 @@ function stopTTS() {
   } catch (e) {}
 }
 
+// 旧コード互換：初期化で stopTts を参照する箇所があるため
+function stopTts(){
+  return stopTTS();
+}
+
 function speedLabelToRate(label) {
   // UIの値に合わせて調整
   if (label === 'ゆっくり') return 0.85;
