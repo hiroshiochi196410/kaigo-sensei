@@ -306,6 +306,32 @@ let _voices = [];
 // ==============================
 
 let __ttsAudio = null;
+
+// iOS Safari の制限対策：最初に「無音の短い音」をユーザー操作で再生して Audio を解放する
+let __audioUnlocked = false;
+const __SILENT_WAV = "data:audio/wav;base64,UklGRuQDAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YcADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+function primeAudioOnce() {
+  if (__audioUnlocked) return;
+  try {
+    const a = new Audio(__SILENT_WAV);
+    a.volume = 0;
+    const p = a.play();
+    if (p && typeof p.then === "function") {
+      p.then(() => {
+        try { a.pause(); a.currentTime = 0; } catch (_) {}
+        __audioUnlocked = true;
+      }).catch(() => {
+        // 失敗しても後続の再生でリトライする
+      });
+    } else {
+      __audioUnlocked = true;
+    }
+  } catch (_) {}
+}
+// ページで最初のタップ/クリック時に一度だけ実行
+document.addEventListener("touchend", primeAudioOnce, { once: true, passive: true });
+document.addEventListener("click", primeAudioOnce, { once: true, passive: true });
+
 let __ttsAbort = null;
 
 function stopTTS() {
@@ -332,6 +358,10 @@ function stopTts(){
 }
 
 function speedLabelToRate(label) {
+  // Allow numeric values (e.g., "0.8", "1", "1.2") from <select>
+  const num = parseFloat(label);
+  if (!Number.isNaN(num)) return num;
+
   // UIの値に合わせて調整
   if (label === 'ゆっくり') return 0.85;
   if (label === 'はやめ') return 1.15;
@@ -454,7 +484,14 @@ async function speakOnce(text, speedLabel='ふつう') {
     await playBlob(cached);
   } catch (e) {
     console.error('[TTS] speakOnce error', e);
-    alert('音声再生エラー：' + (e && e.message ? e.message : e));
+    const msg = (e && e.message) ? e.message : String(e);
+    const isNotAllowed = (e && e.name === 'NotAllowedError') || /not allowed by the user agent|user denied permission|NotAllowedError/i.test(msg);
+    if (isNotAllowed) {
+      // iOS Safari で「最初の1回だけ」出やすい。ブロッキングな alert は出さない。
+      console.warn('[TTS] NotAllowed (autoplay policy). Ignored:', msg);
+      return;
+    }
+    alert('音声再生エラー：' + msg);
   }
 }
 
@@ -1190,7 +1227,7 @@ async function init(){
       }
 
       // 日本語で読み上げ（ひらがな/ローマ字ともに ja-JP でOK）
-      speakOnce(text, "ja-JP");
+      speakOnce(text, document.getElementById('ttsRate') ? document.getElementById('ttsRate').value : '1');
     });
 
     // Reset learning log
