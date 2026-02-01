@@ -1,8 +1,15 @@
 {
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/app/(.*)", "dest": "/index.html" },
-    { "src": "/app", "dest": "/index.html" },
-    { "src": "/", "dest": "/index.html" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "^/app/?$",
+      "status": 302,
+      "headers": {
+        "Location": "/app/trainee/"
+      }
+    }
   ]
 }
