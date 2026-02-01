@@ -7,13 +7,19 @@
   <style>
     body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial; margin:0; background:#f6f7f8; color:#111;}
     .wrap{max-width:820px; margin:40px auto; padding:0 16px;}
-    .card{background:#fff; border:1px solid #e6e6e6; border-radius:16px; padding:20px; box-shadow:0 1px 8px rgba(0,0,0,.04);} 
+    .card{background:#fff; border:1px solid #e6e6e6; border-radius:16px; padding:20px; box-shadow:0 1px 8px rgba(0,0,0,.04);}
     h1{margin:0 0 8px; font-size:22px;}
     p{margin:6px 0 14px; color:#444; line-height:1.6;}
     .btns{display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;}
-    a.btn{display:inline-block; padding:12px 16px; border-radius:12px; background:#111; color:#fff; text-decoration:none; font-weight:600;}
-    a.btn.secondary{background:#fff; color:#111; border:1px solid #111;}
+    button.btn{
+      display:inline-block; padding:12px 16px; border-radius:12px;
+      background:#111; color:#fff; text-decoration:none; font-weight:600; border:0; cursor:pointer;
+    }
+    button.btn.secondary{background:#fff; color:#111; border:1px solid #111;}
     .note{font-size:12px; color:#666; margin-top:14px;}
+    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+    label{font-size:13px; color:#333;}
+    input[type="checkbox"]{transform:scale(1.1);}
   </style>
 </head>
 <body>
@@ -21,17 +27,49 @@
     <div class="card">
       <h1>介護ロールプレイAI</h1>
       <p>練習モードを選んでください。</p>
-      <div class="btns">
-        <a class="btn" href="/app/trainee/">個人向け（trainee）</a>
-        <a class="btn secondary" href="/app/ssw/">SSW（施設向け）</a>
+
+      <div class="row">
+        <label><input id="remember" type="checkbox" checked> 次回からこの選択を自動で開く（おすすめ）</label>
       </div>
-      <p class="note">※ ブックマークは /app/trainee/ をおすすめ</p>
+
+      <div class="btns">
+        <button class="btn" id="btnTrainee" type="button">個人向け（trainee）</button>
+        <button class="btn secondary" id="btnSSW" type="button">SSW（施設向け）</button>
+      </div>
+
+      <p class="note">※ ブックマークはこのページ（/）でOK。次回から自動で開く設定にもできます。</p>
+      <p class="note">※ いつでも選び直したい場合は、URLに <code>?choose=1</code> を付けて開いてください（例：<code>/?choose=1</code>）。</p>
     </div>
   </div>
+
   <script>
-    // 初回は個人向けへ誘導（リンクタップが苦手なユーザー向け）
-    if (!location.search.includes('stay=1')) {
-      setTimeout(()=>{ location.replace('/app/trainee/'); }, 400); // すぐ移動
+    // 初回は「勝手に trainee へ飛ばさない」
+    // 選択したら localStorage に保存し、次回以降は自動オープン（ONのときだけ）
+    // 選び直しは ?choose=1 で強制的に選択画面を表示
+    const KEY = 'kaigo_sensei_mode'; // 'trainee' | 'ssw'
+
+    const params = new URLSearchParams(location.search);
+    const forceChoose = params.get('choose') === '1';
+
+    function go(mode){
+      try{
+        const remember = document.getElementById('remember').checked;
+        if (remember) localStorage.setItem(KEY, mode);
+        else localStorage.removeItem(KEY);
+      }catch(e){}
+      location.href = (mode === 'ssw') ? '/app/ssw/' : '/app/trainee/';
+    }
+
+    document.getElementById('btnTrainee').addEventListener('click', ()=>go('trainee'));
+    document.getElementById('btnSSW').addEventListener('click', ()=>go('ssw'));
+
+    if (!forceChoose){
+      try{
+        const saved = localStorage.getItem(KEY);
+        if (saved === 'trainee' || saved === 'ssw'){
+          setTimeout(()=>go(saved), 150);
+        }
+      }catch(e){}
     }
   </script>
 </body>
