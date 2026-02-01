@@ -76,7 +76,7 @@
 <body>
   <header>
     <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span></h1>
-    <div class="sub">日本語（ひらがな）・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
+    <div class="sub">日本語・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
   </header>
 
   <main class="grid">
@@ -279,7 +279,8 @@ const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",
 const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 const ls = {
   get(k, d=null){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
-  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
 
 function detectVariantFromPath(){
@@ -839,7 +840,7 @@ function insertExample(){
     return;
   }
   // 日本語例文を入れる（ローマ字やIDは履歴表示側で出す）
-  $("userInput").value = ex.jp || "";
+  $("userInput").value = (ex.hira || ex.jp || "");
   $("okBox").style.display="block";
   $("okBox").textContent = "例文を入力しました。送信して会話を続けられます。";
   setTimeout(()=>{$("okBox").style.display="none";}, 1800);
@@ -866,7 +867,7 @@ function triHtml(tri, opts = {}){
     lines.push(`
       <div class="line">
         <div class="kRow">
-          <div class="k">日本語（ひらがな）</div>
+          <div class="k">日本語</div>
           <div class="kBtns">
             <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
           </div>
@@ -929,7 +930,7 @@ function setSuggestBox(tri){
   if (!tri){ $("suggestBox").textContent="—"; return; }
   const mode = $("displayMode").value;
   const parts=[];
-  if (mode==="all" || mode==="ja") parts.push(`日本語（ひらがな）:\n${tri.hira || tri.jp || ""}`);
+  if (mode==="all" || mode==="ja") parts.push(`日本語:\n${tri.hira || tri.jp || ""}`);
   if (mode==="all" || mode==="roma") parts.push(`\nローマ字:\n${tri.romaji || ""}`);
   if (mode==="all" || mode==="id") parts.push(`\nインドネシア語:\n${tri.id || ""}`);
   $("suggestBox").textContent = parts.join("\n");
@@ -1062,14 +1063,23 @@ async function verifyFromUrl(){
     const r = await fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error || "verify error");
-    if (j.paid){
+    if (j.active && !j.cancel_at_period_end){
       unlocked = true;
       ls.set("aiga_unlocked_"+VARIANT, true);
+      if (j.subscription_id) ls.set("stripe_sub_id_"+VARIANT, j.subscription_id);
+      if (sessionId) ls.set("stripe_session_id_"+VARIANT, sessionId);
+
       $("okBox").style.display="block";
-      $("okBox").textContent = "✅ 解除しました（決済確認済み）";
+      $("okBox").textContent = "✅ 解除しました（有効な購読を確認）";
       $("lock").style.display="none";
       setTrialInfo();
     }else{
+      // active でない（または解約予約）ならロック寄せ
+      unlocked = false;
+      ls.del("aiga_unlocked_"+VARIANT);
+      ls.del("stripe_sub_id_"+VARIANT);
+      ls.del("stripe_session_id_"+VARIANT);
+
       $("lockMsg").textContent = "決済はまだ確認できませんでした。少し待って再読み込みしてください。";
     }
   }catch(e){
@@ -1082,6 +1092,40 @@ async function verifyFromUrl(){
     setStatus("準備OK");
   }
 }
+
+async function syncSubscriptionStatus(){
+  try{
+    const subId = ls.get("stripe_sub_id_"+VARIANT, null);
+    const sessId = ls.get("stripe_session_id_"+VARIANT, null);
+    if (!subId && !sessId) return;
+
+    const qs = subId ? `subscription_id=${encodeURIComponent(subId)}` : `session_id=${encodeURIComponent(sessId)}`;
+    const r = await fetch(`/api/subscription-status?${qs}`);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error || "status error");
+
+    if (j.active){
+      unlocked = true;
+      ls.set("aiga_unlocked_"+VARIANT, true);
+      if (j.subscription_id) ls.set("stripe_sub_id_"+VARIANT, j.subscription_id);
+      if (sessId) ls.set("stripe_session_id_"+VARIANT, sessId);
+      $("lock").style.display="none";
+    }else{
+      unlocked = false;
+      ls.del("aiga_unlocked_"+VARIANT);
+      // 混乱を避けて key も消す
+      ls.del("stripe_sub_id_"+VARIANT);
+      ls.del("stripe_session_id_"+VARIANT);
+    }
+    setTrialInfo();
+  }catch(e){
+    // 取れないときは「解除しない」側に倒す（無料枠は使える）
+    unlocked = false;
+    ls.del("aiga_unlocked_"+VARIANT);
+    setTrialInfo();
+  }
+}
+
 
 function unlockByCode(){
   const code = $("unlockCode").value.trim();
@@ -1128,6 +1172,8 @@ async function init(){
     setStatus("準備OK");
 
     await verifyFromUrl();
+
+    await syncSubscriptionStatus();
 
     // events
     $("sceneSel").addEventListener("change", updateCategories);

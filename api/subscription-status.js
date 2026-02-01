@@ -4,13 +4,51 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const sessionId = req.query?.session_id;
-    if (!sessionId) return res.status(400).json({ error: "Missing session_id" });
-
     const secret = process.env.STRIPE_SECRET_KEY;
     if (!secret) return res.status(500).json({ error: "Missing STRIPE_SECRET_KEY" });
 
-    // Checkout Session から subscription を展開して、現在の status を確認する
+    const subscriptionId = req.query?.subscription_id || null;
+    const sessionId = req.query?.session_id || null;
+
+    if (!subscriptionId && !sessionId) {
+      return res.status(400).json({ error: "Missing subscription_id or session_id" });
+    }
+
+    // 1) subscription_id がある場合はそれを最優先で確認（解約反映が確実）
+    if (subscriptionId) {
+      const url = `https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subscriptionId)}?expand[]=items.data.price`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${secret}` } });
+      const data = await r.json();
+      if (!r.ok) {
+        return res.status(r.status).json({ error: data?.error?.message || "Stripe API error", raw: data });
+      }
+
+      const subStatus = data?.status || null;
+      const cancelAtPeriodEnd = data?.cancel_at_period_end ?? null;
+
+      // 方針：active でも「解約予約（cancel_at_period_end=true）」ならロック寄せ
+      const active = (subStatus === "active" || subStatus === "trialing") && !cancelAtPeriodEnd;
+
+      const priceId = data?.items?.data?.[0]?.price?.id || null;
+      let plan = null;
+      if (priceId) {
+        if (priceId === process.env.STRIPE_PRICE_ID_PRO) plan = "pro";
+        if (priceId === process.env.STRIPE_PRICE_ID_LIGHT) plan = "light";
+      }
+
+      return res.status(200).json({
+        ok: true,
+        source: "subscription",
+        active,
+        plan,
+        subscription_id: data?.id || null,
+        subscription_status: subStatus,
+        cancel_at_period_end: cancelAtPeriodEnd,
+        current_period_end: data?.current_period_end ?? null,
+      });
+    }
+
+    // 2) session_id から subscription を展開して確認（後方互換）
     const url = `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=subscription&expand[]=subscription.items.data.price`;
 
     const r = await fetch(url, {
@@ -24,9 +62,9 @@ export default async function handler(req, res) {
 
     const sub = data.subscription || null;
     const subStatus = sub?.status || null;
-    const active = subStatus === "active" || subStatus === "trialing";
+    const cancelAtPeriodEnd = sub?.cancel_at_period_end ?? null;
+    const active = (subStatus === "active" || subStatus === "trialing") && !cancelAtPeriodEnd;
 
-    // plan 判定（priceId から light/pro を推定）
     const priceId = sub?.items?.data?.[0]?.price?.id || null;
     let plan = null;
     if (priceId) {
@@ -36,13 +74,14 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
+      source: "session",
       active,
       plan,
       session_status: data.status,
       payment_status: data.payment_status,
       subscription_id: sub?.id || null,
       subscription_status: subStatus,
-      cancel_at_period_end: sub?.cancel_at_period_end ?? null,
+      cancel_at_period_end: cancelAtPeriodEnd,
       current_period_end: sub?.current_period_end ?? null,
     });
   } catch (e) {

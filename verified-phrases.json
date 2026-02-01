@@ -1,0 +1,82 @@
+{
+  "verified_phrases": {
+    "meal": [
+      {
+        "japanese": "一口ずついきますね",
+        "hira": "ひとくちずついきますね",
+        "romaji": "hitokuchi zutsu ikimasu ne",
+        "indonesian": "Saya akan memberi satu suapan setiap kali",
+        "scene": "meal",
+        "category": "pace"
+      },
+      {
+        "japanese": "準備ができたら教えてください",
+        "hira": "じゅんびができたらおしえてください",
+        "romaji": "junbi ga dekitara oshiete kudasai",
+        "indonesian": "Tolong beri tahu saya ketika Anda siap",
+        "scene": "meal",
+        "category": "start"
+      },
+      {
+        "japanese": "少しずつ召し上がってください",
+        "hira": "すこしずつめしあがってください",
+        "romaji": "sukoshi zutsu meshiagatte kudasai",
+        "indonesian": "Silakan makan sedikit demi sedikit",
+        "scene": "meal",
+        "category": "pace"
+      },
+      {
+        "japanese": "ゆっくりで大丈夫ですよ",
+        "hira": "ゆっくりでだいじょうぶですよ",
+        "romaji": "yukkuri de daijoubu desu yo",
+        "indonesian": "Tidak apa-apa, pelan-pelan saja",
+        "scene": "meal",
+        "category": "pace"
+      }
+    ],
+    "bath": [
+      {
+        "japanese": "お風呂の時間ですよ",
+        "hira": "おふろのじかんですよ",
+        "romaji": "ofuro no jikan desu yo",
+        "indonesian": "Waktunya mandi",
+        "scene": "bath",
+        "category": "voice"
+      },
+      {
+        "japanese": "お湯の温度はいかがですか",
+        "hira": "おゆのおんどはいかがですか",
+        "romaji": "oyu no ondo wa ikaga desu ka",
+        "indonesian": "Bagaimana suhu airnya?",
+        "scene": "bath",
+        "category": "temperature"
+      },
+      {
+        "japanese": "ゆっくりお入りください",
+        "hira": "ゆっくりおはいりください",
+        "romaji": "yukkuri ohairi kudasai",
+        "indonesian": "Silakan masuk pelan-pelan",
+        "scene": "bath",
+        "category": "safety"
+      }
+    ],
+    "toilet": [
+      {
+        "japanese": "トイレに行きますか",
+        "hira": "といれにいきますか",
+        "romaji": "toire ni ikimasu ka",
+        "indonesian": "Apakah Anda ingin ke toilet?",
+        "scene": "toilet",
+        "category": "urge"
+      },
+      {
+        "japanese": "お手伝いしましょうか",
+        "hira": "おてつだいしましょうか",
+        "romaji": "otetsudai shimashou ka",
+        "indonesian": "Bolehkah saya membantu Anda?",
+        "scene": "toilet",
+        "category": "transfer"
+      }
+    ]
+  }
+}

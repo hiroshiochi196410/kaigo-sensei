@@ -36,33 +36,94 @@ export default async function handler(req, res) {
     };
 
     const CATEGORIES = {
-      // bath
       voice: "声かけ（安心・説明）",
       temperature: "温度確認",
       privacy: "羞恥・プライバシー",
       refusal: "拒否対応",
       safety: "安全配慮",
-      // meal
       start: "開始/準備",
       swallow: "嚥下/むせ",
       pace: "ペース調整",
-      // toilet
       urge: "誘導/声かけ",
       transfer: "移乗/立位",
       accident: "失敗/汚染",
       hygiene: "清潔/後始末",
-      // night
       sleep: "眠れない",
       anxiety: "不安/混乱",
       pain: "痛み/体調",
       wander: "徘徊/起き上がり",
-      // complaint
       apology: "謝罪/受容",
       fact: "事実確認",
       plan: "対応方針",
       escalate: "上席/連携",
       followup: "報告/再発防止"
     };
+
+    // 介護頻出語の正確な読み辞書
+    const KAIGO_DICTIONARY = `
+【重要】以下の介護用語は必ずこの読み方を使用すること：
+
+一口ずつ → ひとくちずつ（NOT いっこうずつ or いっこくずつ）
+少しずつ → すこしずつ
+ゆっくり → ゆっくり
+大丈夫 → だいじょうぶ
+お大事に → おだいじに
+準備 → じゅんび
+できる → できる
+いきます → いきます
+お願い → おねがい
+お手伝い → おてつだい
+召し上がる → めしあがる
+温かい → あたたかい
+冷たい → つめたい
+気持ちいい → きもちいい
+痛い → いたい
+苦しい → くるしい
+お風呂 → おふろ
+食事 → しょくじ
+トイレ → といれ
+お茶 → おちゃ
+お水 → おみず
+背中 → せなか
+足 → あし
+手 → て
+頭 → あたま
+体 → からだ
+右 → みぎ
+左 → ひだり
+上 → うえ
+下 → した
+前 → まえ
+後ろ → うしろ
+立つ → たつ
+座る → すわる
+寝る → ねる
+起きる → おきる
+歩く → あるく
+待つ → まつ
+教える → おしえる
+聞く → きく
+見る → みる
+話す → はなす
+笑う → わらう
+泣く → なく
+怒る → おこる
+喜ぶ → よろこぶ
+心配 → しんぱい
+安心 → あんしん
+元気 → げんき
+具合 → ぐあい
+様子 → ようす
+時間 → じかん
+今日 → きょう
+明日 → あした
+昨日 → きのう
+朝 → あさ
+昼 → ひる
+夜 → よる
+午前 → ごぜん
+午後 → ごご
+    `.trim();
 
     const personaInfo = PERSONAS[persona] || PERSONAS.user_calm;
     const sceneInfo = SCENES[scene] || SCENES.bath;
@@ -86,7 +147,6 @@ export default async function handler(req, res) {
           model,
           temperature,
           max_tokens: maxTokens,
-          // JSONモード（可能なモデルであればJSONのみを返しやすくする）
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: system },
@@ -100,52 +160,6 @@ export default async function handler(req, res) {
 
       const text = j.choices?.[0]?.message?.content || "";
       return { ok: true, json: safeJson(text) };
-    }
-
-    // ---------- STAGE 1 / 2 (互換) ----------
-    // 既存クライアントが使っている場合のために残す
-    if (stage === 1) {
-      if (!prompt) return res.status(400).json({ error: "Missing prompt" });
-
-      const system = `
-You are Roleplay AI for a Japanese elderly care facility.
-Persona: ${personaInfo.label}
-Role: ${personaInfo.ai_role}
-Tone: ${personaInfo.ai_tone}
-Scene: ${sceneInfo.label} (${sceneInfo.focus})
-Category: ${categoryLabel}
-Level: ${level}
-
-Return ONLY JSON:
-{
- "ai_reply_jp": "",
- "feedback_jp": "",
- "suggested_reply_jp": ""
-}
-      `.trim();
-
-      const result = await callOpenAI({ system, user: prompt, temperature: 0.4, maxTokens: 500 });
-      if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
-
-      return res.status(200).json({ ...result.json, trace: { persona, scene, category, level } });
-    }
-
-    if (stage === 2) {
-      if (!prompt) return res.status(400).json({ error: "Missing prompt" });
-
-      const system = `
-Convert Japanese caregiver text into Romaji and Indonesian.
-Return ONLY JSON:
-{
- "romaji": "",
- "indonesian": ""
-}
-      `.trim();
-
-      const result = await callOpenAI({ system, user: prompt, temperature: 0.2, maxTokens: 300 });
-      if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
-
-      return res.status(200).json({ ...result.json, trace: { persona, scene, category, level } });
     }
 
     // ---------- STAGE 3 (推奨): 3段表示＋ロールプレイ＋提案 ----------
@@ -176,9 +190,26 @@ For advanced: natural workplace Japanese (still polite).
 
 ROMAJI RULE:
 - Use Hepburn-style romaji.
-HIRAGANA RULE:
-- "hira" must be Japanese hiragana only (no kanji).
-- For names/loanwords, write as natural hiragana as much as possible.
+- Example: "ありがとう" → "arigatou" (NOT "arigato")
+- Example: "〜ます" → "masu" (NOT "mas")
+
+HIRAGANA CONVERSION RULES (CRITICAL):
+- "hira" must be ONLY hiragana (no kanji, no katakana).
+- Use the MOST COMMON READING (訓読み preferred for daily words).
+- Follow the dictionary below EXACTLY for care-related terms.
+- When uncertain, use kun-yomi (訓読み) not on-yomi (音読み).
+
+${KAIGO_DICTIONARY}
+
+EXAMPLES OF CORRECT HIRAGANA CONVERSION:
+❌ WRONG: "一口ずついきますね" → "いっこうずついきますね" or "いっこくずついきますね"
+✅ CORRECT: "一口ずついきますね" → "ひとくちずついきますね"
+
+❌ WRONG: "少しずつ召し上がってください" → "しょうしずつめしあがってください"
+✅ CORRECT: "少しずつ召し上がってください" → "すこしずつめしあがってください"
+
+❌ WRONG: "お大事に" → "おおじに"
+✅ CORRECT: "お大事に" → "おだいじに"
 
 SAFETY:
 - No medical diagnosis. If emergency risk, advise to call nurse/supervisor.
@@ -196,10 +227,14 @@ You must produce:
   },
   "score": { "scene_skill": 1, "reason_jp": "", "next_focus_hira": [""] }
 }
+
 Notes:
 - "user" should be the user's utterance normalized into the 3 languages:
   - If user wrote Indonesian: create a natural caregiver Japanese equivalent (hira) + romaji + original meaning in Indonesian (id).
   - If user wrote Japanese: convert it to hiragana (hira) + romaji + Indonesian translation (id).
+  - CRITICAL: Use the dictionary above for accurate hiragana conversion.
+- "ai" is your response as the ${personaInfo.ai_role} in this scene.
+- "suggested" is an alternative/better way the user could have said it (if applicable).
 - "annotations" helps learning:
   - danger_words: choking/fall/pain etc related words that appear or are important for the scene (max 5). "hira" must be hiragana only.
   - keigo_points: polite phrases used or recommended for the scene (max 5). "phrase_hira" must be hiragana only.
@@ -217,13 +252,12 @@ Notes:
       const result = await callOpenAI({
         system,
         user: JSON.stringify(userPayload, null, 2),
-        temperature: 0.35,
+        temperature: 0.3, // 低めにして安定性向上
         maxTokens: 900
       });
 
       if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
 
-      // 軽いバリデーション（欠けていても返す）
       const out = result.json || {};
       return res.status(200).json({
         user: out.user || {},
@@ -236,7 +270,9 @@ Notes:
       });
     }
 
-    return res.status(400).json({ error: "Invalid stage" });
+    // STAGE 1, 2 の処理は省略（stage 3 のみ使用を想定）
+    return res.status(400).json({ error: "Invalid stage or stage not implemented" });
+
   } catch (e) {
     return res.status(500).json({ error: "Server error", details: String(e?.message || e) });
   }
