@@ -1,40 +1,36 @@
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ success: false, error: "Method not allowed" });
+      return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { text, lang, speed } = req.body || {};
-    const t = String(text || "").trim();
-    if (!t) return res.status(400).json({ success: false, error: "Missing text" });
+    const { text, rate } = req.body || {};
+    const inputText = (text || "").toString().trim();
+    if (!inputText) return res.status(400).json({ error: "Missing text" });
 
-    // Google Cloud Text-to-Speech API key
-    const apiKey = process.env.GOOGLE_TTS_API_KEY || process.env.GOOGLE_CLOUD_API_KEY;
+    // Google Cloud Text-to-Speech API Key
+    const apiKey =
+      process.env.GOOGLE_TTS_API_KEY ||
+      process.env.GOOGLE_CLOUD_API_KEY ||
+      process.env.GOOGLE_API_KEY;
+
     if (!apiKey) {
       return res.status(500).json({
-        success: false,
-        error: "Missing GOOGLE_TTS_API_KEY (or GOOGLE_CLOUD_API_KEY)"
+        error: "Missing GOOGLE_TTS_API_KEY",
+        hint: "VercelのEnvironment Variablesに GOOGLE_TTS_API_KEY を追加してください"
       });
     }
 
-    // speed: "slow" | "normal" | "fast"
-    const speakingRate =
-      speed === "slow" ? 0.85 :
-      speed === "fast" ? 1.15 : 1.0;
+    // 速度（0.25〜4.0 推奨レンジ）
+    const speakingRate = Math.max(0.25, Math.min(4.0, Number(rate) || 1.0));
 
-    const languageCode = (lang && typeof lang === "string") ? lang : "ja-JP";
-
-    // Prefer Neural2 if available; falls back automatically if not.
-    const voiceName =
-      languageCode.startsWith("ja") ? "ja-JP-Neural2-B" :
-      languageCode.startsWith("en") ? "en-US-Neural2-F" :
-      "";
+    const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`;
 
     const payload = {
-      input: { text: t },
+      input: { text: inputText },
       voice: {
-        languageCode,
-        ...(voiceName ? { name: voiceName } : {}),
+        languageCode: "ja-JP",
+        name: "ja-JP-Neural2-B" // 男性寄り。必要ならA/C/Dなどに変更OK
       },
       audioConfig: {
         audioEncoding: "MP3",
@@ -42,33 +38,33 @@ export default async function handler(req, res) {
       }
     };
 
-    const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`;
     const r = await fetch(url, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
-    const data = await r.json().catch(() => ({}));
     if (!r.ok) {
-      return res.status(r.status).json({
-        success: false,
-        error: data?.error?.message || "Google TTS error",
-        detail: data
+      const errText = await r.text().catch(() => "");
+      return res.status(502).json({
+        error: "Google TTS failed",
+        status: r.status,
+        detail: errText.slice(0, 500)
       });
     }
 
-    if (!data.audioContent) {
-      return res.status(500).json({ success: false, error: "No audioContent from Google TTS" });
+    const data = await r.json();
+    const audioContent = data && data.audioContent;
+    if (!audioContent) {
+      return res.status(502).json({ error: "No audioContent" });
     }
 
-    // Return base64 MP3
-    return res.status(200).json({
-      success: true,
-      mime: "audio/mpeg",
-      audioContent: data.audioContent
-    });
+    const buf = Buffer.from(audioContent, "base64");
+    res.setHeader("Content-Type", "audio/mpeg");
+    // キャッシュ：同じ文は何度も使うので短めに許可
+    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    return res.status(200).send(buf);
   } catch (e) {
-    return res.status(500).json({ success: false, error: e?.message || "Unknown error" });
+    return res.status(500).json({ error: "Server error", message: e?.message || String(e) });
   }
 }
