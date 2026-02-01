@@ -1149,18 +1149,43 @@ async function init(){
 
     // Speak suggested
     $("btnSpeakSuggestHira")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.hira || ""); });
-    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });
-
-    // Click-to-speak in history (event delegation)
-    $("history")?.addEventListener("click", (e)=>{
+    $("btnSpeakSuggestRoma")?.addEventListener("click", ()=>{ if (lastSuggested) speakOnce(lastSuggested.romaji || ""); });    // Click-to-speak in history (event delegation)
+    // - data-idx / data-field が取れない時や、triのキー違いでも再生できるようにフォールバック
+    document.addEventListener("click", (e)=>{
       const btn = e.target.closest(".ttsBtn");
       if (!btn) return;
-      const idx = Number(btn.dataset.idx || -1);
-      const field = btn.dataset.field || "";
-      const item = (history || [])[idx];
-      const text = item?.tri?.[field] || "";
-      if (field === "hira") speakOnce(text, "ja-JP");
-      else if (field === "romaji") speakOnce(text, "ja-JP");
+      // 例: 無効ボタンは反応しない
+      if (btn.disabled) return;
+
+      const field = (btn.dataset.field || "").trim();
+      const idxRaw = (btn.dataset.idx ?? "").trim();
+      let text = "";
+
+      // 1) history配列から拾う
+      if (idxRaw !== "") {
+        const idx = Number(idxRaw);
+        const item = (history || [])[idx];
+        if (item && item.tri) {
+          if (field === "hira") text = item.tri.hira || item.tri.jp || item.tri.text || "";
+          else if (field === "romaji") text = item.tri.romaji || "";
+          else if (field) text = item.tri[field] || "";
+        }
+      }
+
+      // 2) DOMから拾う（data-idxがズレてもOK）
+      if (!text) {
+        const row = btn.closest(".triRow");
+        const t = row ? row.querySelector(".triText") : null;
+        text = (t ? t.textContent : "").trim();
+      }
+
+      if (!text) {
+        console.warn("TTS: no text to speak", { field, idxRaw, btn });
+        return;
+      }
+
+      // 日本語で読み上げ（ひらがな/ローマ字ともに ja-JP でOK）
+      speakOnce(text, "ja-JP");
     });
 
     // Reset learning log
