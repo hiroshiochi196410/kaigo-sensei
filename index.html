@@ -3,69 +3,362 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>介護ロールプレイAI</title>
+  <title>介護ロールプレイAI - 日本語学習支援</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;margin:0;background:#fff;color:#111}
-    header{padding:18px 20px;border-bottom:1px solid #eee}
-    h1{margin:0;font-size:20px}
-    p{margin:6px 0 0;color:#555;font-size:13px}
-    .wrap{max-width:980px;margin:0 auto;padding:24px 16px}
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-    .card{border:1px solid #e5e7eb;border-radius:14px;padding:18px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.04)}
-    .card h2{margin:0 0 6px;font-size:18px}
-    .card p{margin:0 0 14px;color:#555;font-size:13px;line-height:1.6}
-    .btn{display:inline-block;width:100%;text-align:center;padding:12px 14px;border-radius:12px;border:0;background:#111;color:#fff;font-size:15px;cursor:pointer}
-    .sub{margin-top:10px;font-size:12px;color:#666}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .ghost{background:#fff;color:#111;border:1px solid #ddd}
+    * { box-sizing: border-box; }
+    body { 
+      font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #111;
+      min-height: 100vh;
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      color: #fff;
+    }
+    
+    .hero h1 {
+      font-size: 42px;
+      margin: 0 0 16px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    
+    .hero p {
+      font-size: 18px;
+      margin: 0 0 40px;
+      opacity: 0.95;
+    }
+    
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+    
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .plan-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    
+    .plan-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #667eea;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .plan-badge.popular {
+      background: #f59e0b;
+    }
+    
+    .plan-name {
+      font-size: 14px;
+      color: #667eea;
+      font-weight: 600;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .plan-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: #111;
+    }
+    
+    .plan-price {
+      font-size: 36px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      color: #111;
+    }
+    
+    .plan-price small {
+      font-size: 16px;
+      font-weight: 400;
+      color: #666;
+    }
+    
+    .plan-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0 0 24px;
+      line-height: 1.6;
+    }
+    
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    
+    .plan-features li {
+      padding: 8px 0;
+      font-size: 14px;
+      color: #444;
+      display: flex;
+      align-items: flex-start;
+      line-height: 1.5;
+    }
+    
+    .plan-features li::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: 700;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #111;
+    }
+    
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin: 60px 0;
+    }
+    
+    .feature-card {
+      background: rgba(255,255,255,0.95);
+      padding: 32px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .feature-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: #111;
+    }
+    
+    .feature-desc {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .plans { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>介護ロールプレイAI</h1>
-    <p>日本語（ひらがな）・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</p>
-  </header>
+  <div class="hero">
+    <h1>24時間いつでも<br>介護日本語を練習</h1>
+    <p>AI相手に何度でも会話練習。ひらがな・ローマ字・インドネシア語の3段表示。</p>
+  </div>
 
   <div class="wrap">
-    <div class="grid">
-      <div class="card">
-        <h2>trainee</h2>
-        <p>個人学習向け。シーン別に会話練習（入浴・食事・排泄・夜間・クレーム）。</p>
-        <button class="btn" id="goTrainee">trainee をひらく</button>
-        <div class="sub">/app/trainee/</div>
+    <h2 style="text-align:center; color:#fff; margin:0 0 32px; font-size:28px;">あなたに合ったプランを選択</h2>
+    
+    <div class="plans">
+      <!-- trainee ライト -->
+      <div class="plan-card">
+        <span class="plan-badge">入門者</span>
+        <div class="plan-name">Trainee Lite</div>
+        <h3 class="plan-title">ライト</h3>
+        <div class="plan-price">¥980<small>/月</small></div>
+        <p class="plan-desc">来日前・来日直後の技能実習生向け</p>
+        
+        <ul class="plan-features">
+          <li>1日30回まで利用可能</li>
+          <li>超簡単な語彙（N5レベル）</li>
+          <li>基礎シナリオ3種</li>
+          <li>ローマ字+ID語表示</li>
+          <li>音声再生機能</li>
+        </ul>
+        
+        <button class="btn btn-secondary" onclick="selectPlan('trainee_lite')">
+          無料トライアル開始
+        </button>
       </div>
 
-      <div class="card">
-        <h2>ssw</h2>
-        <p>特定技能向けの練習（必要に応じてシーンや難易度を拡張）。</p>
-        <button class="btn" id="goSsw">ssw をひらく</button>
-        <div class="sub">/app/ssw/</div>
+      <!-- trainee スタンダード -->
+      <div class="plan-card">
+        <span class="plan-badge popular">人気</span>
+        <div class="plan-name">Trainee Standard</div>
+        <h3 class="plan-title">スタンダード</h3>
+        <div class="plan-price">¥1,680<small>/月</small></div>
+        <p class="plan-desc">来日3ヶ月〜1年の技能実習生向け</p>
+        
+        <ul class="plan-features">
+          <li>1日70回まで利用可能</li>
+          <li>N5-N4語彙（1,500語）</li>
+          <li>全基礎シナリオ5種</li>
+          <li>ローマ字+ID語表示</li>
+          <li>例文保存（最大50件）</li>
+          <li>簡易学習レポート</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="selectPlan('trainee_standard')">
+          無料トライアル開始
+        </button>
+      </div>
+
+      <!-- ssw スタンダード -->
+      <div class="plan-card">
+        <span class="plan-badge">実務者</span>
+        <div class="plan-name">SSW Standard</div>
+        <h3 class="plan-title">スタンダード</h3>
+        <div class="plan-price">¥2,680<small>/月</small></div>
+        <p class="plan-desc">特定技能1号（1-2年経験）向け</p>
+        
+        <ul class="plan-features">
+          <li>1日100回まで利用可能</li>
+          <li>N4-N3語彙+敬語（3,000語）</li>
+          <li>高度シナリオ8種</li>
+          <li>日本語のみ表示</li>
+          <li>例文保存（最大200件）</li>
+          <li>詳細学習レポート</li>
+          <li>シナリオ選択可能</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="selectPlan('ssw_standard')">
+          無料トライアル開始
+        </button>
+      </div>
+
+      <!-- ssw プロフェッショナル -->
+      <div class="plan-card">
+        <span class="plan-badge">リーダー</span>
+        <div class="plan-name">SSW Professional</div>
+        <h3 class="plan-title">プロフェッショナル</h3>
+        <div class="plan-price">¥4,980<small>/月</small></div>
+        <p class="plan-desc">特定技能・リーダー候補向け</p>
+        
+        <ul class="plan-features">
+          <li><strong>無制限</strong>利用</li>
+          <li>N3-N2語彙+謙譲語（6,000語）</li>
+          <li>全シナリオ12種</li>
+          <li>AI詳細分析レポート</li>
+          <li>例文保存無制限</li>
+          <li>完全カスタマイズ可能</li>
+          <li>優先サポート（12h以内）</li>
+          <li>データエクスポート機能</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="selectPlan('ssw_professional')">
+          無料トライアル開始
+        </button>
       </div>
     </div>
 
-    <div class="row">
-      <button class="btn ghost" id="clearLast">前回の選択を消す</button>
+    <!-- 特徴セクション -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">AIで会話練習</h3>
+        <p class="feature-desc">利用者・家族役のAIと実践的な会話練習ができます</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🗣️</div>
+        <h3 class="feature-title">高品質音声</h3>
+        <p class="feature-desc">正しい発音を何度でも聞くことができます</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌏</div>
+        <h3 class="feature-title">3言語対応</h3>
+        <p class="feature-desc">日本語・ローマ字・インドネシア語で表示</p>
+      </div>
     </div>
   </div>
 
+  <footer>
+    <p>© 2026 介護ロールプレイAI. All rights reserved.</p>
+  </footer>
+
   <script>
-    // ★ここ重要：自動遷移はしない。クリックした時だけ移動する。
-    const KEY = "kaigo_last_app";
-
-    document.getElementById("goTrainee").addEventListener("click", () => {
-      localStorage.setItem(KEY, "trainee");
-      location.href = "/app/trainee/";
-    });
-
-    document.getElementById("goSsw").addEventListener("click", () => {
-      localStorage.setItem(KEY, "ssw");
-      location.href = "/app/ssw/";
-    });
-
-    document.getElementById("clearLast").addEventListener("click", () => {
-      localStorage.removeItem(KEY);
-      alert("前回の選択を消しました。");
-    });
+    function selectPlan(plan) {
+      // プラン情報をローカルストレージに保存
+      localStorage.setItem('selected_plan', plan);
+      
+      // プランに応じてvariantを決定
+      let variant;
+      if (plan === 'trainee_lite' || plan === 'trainee_standard') {
+        variant = 'trainee';
+      } else {
+        variant = 'ssw';
+      }
+      
+      localStorage.setItem('kaigo_last_app', variant);
+      
+      // アプリページへ遷移
+      window.location.href = `/app/${variant}/`;
+    }
   </script>
 </body>
 </html>
