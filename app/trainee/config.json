@@ -1,10 +1,86 @@
 {
   "variant": "trainee",
-  "title": "介護ロールプレイAI（技能実習生）",
+  "title": "介護ロールプレイAI（技能実習生向け）",
+  "subtitle": "基礎から学ぶ介護日本語",
+  "target_audience": "技能実習生（入国〜1年目）",
+  "target_jlpt": "N5-N4",
+  
   "default_scene": "meal",
   "default_persona": "user_calm",
   "default_level": "beginner",
-  "trial_limit": 3,
-  "stripe_price_id": "PRICE_ID_TRAINEE_HERE",
-  "unlock_code": "TRN-2026"
+  
+  "available_levels": ["beginner", "intermediate"],
+  "trial_limit": 5,
+  
+  "features": {
+    "show_furigana": true,
+    "show_romaji": true,
+    "show_indonesian": true,
+    "vocabulary_hints": true,
+    "grammar_tips": true,
+    "slow_speech": true,
+    "simple_feedback": true
+  },
+  
+  "focus_areas": [
+    "基本的な挨拶",
+    "日常会話",
+    "基礎的な介護動作",
+    "安全確認の基本",
+    "報告の基礎"
+  ],
+  
+  "learning_goals": [
+    "N5レベルの日常会話ができる",
+    "基本的な介護用語を理解できる",
+    "簡単な指示を理解できる",
+    "危険を報告できる"
+  ],
+  
+  "pricing": {
+    "plans": [
+      {
+        "id": "trainee_basic",
+        "name": "ベーシック",
+        "name_id": "Dasar",
+        "price": 1280,
+        "daily_limit": 50,
+        "features": [
+          "基礎シナリオすべて",
+          "ふりがな・ローマ字・インドネシア語",
+          "文法ヒント",
+          "単語帳"
+        ]
+      },
+      {
+        "id": "trainee_standard",
+        "name": "スタンダード",
+        "name_id": "Standar",
+        "price": 1980,
+        "daily_limit": 100,
+        "features": [
+          "すべてのシナリオ",
+          "ふりがな・ローマ字・インドネシア語",
+          "文法ヒント・解説",
+          "単語帳・復習機能",
+          "進捗レポート"
+        ]
+      }
+    ]
+  },
+  
+  "stripe_price_ids": {
+    "basic": "price_trainee_basic_1280",
+    "standard": "price_trainee_standard_1980"
+  },
+  
+  "unlock_code": "TRN-2026",
+  
+  "ui_settings": {
+    "primary_language": "japanese",
+    "secondary_language": "indonesian",
+    "show_romaji_by_default": true,
+    "emphasize_basic_vocabulary": true,
+    "use_simple_UI": true
+  }
 }
