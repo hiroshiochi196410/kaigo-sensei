@@ -1,10 +1,100 @@
 {
   "variant": "ssw",
-  "title": "介護ロールプレイAI（特定技能）",
-  "default_scene": "night",
-  "default_persona": "family_complaint",
-  "default_level": "field",
+  "title": "介護ロールプレイAI（特定技能向け）",
+  "subtitle": "実践的な専門スキルを磨く",
+  "target_audience": "特定技能（実務経験者）",
+  "target_jlpt": "N4-N3",
+  
+  "default_scene": "complaint",
+  "default_persona": "family_anxious",
+  "default_level": "intermediate",
+  
+  "available_levels": ["intermediate", "advanced"],
   "trial_limit": 3,
-  "stripe_price_id": "PRICE_ID_SSW_HERE",
-  "unlock_code": "SSW-2026"
+  
+  "features": {
+    "show_furigana": false,
+    "show_romaji": false,
+    "show_indonesian": false,
+    "vocabulary_hints": false,
+    "grammar_tips": false,
+    "complex_scenarios": true,
+    "team_communication": true,
+    "case_studies": true,
+    "professional_feedback": true
+  },
+  
+  "focus_areas": [
+    "家族対応",
+    "クレーム処理",
+    "チーム連携",
+    "緊急時対応",
+    "記録・報告",
+    "リーダーシップ"
+  ],
+  
+  "learning_goals": [
+    "複雑な状況に適切に対応できる",
+    "家族との専門的なコミュニケーション",
+    "チーム内での効果的な連携",
+    "正確な記録と報告",
+    "後輩への指導"
+  ],
+  
+  "pricing": {
+    "plans": [
+      {
+        "id": "ssw_standard",
+        "name": "スタンダード",
+        "name_id": "Standar",
+        "price": 2480,
+        "daily_limit": 100,
+        "features": [
+          "高度シナリオすべて",
+          "チーム連携訓練",
+          "ケーススタディ",
+          "専門的フィードバック"
+        ]
+      },
+      {
+        "id": "ssw_professional",
+        "name": "プロフェッショナル",
+        "name_id": "Profesional",
+        "price": 3980,
+        "daily_limit": 999999,
+        "features": [
+          "すべての機能",
+          "無制限練習",
+          "記録練習",
+          "個別フィードバック",
+          "リーダーシップ訓練",
+          "優先サポート"
+        ]
+      }
+    ]
+  },
+  
+  "stripe_price_ids": {
+    "standard": "price_ssw_standard_2480",
+    "professional": "price_ssw_professional_3980"
+  },
+  
+  "unlock_code": "SSW-2026",
+  
+  "ui_settings": {
+    "primary_language": "japanese",
+    "secondary_language": null,
+    "show_romaji_by_default": false,
+    "emphasize_professional_terms": true,
+    "use_advanced_UI": true
+  },
+  
+  "exclusive_scenarios": [
+    "emergency_response",
+    "family_consultation",
+    "team_coordination",
+    "incident_reporting",
+    "care_planning",
+    "mentoring"
+  ]
 }
