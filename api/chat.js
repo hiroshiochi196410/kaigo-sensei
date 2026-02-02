@@ -19,6 +19,35 @@ export default async function handler(req, res) {
     const variant = meta?.variant || "trainee";
     const ctx = Array.isArray(meta?.ctx) ? meta.ctx.slice(-6) : [];
 
+    // ========== VARIANT-SPECIFIC SETTINGS ==========
+    
+    const VARIANT_SETTINGS = {
+      trainee: {
+        vocabulary_level: "N5-N4",
+        max_sentence_words: 15,
+        use_simple_grammar: true,
+        provide_hints: true,
+        feedback_style: "encouraging",
+        include_romaji: true,
+        include_indonesian: true,
+        focus: "basic daily care, simple communication, safety basics"
+      },
+      ssw: {
+        vocabulary_level: "N4-N3",
+        max_sentence_words: 25,
+        use_simple_grammar: false,
+        provide_hints: false,
+        feedback_style: "professional",
+        include_romaji: false,
+        include_indonesian: false,
+        focus: "complex scenarios, team coordination, family communication, professional documentation"
+      }
+    };
+
+    const variantConfig = VARIANT_SETTINGS[variant] || VARIANT_SETTINGS.trainee;
+
+    // ========== PERSONAS ==========
+    
     const PERSONAS = {
       user_calm: { label: "利用者：穏やか", ai_role: "resident", ai_tone: "calm, cooperative, polite" },
       user_angry: { label: "利用者：怒り", ai_role: "resident", ai_tone: "irritated, defensive, short answers" },
@@ -162,85 +191,123 @@ export default async function handler(req, res) {
       return { ok: true, json: safeJson(text) };
     }
 
-    // ---------- STAGE 3 (推奨): 3段表示＋ロールプレイ＋提案 ----------
+    // ========== STAGE 3: VARIANT-AWARE PROMPT ==========
+    
     if (stage === 3) {
       if (!prompt) return res.status(400).json({ error: "Missing prompt" });
 
-      const system = `
-You are "AIGA", a roleplay conversation partner for training Indonesian caregivers working in Japan.
-Your job: make practice conversations for Japanese elderly care (kaigo).
-The user's input may be Japanese or Indonesian.
+      // Variant-specific prompt modifier
+      const variantPromptModifier = variant === 'trainee' ? `
+========== TRAINEE MODE (技能実習生向け) ==========
 
-Roleplay setup:
-- Scene: ${sceneInfo.label}
-- Focus: ${sceneInfo.focus}
+TARGET: Japanese learners (JLPT N5-N4 level) in their first 1-2 years
+VOCABULARY: Use only N5-N4 words (common daily expressions)
+SENTENCE LENGTH: Keep sentences short (10-15 words maximum)
+GRAMMAR: Avoid complex grammar (no passive voice, causative, or conditional forms)
+
+COMMUNICATION STYLE:
+- Use simple, clear expressions
+- Break complex ideas into multiple short sentences
+- Provide vocabulary hints for difficult words
+- Be patient and encouraging in feedback
+- Explain grammar patterns when relevant
+
+EXAMPLES OF APPROPRIATE LANGUAGE:
+✅ "ゆっくりで だいじょうぶですよ"
+✅ "おふろに はいりますか？"
+✅ "すこしずつ たべてください"
+
+AVOID:
+❌ "お急ぎにならなくても結構ですよ" (too formal/complex)
+❌ "入浴なさいますか？" (too formal)
+❌ "少量ずつ召し上がってください" (too formal)
+
+FEEDBACK STYLE: Encouraging, specific, actionable
+Example: "『ゆっくり』がよく使えました！つぎは『〜てください』もつかってみましょう"
+` : `
+========== SSW MODE (特定技能向け) ==========
+
+TARGET: Experienced caregivers (JLPT N4-N3 level) with 1+ years of work experience
+VOCABULARY: Use N4-N3 vocabulary, natural workplace Japanese
+SENTENCE LENGTH: Normal workplace length (15-25 words)
+GRAMMAR: Include appropriate keigo (humble/respectful language)
+
+COMMUNICATION STYLE:
+- Use realistic workplace expressions
+- Include professional terminology
+- Expect proper use of keigo
+- Provide context-aware professional feedback
+- Challenge with realistic complex scenarios
+
+REALISTIC SCENARIOS:
+- Family member questioning care quality
+- Coordinating with nurses/doctors
+- Handling difficult resident behaviors
+- Team communication under pressure
+- Incident reporting and documentation
+
+EXAMPLES OF APPROPRIATE LANGUAGE:
+✅ "ご家族の方に状況をご説明させていただきます"
+✅ "看護師に報告して、指示を仰ぎます"
+✅ "利用者様の様子を詳しく観察いたしました"
+
+FEEDBACK STYLE: Professional, constructive, specific
+Example: "報告の仕方は適切です。さらに『いつ・どこで・何が』を明確にすると、より正確な報告になります"
+`;
+
+      const system = `
+You are "AIGA", an AI roleplay partner for training caregivers working in Japanese elderly care facilities.
+
+${variantPromptModifier}
+
+CURRENT ROLEPLAY SETUP:
+- Scene: ${sceneInfo.label} (${sceneInfo.focus})
 - Category: ${categoryLabel}
 - Persona: ${personaInfo.label}
 - Role you play: ${personaInfo.ai_role}
 - Tone: ${personaInfo.ai_tone}
-- Difficulty level: ${level} (beginner / intermediate / advanced)
+- Target Level: ${variantConfig.vocabulary_level}
 - Variant: ${variant}
 
 OUTPUT RULES:
 Return ONLY valid JSON (no markdown, no extra text).
-Use short, clear sentences.
-For beginner: prefer N5–N4 grammar, very simple words.
-For intermediate: N4–N3.
-For advanced: natural workplace Japanese (still polite).
 
 ROMAJI RULE:
-- Use Hepburn-style romaji.
-- Example: "ありがとう" → "arigatou" (NOT "arigato")
-- Example: "〜ます" → "masu" (NOT "mas")
+- Use Hepburn-style romaji
 
 HIRAGANA CONVERSION RULES (CRITICAL):
-- "hira" must be ONLY hiragana (no kanji, no katakana).
-- Use the MOST COMMON READING (訓読み preferred for daily words).
-- Follow the dictionary below EXACTLY for care-related terms.
-- When uncertain, use kun-yomi (訓読み) not on-yomi (音読み).
+- "hira" must be ONLY hiragana (no kanji, no katakana)
+- Use the MOST COMMON READING (訓読み preferred for daily words)
+- Follow the dictionary below EXACTLY for care-related terms
 
 ${KAIGO_DICTIONARY}
 
-EXAMPLES OF CORRECT HIRAGANA CONVERSION:
-❌ WRONG: "一口ずついきますね" → "いっこうずついきますね" or "いっこくずついきますね"
-✅ CORRECT: "一口ずついきますね" → "ひとくちずついきますね"
-
-❌ WRONG: "少しずつ召し上がってください" → "しょうしずつめしあがってください"
-✅ CORRECT: "少しずつ召し上がってください" → "すこしずつめしあがってください"
-
-❌ WRONG: "お大事に" → "おおじに"
-✅ CORRECT: "お大事に" → "おだいじに"
-
 SAFETY:
-- No medical diagnosis. If emergency risk, advise to call nurse/supervisor.
+- No medical diagnosis
+- If emergency risk, advise to call nurse/supervisor
 
-You must produce:
+YOU MUST PRODUCE:
 {
   "user": { "hira": "", "romaji": "", "id": "" },
   "ai": { "hira": "", "romaji": "", "id": "" },
-  "feedback_jp": "",
+  "feedback_jp": "${variantConfig.feedback_style === 'encouraging' ? '50字以内、具体的で前向き' : '50字以内、プロフェッショナルで建設的'}",
   "suggested": { "hira": "", "romaji": "", "id": "" },
   "annotations": {
     "danger_words": [ { "hira": "", "romaji": "", "level": "high|medium|low", "note_jp": "" } ],
     "keigo_points": [ { "phrase_hira": "", "phrase_romaji": "", "note_jp": "" } ],
     "vocab": [ { "hira": "", "romaji": "", "id": "", "note_jp": "" } ]
   },
-  "score": { "scene_skill": 1, "reason_jp": "", "next_focus_hira": [""] }
+  "score": { "scene_skill": 1-5, "reason_jp": "", "next_focus_hira": [""] }
 }
 
-Notes:
-- "user" should be the user's utterance normalized into the 3 languages:
-  - If user wrote Indonesian: create a natural caregiver Japanese equivalent (hira) + romaji + original meaning in Indonesian (id).
-  - If user wrote Japanese: convert it to hiragana (hira) + romaji + Indonesian translation (id).
-  - CRITICAL: Use the dictionary above for accurate hiragana conversion.
-- "ai" is your response as the ${personaInfo.ai_role} in this scene.
-- "suggested" is an alternative/better way the user could have said it (if applicable).
-- "annotations" helps learning:
-  - danger_words: choking/fall/pain etc related words that appear or are important for the scene (max 5). "hira" must be hiragana only.
-  - keigo_points: polite phrases used or recommended for the scene (max 5). "phrase_hira" must be hiragana only.
-  - vocab: useful new words for this scene (max 6). "hira" must be hiragana only.
-  - If nothing, use empty arrays.
-- "score.scene_skill": 1–5 score of the user's utterance appropriateness/politeness for this scene (5 is best).
+NOTES:
+- "user" should be the user's utterance normalized into 3 languages
+- "ai" is your response as the ${personaInfo.ai_role} in this scene
+- "suggested" is an alternative/better way the user could have said it
+- "annotations" helps learning (use empty arrays if not applicable)
+- "score.scene_skill": 1-5 score of appropriateness/politeness
+- ${variantConfig.include_indonesian ? 'Include Indonesian translations' : 'Indonesian can be brief or omitted'}
+- ${variantConfig.provide_hints ? 'Provide helpful vocabulary hints' : 'Focus on professional feedback'}
       `.trim();
 
       const userPayload = {
@@ -249,11 +316,13 @@ Notes:
         recent_context: ctx
       };
 
+      const maxTokens = variant === 'trainee' ? 600 : 800;
+
       const result = await callOpenAI({
         system,
         user: JSON.stringify(userPayload, null, 2),
-        temperature: 0.3, // 低めにして安定性向上
-        maxTokens: 900
+        temperature: 0.3,
+        maxTokens
       });
 
       if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
@@ -266,13 +335,11 @@ Notes:
         suggested: out.suggested || {},
         annotations: out.annotations || { danger_words: [], keigo_points: [], vocab: [] },
         score: out.score || {},
-        trace: { persona, scene, category, level, variant }
+        trace: { persona, scene, category, level, variant, vocabulary_level: variantConfig.vocabulary_level }
       });
     }
 
-    // STAGE 1, 2 の処理は省略（stage 3 のみ使用を想定）
-    return res.status(400).json({ error: "Invalid stage or stage not implemented" });
-
+    return res.status(400).json({ error: "Invalid stage" });
   } catch (e) {
     return res.status(500).json({ error: "Server error", details: String(e?.message || e) });
   }
