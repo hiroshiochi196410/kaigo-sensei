@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>介護ロールプレイAI（日本語×ローマ字×インドネシア語）</title>
+  <!-- プラン管理ライブラリ -->
+  <script src="/plan-manager.js"></script>
   <style>
     :root{
       --bg:#fafafa; --card:#fff; --bd:#e5e7eb; --txt:#111827; --muted:#6b7280;
@@ -75,8 +77,10 @@
 </head>
 <body>
   <header>
-    <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span></h1>
+    <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span> <span class="pill" id="planInfo">プラン取得中...</span></h1>
     <div class="sub">日本語・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
+    <!-- 使用回数表示 -->
+    <div id="usageInfo" style="margin-top:8px;padding:8px 12px;background:#f3f4f6;border-radius:8px;text-align:center;font-weight:600;font-size:13px;"></div>
   </header>
 
   <main class="grid">
@@ -952,6 +956,13 @@ async function send(){
   $("errBox").style.display="none";
   $("okBox").style.display="none";
 
+  // ★ プラン管理：使用回数チェック
+  if (typeof PlanManager !== 'undefined') {
+    if (!PlanManager.canUse()) {
+      return; // 制限に達している場合はモーダル表示して終了
+    }
+  }
+
   if (maybeLock()) return;
 
   const text = $("userInput").value.trim();
@@ -964,6 +975,9 @@ async function send(){
   const langSel = $("langSel").value;
   const user_lang = (langSel === "auto") ? detectLangAuto(text) : langSel;
 
+  // ★ プラン管理：現在のプランを取得
+  const currentPlan = (typeof PlanManager !== 'undefined') ? PlanManager.getCurrentPlan() : 'trainee_lite';
+
   // client-side history to help context (last 6 turns)
   const ctx = (history || []).slice(-6).map(x=>({
     role: x.role, hira: x.tri?.hira || "", romaji: x.tri?.romaji || "", id: x.tri?.id || ""
@@ -973,8 +987,13 @@ async function send(){
   setStatus("AI応答中…");
 
   try{
-    const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, ctx };
+    const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, plan: currentPlan, ctx };
     const out = await postChat({ text, meta });
+
+    // ★ プラン管理：使用回数をカウント
+    if (typeof PlanManager !== 'undefined') {
+      PlanManager.recordUsage();
+    }
 
     // trial count
     if (!unlocked){
@@ -1246,6 +1265,19 @@ async function init(){
       ls.set("aiga_stats_"+VARIANT, STATS);
       renderStats();
     });
+
+    // ★ プラン管理の初期化
+    if (typeof PlanManager !== 'undefined') {
+      // プラン情報を表示
+      const config = PlanManager.getPlanConfig();
+      const planInfoEl = document.getElementById('planInfo');
+      if (planInfoEl) {
+        planInfoEl.textContent = config.name;
+      }
+      
+      // 使用回数表示を更新
+      PlanManager.updateUsageDisplay();
+    }
 
   }catch(e){
     setStatus("起動失敗");
