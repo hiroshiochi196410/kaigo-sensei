@@ -1071,6 +1071,19 @@ async function startCheckout() {
   }
 }
 
+
+function applyEntitlementFromBilling(billingPlan){
+  // billingPlan: "light" | "pro" | null
+  if (typeof PlanManager === 'undefined' || !PlanManager.setCurrentPlan) return;
+
+  const planKey =
+    (billingPlan === "pro")   ? "ssw_standard" :
+    (billingPlan === "light") ? "trainee_standard" :
+                               "trainee_lite";
+
+  PlanManager.setCurrentPlan(planKey);
+}
+
 async function verifyFromUrl(){
   const url = new URL(location.href);
   const sessionId = url.searchParams.get("session_id");
@@ -1092,7 +1105,10 @@ async function verifyFromUrl(){
       $("okBox").textContent = "✅ 解除しました（有効な購読を確認）";
       $("lock").style.display="none";
       setTrialInfo();
-    }else{
+    
+      // ★ 購読プラン(light/pro) → 4プラン権限に反映
+      try { applyEntitlementFromBilling(j.plan || null); } catch(_) {}
+}else{
       // active でない（または解約予約）ならロック寄せ
       unlocked = false;
       ls.del("aiga_unlocked_"+VARIANT);
@@ -1100,6 +1116,8 @@ async function verifyFromUrl(){
       ls.del("stripe_session_id_"+VARIANT);
 
       $("lockMsg").textContent = "決済はまだ確認できませんでした。少し待って再読み込みしてください。";
+      // ★ 非アクティブなら権限をliteへ
+      try { applyEntitlementFromBilling(null); } catch(_) {}
     }
   }catch(e){
     $("lockMsg").textContent = "決済確認に失敗: " + String(e.message || e);
@@ -1129,18 +1147,24 @@ async function syncSubscriptionStatus(){
       if (j.subscription_id) ls.set("stripe_sub_id_"+VARIANT, j.subscription_id);
       if (sessId) ls.set("stripe_session_id_"+VARIANT, sessId);
       $("lock").style.display="none";
-    }else{
+    
+      // ★ 購読プラン(light/pro) → 4プラン権限に反映
+      try { applyEntitlementFromBilling(j.plan || null); } catch(_) {}
+}else{
       unlocked = false;
       ls.del("aiga_unlocked_"+VARIANT);
       // 混乱を避けて key も消す
       ls.del("stripe_sub_id_"+VARIANT);
       ls.del("stripe_session_id_"+VARIANT);
+      // ★ 非アクティブなら権限をliteへ
+      try { applyEntitlementFromBilling(null); } catch(_) {}
     }
     setTrialInfo();
   }catch(e){
     // 取れないときは「解除しない」側に倒す（無料枠は使える）
     unlocked = false;
     ls.del("aiga_unlocked_"+VARIANT);
+    try { applyEntitlementFromBilling(null); } catch(_) {}
     setTrialInfo();
   }
 }
@@ -1155,7 +1179,10 @@ function unlockByCode(){
     $("lock").style.display="none";
     $("lockMsg").textContent = "";
     setTrialInfo();
-  }else{
+  
+    // ★ 解除コードは強い権限（現在は pro 相当）
+    try { applyEntitlementFromBilling("pro"); } catch(_) {}
+}else{
     $("lockMsg").textContent = "解除コードが違います。";
   }
 }
