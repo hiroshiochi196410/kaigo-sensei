@@ -31,22 +31,25 @@ const PlanManager = (() => {
 
   // ========== ローカルストレージ管理 ==========
   const storage = {
-    get: (key, defaultValue = null) => {
-      try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultValue;
-      } catch (e) {
-        console.error('Storage get error:', e);
-        return defaultValue;
-      }
-    },
-    set: (key, value) => {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (e) {
-        console.error('Storage set error:', e);
-      }
-    },
+   get: (key, defaultValue = null) => {
+  try {
+    const item = localStorage.getItem(key);
+    if (item === null || item === undefined || item === '') return defaultValue;
+
+    // JSONで読めるものはJSONで読む
+    try {
+      return JSON.parse(item);
+    } catch (parseErr) {
+      // 旧形式（ただの文字列）を救済して、その場でJSON形式へ“自動変換”もする
+      try { localStorage.setItem(key, JSON.stringify(item)); } catch (_) {}
+      return item;
+    }
+  } catch (e) {
+    console.error('Storage get error:', e);
+    return defaultValue;
+  }
+},
+
     remove: (key) => {
       try {
         localStorage.removeItem(key);
