@@ -253,18 +253,18 @@
       <p>続きは有料（Stripe）で解除できます。<br>もしくは管理者用の解除コードでも解除できます。</p>
     <div class="planChoice">
       <label class="planOpt">
-        <input type="radio" name="plan" value="light">
-        <span class="planName">ライト</span>
-        <span class="planPrice">¥1,100/月</span>
+        <input type="radio" name="plan" value="trainee_lite">
+        <span class="planName">Trainee Lite</span>
+        <span class="planPrice">¥980/月</span>
       </label>
       <label class="planOpt">
-        <input type="radio" name="plan" value="pro">
-        <span class="planName">PRO</span>
-        <span class="planPrice">¥1,980/月</span>
+        <input type="radio" name="plan" value="trainee_standard" checked>
+        <span class="planName">Trainee Standard</span>
+        <span class="planPrice">¥1,680/月</span>
       </label>
     </div>
 
-      <div class="btnRow">
+<div class="btnRow">
         <button class="primary" id="btnPay">Stripeで購読して解除</button>
         <button id="btnCloseLock">閉じる</button>
       </div>
@@ -1048,7 +1048,7 @@ async function send(){
 /* ========= Stripe unlock ========= */
 async function startCheckout() {
   const msg = $("lockMsg");
-  const plan = document.querySelector('input[name="plan"]:checked')?.value || ((VARIANT === "ssw") ? "pro" : "light");
+  const planKey = document.querySelector('input[name="plan"]:checked')?.value || ((VARIANT === "ssw") ? "ssw_standard" : "trainee_standard");
 
   msg.textContent = "Stripeへ移動します…";
   msg.className = "muted";
@@ -1057,7 +1057,7 @@ async function startCheckout() {
     const r = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan, variant: VARIANT }) // variantはログ用途（サーバ側で無視してOK）
+      body: JSON.stringify({ plan_key: planKey })
     });
 
     const data = await r.json();
@@ -1072,16 +1072,20 @@ async function startCheckout() {
 }
 
 
-function applyEntitlementFromBilling(billingPlan){
-  // billingPlan: "light" | "pro" | null
+
+function mapLegacyBillingPlan(plan){
+  // backward compatibility: "light" | "pro" -> plan_key
+  if (plan === "pro") return "ssw_standard";
+  if (plan === "light") return "trainee_standard";
+  return null;
+}
+
+function applyEntitlementFromBilling(planKey){
+  // planKey: "trainee_lite" | "trainee_standard" | "ssw_standard" | "ssw_pro" | null
   if (typeof PlanManager === 'undefined' || !PlanManager.setCurrentPlan) return;
 
-  const planKey =
-    (billingPlan === "pro")   ? "ssw_standard" :
-    (billingPlan === "light") ? "trainee_standard" :
-                               "trainee_lite";
-
-  PlanManager.setCurrentPlan(planKey);
+  const key = planKey || "trainee_lite";
+  PlanManager.setCurrentPlan(key);
 }
 
 async function verifyFromUrl(){
@@ -1106,8 +1110,8 @@ async function verifyFromUrl(){
       $("lock").style.display="none";
       setTrialInfo();
     
-      // ★ 購読プラン(light/pro) → 4プラン権限に反映
-      try { applyEntitlementFromBilling(j.plan || null); } catch(_) {}
+      // ★ 購読プラン(plan_key) → 4プラン権限に反映
+      try { applyEntitlementFromBilling(j.plan_key || mapLegacyBillingPlan(j.plan) || null); } catch(_) {}
 }else{
       // active でない（または解約予約）ならロック寄せ
       unlocked = false;
@@ -1148,8 +1152,8 @@ async function syncSubscriptionStatus(){
       if (sessId) ls.set("stripe_session_id_"+VARIANT, sessId);
       $("lock").style.display="none";
     
-      // ★ 購読プラン(light/pro) → 4プラン権限に反映
-      try { applyEntitlementFromBilling(j.plan || null); } catch(_) {}
+      // ★ 購読プラン(plan_key) → 4プラン権限に反映
+      try { applyEntitlementFromBilling(j.plan_key || mapLegacyBillingPlan(j.plan) || null); } catch(_) {}
 }else{
       unlocked = false;
       ls.del("aiga_unlocked_"+VARIANT);
