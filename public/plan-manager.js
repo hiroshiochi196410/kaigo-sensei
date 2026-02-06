@@ -161,21 +161,46 @@ const PlanManager = (() => {
     
     const status = checkDailyLimit();
     const config = getPlanConfig();
-    
+
+    // 表示テキスト（色はテキスト部分だけに適用）
+    let statusText = '';
+    let statusColor = '#10b981'; // 緑
+
     if (status.remaining === Infinity) {
-      element.textContent = `今日の利用: ${status.used}回（無制限）`;
-      element.style.color = '#10b981';
+      statusText = `今日の利用: ${status.used}回（無制限）`;
+      statusColor = '#10b981';
     } else {
-      element.textContent = `今日の残り: ${status.remaining}/${status.limit}回`;
-      
-      // 残り回数に応じて色を変更
+      statusText = `今日の残り: ${status.remaining}/${status.limit}回`;
+
       if (status.remaining === 0) {
-        element.style.color = '#ef4444'; // 赤
+        statusColor = '#ef4444'; // 赤
       } else if (status.remaining <= 5) {
-        element.style.color = '#f59e0b'; // 黄
+        statusColor = '#f59e0b'; // 黄
       } else {
-        element.style.color = '#10b981'; // 緑
+        statusColor = '#10b981'; // 緑
       }
+    }
+
+    // 右上（利用状況の横）に「解約/プラン管理」ボタンを表示
+    // ※二重生成を防ぐため、常に同じ構造で上書きしてからイベントを付与
+    const btnId = `managePlanBtn_${elementId}`;
+    element.innerHTML = `
+      <span id="${elementId}_text" style="color:${statusColor}; font-weight:600;">${statusText}</span>
+      <button id="${btnId}" type="button"
+        style="margin-left:10px; padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; cursor:pointer; font-size:12px;">
+        解約/プラン管理
+      </button>
+    `;
+
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      btn.onclick = async () => {
+        try {
+          await openCustomerPortal();
+        } catch (e) {
+          alert(e?.message || 'Customer Portal を開けませんでした。');
+        }
+      };
     }
   };
 
@@ -375,7 +400,12 @@ if (typeof window !== 'undefined') {
 
   async function openCustomerPortal() {
     try {
-      const subscriptionId = localStorage.getItem('subscription_id');
+      // variant（trainee/ssw）ごとに保持している subscription_id を優先
+      const variant = (location.pathname.includes('/app/ssw') || location.pathname.includes('/ssw')) ? 'ssw' : 'trainee';
+      const subscriptionId =
+        localStorage.getItem(`stripe_sub_id_${variant}`) ||
+        localStorage.getItem('subscription_id') ||
+        localStorage.getItem('stripe_sub_id');
       if (!subscriptionId) {
         alert('サブスクリプション情報が見つかりません。購入後に再読み込みしてください。');
         return;
