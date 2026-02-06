@@ -371,3 +371,25 @@ if (typeof window !== 'undefined') {
     PlanManager.init();
   }
 }
+
+
+  async function openCustomerPortal() {
+    try {
+      const subscriptionId = localStorage.getItem('subscription_id');
+      if (!subscriptionId) {
+        alert('サブスクリプション情報が見つかりません。購入後に再読み込みしてください。');
+        return;
+      }
+      const res = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription_id: subscriptionId })
+      });
+      const data = await res.json();
+      if (!data || !data.url) throw new Error(data?.error || 'portal url missing');
+      window.location.href = data.url;
+    } catch (e) {
+      console.error(e);
+      alert('カスタマーポータルを開けませんでした。お手数ですが、管理者へお問い合わせください。');
+    }
+  }

@@ -4,14 +4,14 @@
   "subtitle": "基礎から学ぶ介護日本語",
   "target_audience": "技能実習生（入国〜1年目）",
   "target_jlpt": "N5-N4",
+  
   "default_scene": "meal",
   "default_persona": "user_calm",
   "default_level": "beginner",
-  "available_levels": [
-    "beginner",
-    "intermediate"
-  ],
-  "trial_limit": 10,
+  
+  "available_levels": ["beginner", "intermediate"],
+  "trial_limit": 5,
+  
   "features": {
     "show_furigana": true,
     "show_romaji": true,
@@ -21,6 +21,7 @@
     "slow_speech": true,
     "simple_feedback": true
   },
+  
   "focus_areas": [
     "基本的な挨拶",
     "日常会話",
@@ -28,12 +29,14 @@
     "安全確認の基本",
     "報告の基礎"
   ],
+  
   "learning_goals": [
     "N5レベルの日常会話ができる",
     "基本的な介護用語を理解できる",
     "簡単な指示を理解できる",
     "危険を報告できる"
   ],
+  
   "pricing": {
     "plans": [
       {
@@ -65,11 +68,14 @@
       }
     ]
   },
+  
   "stripe_price_ids": {
     "basic": "price_trainee_basic_1280",
     "standard": "price_trainee_standard_1980"
   },
+  
   "unlock_code": "TRN-2026",
+  
   "ui_settings": {
     "primary_language": "japanese",
     "secondary_language": "indonesian",

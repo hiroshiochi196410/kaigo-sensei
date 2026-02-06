@@ -1129,7 +1129,7 @@ async function verifyFromUrl(){
     // clean URL (keep path)
     url.searchParams.delete("success");
     url.searchParams.delete("session_id");
-    history.replaceState({}, "", url.pathname + url.search);
+    window.history.replaceState({}, "", url.pathname + url.search);
     setStatus("準備OK");
   }
 }

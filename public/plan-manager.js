@@ -21,35 +21,47 @@ const PlanManager = (() => {
       price: 2680,
       features: ['100回/日', 'N4-N3語彙+敬語', '高度8シナリオ', '例文保存200件', '詳細レポート']
     },
+    ssw_pro: {
+      name: 'ssw プロ',
+      daily_limit: 150,
+      price: 4980,
+      features: ['150回/日', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
+    },
     ssw_professional: {
       name: 'ssw プロフェッショナル',
-      daily_limit: 999999,
+      daily_limit: 150,
       price: 4980,
-      features: ['無制限', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
+      features: ['150回/日', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
     }
   };
 
   // ========== ローカルストレージ管理 ==========
   const storage = {
-   get: (key, defaultValue = null) => {
-  try {
-    const item = localStorage.getItem(key);
-    if (item === null || item === undefined || item === '') return defaultValue;
+    get: (key, defaultValue = null) => {
+      try {
+        const item = localStorage.getItem(key);
+        if (item === null || item === undefined || item === '') return defaultValue;
 
-    // JSONで読めるものはJSONで読む
-    try {
-      return JSON.parse(item);
-    } catch (parseErr) {
-      // 旧形式（ただの文字列）を救済して、その場でJSON形式へ“自動変換”もする
-      try { localStorage.setItem(key, JSON.stringify(item)); } catch (_) {}
-      return item;
-    }
-  } catch (e) {
-    console.error('Storage get error:', e);
-    return defaultValue;
-  }
-},
-
+        // JSONで読めるものはJSONで読む（新形式）
+        try {
+          return JSON.parse(item);
+        } catch (parseErr) {
+          // 旧形式（ただの文字列）を救済し、その場でJSON形式へ自動変換
+          try { localStorage.setItem(key, JSON.stringify(item)); } catch (_) {}
+          return item;
+        }
+      } catch (e) {
+        console.error('Storage get error:', e);
+        return defaultValue;
+      }
+    },
+    set: (key, value) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        console.error('Storage set error:', e);
+      }
+    },
     remove: (key) => {
       try {
         localStorage.removeItem(key);
@@ -359,3 +371,25 @@ if (typeof window !== 'undefined') {
     PlanManager.init();
   }
 }
+
+
+  async function openCustomerPortal() {
+    try {
+      const subscriptionId = localStorage.getItem('subscription_id');
+      if (!subscriptionId) {
+        alert('サブスクリプション情報が見つかりません。購入後に再読み込みしてください。');
+        return;
+      }
+      const res = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription_id: subscriptionId })
+      });
+      const data = await res.json();
+      if (!data || !data.url) throw new Error(data?.error || 'portal url missing');
+      window.location.href = data.url;
+    } catch (e) {
+      console.error(e);
+      alert('カスタマーポータルを開けませんでした。お手数ですが、管理者へお問い合わせください。');
+    }
+  }
