@@ -263,7 +263,7 @@
       <label class="chip"><input type="checkbox" id="sbarAms"> いしき へんよう</label>
       <label class="chip"><input type="checkbox" id="sbarVomit"> おうと</label>
       <label class="chip"><input type="checkbox" id="sbarChest"> きょうつう（むねのいたみ）</label>
-      <label class="chip"><input type="checkbox" id="sbarHypo"> ひくけっとう っぽい</label>
+      <label class="chip"><input type="checkbox" id="sbarHypo"> ていけっとう の うたがい</label>
     </div>
     <div class="row" style="margin-top:8px;">
       <div>
@@ -1098,7 +1098,7 @@ function buildSbarText(targetPersonaKey){
   if (sbarChecked("sbarAms")) ss.push("いしき へんよう");
   if (sbarChecked("sbarVomit")) ss.push("おうと");
   if (sbarChecked("sbarChest")) ss.push("むねの いたみ");
-  if (sbarChecked("sbarHypo")) ss.push("ひくけっとう っぽい");
+  if (sbarChecked("sbarHypo")) ss.push("ていけっとう の うたがい");
   if (other) ss.push(other);
 
   const subj = name ? (name + "さん") : "りようしゃ";
