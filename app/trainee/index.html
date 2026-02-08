@@ -1093,7 +1093,6 @@ function buildSbarText(targetPersonaKey){
   const action = sbarVal("sbarAction");
 
   const ss = [];
-
   if (sbarChecked("sbarFever")) ss.push("ねつ が ある");
   if (sbarChecked("sbarDyspnea")) ss.push("いきが くるしい");
   if (sbarChecked("sbarAms")) ss.push("いしき の へんか");
@@ -1105,16 +1104,17 @@ function buildSbarText(targetPersonaKey){
   const subj = name ? (name + "さん") : "りようしゃ";
   const s1 = ss.length ? ss.join("、") : "ぐあいが わるい";
 
-  // ---- S（じょうきょう）
-  let S = `${subj} が、${s1} です。`;
+  // ---- S（状況）: 口頭向けは「見出しを出さない」
+  let S = `いま、${subj} が、${s1} です。`;
   if (onset) S += ` ${onset} から です。`;
   if (sbarChecked("sbarDyspnea") && spo2) S += ` えすぴーおーつー は ${spo2}ぱーせんと です。`;
   if (sbarChecked("sbarFever") && temp) S += ` たいおん は ${temp}ど です。`;
 
-  // ---- B（はいけい）
-  let B = bg ? `はいけい は、${bg} です。` : "はいけい は、（ふめい）です。";
+  // ---- B（背景）: 入力がある時だけ出す
+  const parts = [S];
+  if (bg) parts.push(`はいけい は、${bg} です。`);
 
-  // ---- A（ひょうか）
+  // ---- A（評価）: 数値がある時だけ出す
   const vit = [];
   if (temp) vit.push(`たいおん ${temp}ど`);
   if (spo2) vit.push(`えすぴーおーつー ${spo2}ぱーせんと`);
@@ -1122,20 +1122,20 @@ function buildSbarText(targetPersonaKey){
   if (bp) vit.push(`けつあつ ${bp}`);
   if (rr) vit.push(`こきゅう ${rr}`);
   if (glucose) vit.push(`けっとう ${glucose}`);
-  let A = vit.length ? `すうち は、${vit.join("、")} です。` : "すうち は、（ふめい）です。";
+  if (vit.length) parts.push(`すうち は、${vit.join("、")} です。`);
 
-  // ---- R（いらい）
+  // ---- R（依頼）
   const req = (targetPersonaKey === "doctor")
     ? "しじ を おねがい します。"
     : "かくにん を おねがい します。";
   let R = action ? `いま、${action} を しています。` : "いま、あんせい に しています。";
   if (sbarChecked("sbarHypo") && glucose) R += " てんてき や とうぶん たいおう の ひつようが あるか、";
   R += ` ${req}`;
+  parts.push(R);
 
-  const out = `えす（じょうきょう）：${S}\nびー（はいけい）：${B}\nえー（ひょうか）：${A}\nあーる（いらい）：${R}`;
+  const out = parts.join(" ");
   return (window.MED_TERM && typeof MED_TERM.apply === "function") ? MED_TERM.apply(out) : out;
 }
-
 
 // ===== fall report helper =====
 function isFallScene(){
