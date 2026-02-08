@@ -1124,56 +1124,56 @@ function buildFallText(targetPersonaKey){
 
   const subj = name ? (name + "さん") : "りようしゃ";
 
-  const inj = [];
-  if (fallChecked("fallHead")) inj.push("あたま を うった かのうせい");
-  if (fallChecked("fallBleed")) inj.push("しゅっけつ あり");
-  if (fallChecked("fallPain")) inj.push(painPart ? (`いたみ（${painPart}）あり`) : "いたみ あり");
-  if (fallChecked("fallAms")) inj.push("いしき が いつもと ちがう");
-  if (fallChecked("fallVomit")) inj.push("おうと あり");
-  if (fallChecked("fallFract")) inj.push("こっせつ の うたがい");
-  if (other) inj.push(other);
+  // --- status snippets (短いセンテンスで)
+  const st = [];
+  if (fallChecked("fallHead")) st.push("あたま を うった かのうせい が あります");
+  if (fallChecked("fallBleed")) st.push("ち が でています");
+  if (fallChecked("fallPain")) st.push(painPart ? `${painPart} に いたみ が あります` : "いたみ が あります");
+  if (fallChecked("fallAms")) st.push("いしき が いつも と ちがいます");
+  if (fallChecked("fallVomit")) st.push("おうと が ありました");
+  if (fallChecked("fallFract")) st.push("ほね の けが の うたがい が あります");
 
+  if (other){
+    const needsVerb = !/(が|です|でした|ます|ました|あります|ありません|なし)/.test(other);
+    const otherPhrase = needsVerb ? (other + " が あります") : other;
+    st.push(`そのほか、${otherPhrase}`);
+  }
+
+  // --- vitals
   const vit = [];
-  if (temp) vit.push(`たいおん ${temp}ど`);
-  if (spo2) vit.push(`すぽつー ${spo2}ぱーせんと`);
-  if (pulse) vit.push(`みゃく ${pulse}`);
-  if (bp) vit.push(`けつあつ ${bp}`);
+  if (temp) vit.push(`たいおん は ${temp}ど`);
+  if (spo2) vit.push(`えすぴーおーつー は ${spo2}ぱーせんと`);
+  if (pulse) vit.push(`みゃく は ${pulse}`);
+  if (bp) vit.push(`けつあつ は ${bp}`);
 
+  // request by target
   const req = (targetPersonaKey === "head_nurse")
     ? "しちょう、かくにん を おねがい します。"
     : (targetPersonaKey === "leader")
-      ? "りーだー に きょうゆう します。"
+      ? "りーだー に ほうこく します。"
       : "かんごし さん、かくにん と しょち を おねがい します。";
 
-  let act = action ? action : "いま、あんせい に しています。";
-  const prev = prevent ? prevent : "";
-
-  // caution
-  const hasHeadRisk = (fallChecked("fallHead") || fallChecked("fallAms") || fallChecked("fallVomit"));
-  if (hasHeadRisk){
-    act += " あたま の けが に ちゅうい します。";
-  }
-
+  // ---------- items mode (1行で見えるように)
   if (fmt === "items"){
-    const lines = [];
-    lines.push("てんとう の ほうこく です。");
-    if (when) lines.push(`いつ：${when}`);
-    if (where) lines.push(`どこ：${where}`);
-    lines.push(`だれ：${subj}`);
-    if (situation) lines.push(`なにを していた：${situation}`);
-    if (cause) lines.push(`げんいん：${cause}`);
-    if (found) lines.push(`はっけん：${found}`);
-    lines.push(`けが：${inj.length ? inj.join("、") : "いまのところ なし"}`);
-    if (vit.length) lines.push(`すうち：${vit.join("、")}`);
-    if (act) lines.push(`たいおう：${act}`);
-    if (prev) lines.push(`よぼう：${prev}`);
-    lines.push(`いらい：${req}`);
-    return lines.join("\n");
+    const parts = [];
+    parts.push("てんとう の ほうこく です。");
+    if (when) parts.push(`いつ：${when}`);
+    if (where) parts.push(`どこ：${where}`);
+    parts.push(`だれ：${subj}`);
+    if (situation) parts.push(`じょうきょう：${situation}`);
+    if (cause) parts.push(`げんいん：${cause}`);
+    if (found) parts.push(`はっけん：${found}`);
+    parts.push(`ようす：${st.length ? st.join("、") : "いまのところ けが は ありません"}`);
+    if (vit.length) parts.push(`すうち：${vit.join("、")}`);
+    if (action) parts.push(`たいおう：${action}`);
+    if (prevent) parts.push(`よぼう：${prevent}`);
+    parts.push(`いらい：${req}`);
+    return parts.join(" / ");
   }
 
-  // narrative (oral report)
+  // ---------- narrative mode (口頭・自然な文。改行しない)
   const out = [];
-  out.push(`${subj} の てんとうを ほうこく します。`);
+  out.push(`${subj} の てんとう を ほうこく します。`);
 
   const s1 = [];
   if (when) s1.push(`${when} に`);
@@ -1183,16 +1183,24 @@ function buildFallText(targetPersonaKey){
   out.push(s1.join(" "));
 
   if (found) out.push(`はっけん は ${found} です。`);
-  if (cause) out.push(`げんいん は ${cause} の かのうせい が あります。`);
+  if (cause) out.push(`げんいん は ${cause} かも しれません。`);
 
-  out.push(inj.length ? `けが は ${inj.join("、")} です。` : "けが は いまのところ ありません。");
+  out.push(st.length ? (st.join("。") + "。") : "けが は いまのところ ありません。" );
 
-  if (vit.length) out.push(`${vit.join("、")} です。`);
-  if (act) out.push(`たいおう は ${act} です。`);
-  if (prev) out.push(`こんご は ${prev} を します。`);
+  if (vit.length) out.push(vit.join("、") + " です。" );
+
+  if (action){
+    const alreadyVerb = /(して|します|しました|しています|しました)/.test(action);
+    out.push(alreadyVerb ? (`いま は ${action}。`) : (`いま は ${action} しています。`));
+  } else {
+    out.push("いま は あんせい に しています。" );
+  }
+
+  if (prevent) out.push(`こんご は ${prevent} を します。`);
 
   out.push(req);
-  return out.join("\n");
+
+  return out.join(" ");
 }
 function updatePersonasForScene(){
   const scene = $("sceneSel")?.value || "";
