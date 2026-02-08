@@ -307,7 +307,7 @@
           <li>優先サポート（12h）</li>
           <li>データエクスポート</li>
         </ul>
-        <button class="btn btn-primary" onclick="selectPlan('ssw_professional')">
+        <button class="btn btn-primary" onclick="selectPlan('ssw_pro')">
           無料トライアル開始
         </button>
       </div>
@@ -340,29 +340,21 @@
   </footer>
 
   <script>
-    async function selectPlan(planKey) {
+    // LPは「無料トライアル開始」専用：Stripeは絶対に呼ばない
+    function selectPlan(planKey) {
       try {
         // JSON形式で保存（旧形式対策）
         localStorage.setItem('selected_plan', JSON.stringify(planKey));
 
-        // プランに応じてvariantを決定（遷移先の保険）
-        var variant = (planKey === 'trainee_lite' || planKey === 'trainee_standard') ? 'trainee' : 'ssw';
+        // プランに応じて variant を決定（遷移先の保険）
+        const variant = (planKey === 'trainee_lite' || planKey === 'trainee_standard') ? 'trainee' : 'ssw';
         localStorage.setItem('kaigo_last_app', variant);
 
-        // Stripe Checkout へ
-        const r = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan_key: planKey })
-        });
-        const data = await r.json();
-        if (!r.ok) throw new Error(data?.error || 'Checkout作成に失敗しました');
-        if (!data?.url) throw new Error('Checkout URL が返ってきません');
-
-        window.location.href = data.url;
+        // お試しアプリへ（決済は 10回消化後のロック画面のみ）
+        window.location.href = `/app/${variant}/`;
       } catch (e) {
-        console.error('Error selecting plan:', e);
-        alert('決済ページへ移動できませんでした。もう一度お試しください。');
+        console.error('Error starting trial:', e);
+        alert('アプリへ移動できませんでした。もう一度お試しください。');
       }
     }
   </script>
