@@ -240,6 +240,70 @@
         </div>
       </div>
 
+<!-- 申し送り：SOAP（食事/水分/排泄/睡眠/注意点） -->
+<div id="soapPanel" class="card" style="margin-top:10px; display:none;">
+  <label>申し送り（食事/水分/排泄/睡眠/注意点）</label>
+  <div class="sbarNote">入力して「申し送り文を作る」を押すと、入力欄に入ります（ひらがなで出ます）。</div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>利用者名（任意）</label>
+      <input type="text" id="soapName" placeholder="例：たなか" />
+    </div>
+    <div>
+      <label>いつ（任意）</label>
+      <input type="text" id="soapWhen" placeholder="例：きょう / にっきん" />
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>しょくじ</label>
+      <input type="text" id="soapMeal" placeholder="例：8わり / ぜんりょう / はんぶん / たべない" />
+    </div>
+    <div>
+      <label>すいぶん</label>
+      <input type="text" id="soapFluid" placeholder="例：りょうこう / すくない" />
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>はいせつ</label>
+      <input type="text" id="soapElim" placeholder="例：しょう あり、べん なし / べんぴ ぎみ" />
+    </div>
+    <div>
+      <label>すいみん</label>
+      <input type="text" id="soapSleep" placeholder="例：よく ねた / よなか に おきた / ねむれない" />
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label>ちゅういてん（任意）</label>
+    <input type="text" id="soapCare" placeholder="例：ふらつき あり。みまもり を おねがい します。" />
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>形式</label>
+      <select id="soapFormat">
+        <option value="koutou" selected>こうとうぶん（しぜん）</option>
+        <option value="record">きろく（こうもく / みじかく）</option>
+      </select>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="btnRow" style="margin-top:10px;">
+    <button id="btnSoapBuild" type="button">申し送り文を作る</button>
+    <button id="btnSoapClear" type="button">クリア</button>
+  </div>
+
+  <div class="ok" id="soapLocalMsg" style="display:none; margin-top:8px;"></div>
+
+  <div class="sbarNote">※「申し送り」では、あいて が どうりょう／りーだー のときが しぜんです。</div>
+</div>
+
 <!-- 急変：SBAR（看護師／医師へ報告） -->
 <div id="sbarPanel" class="card" style="margin-top:10px; display:none;">
   <label>急変SBAR（看護師／医師へ報告）</label>
@@ -1057,6 +1121,75 @@ function allowedPersonaKeysForScene(sceneKey){
   return PERSONA_ALLOW[sceneKey] || PERSONA_ALLOW.default;
 }
 
+
+// ===== handover (申し送り) SOAP helper =====
+function isHandoverScene(){
+  return ($("sceneSel")?.value || "") === "handover";
+}
+function toggleSoapPanel(){
+  const panel = $("soapPanel");
+  if (!panel) return;
+  panel.style.display = isHandoverScene() ? "block" : "none";
+}
+function soapVal(id){ return ($(""+id)?.value || "").trim(); }
+
+function clearSoap(){
+  const ids = ["soapName","soapWhen","soapMeal","soapFluid","soapElim","soapSleep","soapCare"];
+  for (const i of ids){ const el = $(i); if (el) el.value = ""; }
+  const ff = $("soapFormat"); if (ff) ff.value = "koutou";
+}
+
+function sentenceWith(labelHira, value){
+  const v = (value || "").trim();
+  if (!v) return "";
+  const already = /(です|でした|ます|ました|あります|ありません|なし|あり)$/.test(v);
+  return `${labelHira} は ${v}${already ? "" : " です"}。`;
+}
+function noteSentence(labelHira, value){
+  const v = (value || "").trim();
+  if (!v) return "";
+  const end = /[。．\.]$/.test(v) ? "" : "。";
+  return `${labelHira} は、${v}${end}`;
+}
+
+function buildSoapText(){
+  const fmt = ($("soapFormat")?.value || "koutou"); // koutou | record
+  const name = soapVal("soapName");
+  const when = soapVal("soapWhen");
+  const meal = soapVal("soapMeal");
+  const fluid = soapVal("soapFluid");
+  const elim = soapVal("soapElim");
+  const sleep = soapVal("soapSleep");
+  const care = soapVal("soapCare");
+
+  const subj = name ? (name + "さん") : "りようしゃ";
+  if (!(when || meal || fluid || elim || sleep || care || name)) return "";
+
+  if (fmt === "record"){
+    const parts = [];
+    parts.push("もうしおくり");
+    if (when) parts.push(when);
+    parts.push(subj);
+    if (meal) parts.push(`しょくじ:${meal}`);
+    if (fluid) parts.push(`すいぶん:${fluid}`);
+    if (elim) parts.push(`はいせつ:${elim}`);
+    if (sleep) parts.push(`すいみん:${sleep}`);
+    if (care) parts.push(`ちゅうい:${care}`);
+    const out = parts.join(" / ");
+    return (window.MED_TERM && typeof MED_TERM.apply === "function") ? MED_TERM.apply(out) : out;
+  }
+
+  const out = [];
+  out.push(when ? `${when} の ${subj} の もうしおくり です。` : `${subj} の もうしおくり です。`);
+  if (meal) out.push(sentenceWith("しょくじ", meal));
+  if (fluid) out.push(sentenceWith("すいぶん", fluid));
+  if (elim) out.push(sentenceWith("はいせつ", elim));
+  if (sleep) out.push(sentenceWith("すいみん", sleep));
+  if (care) out.push(noteSentence("ちゅういてん", care));
+  out.push("よろしく おねがい します。");
+  const txt = out.join(" ");
+  return (window.MED_TERM && typeof MED_TERM.apply === "function") ? MED_TERM.apply(txt) : txt;
+}
 // ===== emergency SBAR helper =====
 function isEmergencyScene(){
   return ($("sceneSel")?.value || "") === "emergency";
@@ -1344,6 +1477,7 @@ function rebuildSelectLabels(){
   if (catVal) $("catSel").value = catVal;
   toggleSbarPanel();
   toggleFallPanel();
+  toggleSoapPanel();
 }
 
 /* ========= examples ========= */
@@ -1804,7 +1938,7 @@ async function init(){
     populate();
 
     
-    toggleSbarPanel(); toggleFallPanel();
+    toggleSbarPanel(); toggleFallPanel(); toggleSoapPanel();
 // apply settings to UI
     if ($("ttsSel")) $("ttsSel").value = SETTINGS.ttsSel || "off";
     if ($("ttsRate")) $("ttsRate").value = SETTINGS.ttsRate || "1";
@@ -1819,8 +1953,32 @@ async function init(){
     setStatus("準備OK");
 
     // events（※Stripe状態確認が失敗してもUI操作を止めないため、先にバインド）
-    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); toggleFallPanel(); });
+    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); toggleFallPanel(); toggleSoapPanel(); });
     $("btnExample").addEventListener("click", insertExample);
+
+$("btnSoapBuild")?.addEventListener("click", ()=>{
+  try{
+    if (!isHandoverScene()){
+      showLocalMsg("soapLocalMsg", "シーンを「申し送り」にしてから押してください。", true);
+      return;
+    }
+    const txt = buildSoapText();
+    if (!txt){
+      showLocalMsg("soapLocalMsg", "しょくじ／すいぶん／はいせつ／すいみん／ちゅういてん のどれかを入れてください。", true);
+      return;
+    }
+    const ui = $("userInput");
+    if (ui) ui.value = txt;
+    try{ const cats = EX.scenes?.["handover"] || []; if (cats.some(c=>c.key==="report")) $("catSel").value = "report"; }catch(e){}
+    showLocalMsg("soapLocalMsg", "入力欄に 申し送り文を入れました。必要なら編集して、下の「送信」を押してください。", false);
+    focusUserInput();
+  }catch(e){
+    console.error("soap build error", e);
+    showLocalMsg("soapLocalMsg", "申し送り文の作成でエラー: " + String(e.message || e), true);
+    showErr("申し送り文の作成でエラー: " + String(e.message || e));
+  }
+});
+$("btnSoapClear")?.addEventListener("click", clearSoap);
     
     $("btnSbarBuild")?.addEventListener("click", ()=>{
       try{
