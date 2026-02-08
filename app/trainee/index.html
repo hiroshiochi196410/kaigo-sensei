@@ -762,7 +762,13 @@ const FALLBACK_PERSONA_ID = {
   user_angry:"Pengguna: Marah",
   dementia:"Pengguna: Bingung",
   family_anxious:"Keluarga: Cemas",
-  family_complaint:"Keluarga: Keluhan"
+  family_complaint:"Keluarga: Keluhan",
+
+  colleague:"Rekan kerja",
+  leader:"Leader",
+  nurse:"Perawat",
+  head_nurse:"Kepala perawat",
+  doctor:"Dokter"
 };
 const FALLBACK_CAT_ID = {
   bath:{ voice:"Menyapa", temperature:"Cek suhu", privacy:"Menjaga privasi", refusal:"Menangani penolakan", safety:"Keamanan" },
@@ -771,6 +777,39 @@ const FALLBACK_CAT_ID = {
   night:{ sleep:"Tidur", anxiety:"Cemas", pain:"Nyeri", wander:"Berkeliaran", safety:"Keamanan" },
   complaint:{ apology:"Permintaan maaf", fact:"Konfirmasi fakta", plan:"Rencana tindak lanjut", escalate:"Eskalasi ke atasan", followup:"Tindak lanjut" }
 };
+
+
+// ===== persona options by scene (prevent wrong counterparts) =====
+const PERSONA_ALLOW = {
+  default: ["user_calm","user_angry","dementia","family_anxious","family_complaint"],
+  handover: ["colleague","leader"],
+  emergency: ["nurse","doctor"],
+  fall: ["nurse","leader","head_nurse"],
+};
+
+function allowedPersonaKeysForScene(sceneKey){
+  return PERSONA_ALLOW[sceneKey] || PERSONA_ALLOW.default;
+}
+
+function updatePersonasForScene(){
+  const scene = $("sceneSel")?.value || "";
+  const allow = allowedPersonaKeysForScene(scene);
+  const cur = $("personaSel")?.value || "";
+
+  const list = (EX?.personas || []).filter(p=>allow.includes(p.key));
+  // If config/examples are old and list is empty, fall back to all personas.
+  const finalList = list.length ? list : (EX?.personas || []);
+
+  fillSelect($("personaSel"), finalList, p=>p.key, p=>getPersonaLabelByKey(p.key));
+
+  if (cur && allow.includes(cur) && finalList.some(p=>p.key===cur)) {
+    $("personaSel").value = cur;
+  } else {
+    // choose first allowed persona that exists in list
+    const first = allow.find(k=>finalList.some(p=>p.key===k));
+    $("personaSel").value = first || (CFG?.default_persona || "user_calm");
+  }
+}
 
 function getSceneLabel(sceneKey){
   const o = (EX && EX.scene_labels && EX.scene_labels[sceneKey]) ? EX.scene_labels[sceneKey] : (FALLBACK_SCENE_LABELS[sceneKey] || {jp:sceneKey, id:sceneKey});
@@ -792,13 +831,13 @@ function populate(){
   // scenes
   const sceneKeys = Object.keys(EX.scenes || {});
   fillSelect($("sceneSel"), sceneKeys, k=>k, k=>getSceneLabel(k));
-  // personas
-  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>getPersonaLabelByKey(p.key));
 
   // defaults
   $("sceneSel").value = (CFG.default_scene || "meal");
-  $("personaSel").value = (CFG.default_persona || "user_calm");
   $("levelSel").value = (CFG.default_level || "beginner");
+
+  // personas depend on scene
+  updatePersonasForScene();
 
   updateCategories();
 }
@@ -817,11 +856,12 @@ function rebuildSelectLabels(){
   // scenes
   const sceneKeys = Object.keys(EX.scenes || {});
   fillSelect($("sceneSel"), sceneKeys, k=>k, k=>getSceneLabel(k));
-  // personas
-  fillSelect($("personaSel"), EX.personas || [], p=>p.key, p=>getPersonaLabelByKey(p.key));
-
   if (sceneVal) $("sceneSel").value = sceneVal;
-  if (personaVal) $("personaSel").value = personaVal;
+
+  // personas depend on scene (avoid wrong counterparts in handover/report)
+  updatePersonasForScene();
+  const allow = allowedPersonaKeysForScene($("sceneSel")?.value || "");
+  if (personaVal && allow.includes(personaVal)) $("personaSel").value = personaVal;
 
   updateCategories();
   if (catVal) $("catSel").value = catVal;
@@ -1282,7 +1322,7 @@ async function init(){
     await syncSubscriptionStatus();
 
     // events
-    $("sceneSel").addEventListener("change", updateCategories);
+    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); });
     $("btnExample").addEventListener("click", insertExample);
     $("btnClear").addEventListener("click", ()=>{
       if (!confirm("履歴を消しますか？")) return;
