@@ -1092,6 +1092,16 @@ function toggleFallPanel(){
 }
 function fallVal(id){ return ($(""+id)?.value || "").trim(); }
 function fallChecked(id){ return !!($(""+id)?.checked); }
+function formatSituation(s){
+  s = (s || "").trim();
+  if (!s) return "";
+  // すでに「に」「のときに」「ときに」などが付いている場合はそのまま
+  if (/(に|の\s*ときに|ときに)$/.test(s)) return s;
+  // 「〜ちゅう」系は「〜ちゅうに」が自然
+  if (/(ちゅう|中)$/.test(s)) return s + "に";
+  // それ以外は「〜のときに」
+  return s + " の ときに";
+}
 
 function clearFall(){
   const ids = ["fallName","fallWhen","fallWhere","fallSituation","fallCause","fallFound","fallPainPart","fallOther","fallTemp","fallSpo2","fallPulse","fallBp","fallAction","fallPrevent"];
@@ -1178,7 +1188,7 @@ function buildFallText(targetPersonaKey){
   const s1 = [];
   if (when) s1.push(`${when} に`);
   if (where) s1.push(`${where} で`);
-  if (situation) s1.push(`${situation} ときに`);
+  if (situation) s1.push(formatSituation(situation));
   s1.push("てんとう しました。");
   out.push(s1.join(" "));
 
@@ -1468,11 +1478,19 @@ async function send(){
   // ★ プラン管理：使用回数チェック
   if (typeof PlanManager !== 'undefined') {
     if (!PlanManager.canUse()) {
-      return; // 制限に達している場合はモーダル表示して終了
+      $("errBox").style.display="block";
+      $("errBox").textContent = "本日の利用回数が上限に達しています。プランの購入/変更で解除できます。";
+      setStatus("制限");
+      return;
     }
   }
 
-  if (maybeLock()) return;
+  if (maybeLock()) {
+  $("errBox").style.display="block";
+  $("errBox").textContent = "ロック中です（無料体験の回数終了など）。購入で解除してください。";
+  setStatus("ロック");
+  return;
+}
 
   const text = $("userInput").value.trim();
   if (!text){ alert("入力が空です"); return; }
