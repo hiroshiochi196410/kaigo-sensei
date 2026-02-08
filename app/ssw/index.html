@@ -83,6 +83,9 @@
 .sbarGrid{ display:grid; gap:8px; grid-template-columns: 1fr; }
 @media(min-width:720px){ .sbarGrid{ grid-template-columns: 1fr 1fr 1fr; } }
 
+/* small UX helpers */
+.flashFocus{ outline:2px solid #111827; box-shadow: 0 0 0 3px rgba(17,24,39,.12); }
+
 </style>
 </head>
 <body>
@@ -318,6 +321,8 @@
     <button id="btnSbarBuild" type="button">SBAR文を作る</button>
     <button id="btnSbarClear" type="button">クリア</button>
   </div>
+
+  <div class="ok" id="sbarLocalMsg" style="display:none; margin-top:8px;"></div>
 
   <div class="sbarNote">※「急変」では、あいて が かんごし／いし のときが いちばん しぜんです（えらんだ あいて に あわせて いらい の いいかた が かわります）。</div>
 </div>
@@ -752,6 +757,26 @@ function showOk(msg){
     b.textContent = msg;
     setTimeout(()=>{ try{ b.style.display="none"; }catch(e){} }, 2200);
   }catch(e){}
+}
+
+// panel-local notice (so user can see it without scrolling)
+function showLocalMsg(id, msg, isErr=false){
+  try{
+    const el = $(id);
+    if (!el) return;
+    el.className = isErr ? "err" : "ok";
+    el.style.display = "block";
+    el.textContent = msg;
+    setTimeout(()=>{ try{ el.style.display="none"; }catch(e){} }, 2600);
+  }catch(e){}
+}
+
+function focusUserInput(){
+  const ta = $("userInput");
+  if (!ta) return;
+  try{ ta.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){}
+  try{ ta.focus(); }catch(e){}
+  try{ ta.classList.add("flashFocus"); setTimeout(()=>ta.classList.remove("flashFocus"), 900); }catch(e){}
 }
 
 // tri object safety: always have something to show
@@ -1785,18 +1810,14 @@ async function init(){
     renderAnno(lastAnnotations);
     setStatus("準備OK");
 
-    await verifyFromUrl();
-
-    await syncSubscriptionStatus();
-
-    // events
+    // events（※Stripe状態確認が失敗してもUI操作を止めないため、先にバインド）
     $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); toggleFallPanel(); });
     $("btnExample").addEventListener("click", insertExample);
     
     $("btnSbarBuild")?.addEventListener("click", ()=>{
       try{
         if (!isEmergencyScene()){
-          showOk("シーンを「急変」にしてから押してください。");
+          showLocalMsg("sbarLocalMsg", "シーンを「急変」にしてから押してください。", true);
           return;
         }
         const target = $("personaSel")?.value || "nurse";
@@ -1804,9 +1825,12 @@ async function init(){
         $("userInput").value = sbarTxt;
         // help user: set category to "call" when available
         try{ const cats = EX.scenes?.["emergency"] || []; if (cats.some(c=>c.key==="call")) $("catSel").value = "call"; }catch(e){}
+        showLocalMsg("sbarLocalMsg", "SBAR文を入力欄に入れました。下の「送信」で練習できます。", false);
+        focusUserInput();
         showOk("SBAR文を入力しました。必要なら編集して送信してください。");
       }catch(e){
         console.error("sbar build error", e);
+        showLocalMsg("sbarLocalMsg", "SBAR文の作成でエラー: " + String(e.message || e), true);
         showErr("SBAR文の作成でエラー: " + String(e.message || e));
       }
     });
@@ -1922,6 +1946,10 @@ $("btnClear").addEventListener("click", ()=>{
       ls.set("aiga_stats_"+VARIANT, STATS);
       renderStats();
     });
+
+    // URLパラメータ検証 / サブスク状態同期（失敗しても致命傷にしない）
+    try{ await verifyFromUrl(); }catch(e){ console.warn("verifyFromUrl failed", e); }
+    try{ await syncSubscriptionStatus(); }catch(e){ console.warn("syncSubscriptionStatus failed", e); }
 
     // ★ プラン管理の初期化
     if (typeof PlanManager !== 'undefined') {
