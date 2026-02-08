@@ -1130,7 +1130,7 @@
         "report": [
           {
             "jp": "きょう の ようす は おだやか でした。しょくじ は 8わり、すいぶん は りょうこう です。",
-            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wa,suibun ha ryoukou desu.",
+            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wari,suibun ha ryoukou desu.",
             "id": "Hari ini tenang. Makan 80%, cairan baik.",
             "level": "intermediate"
           },
@@ -1258,7 +1258,7 @@
         "basic": [
           {
             "jp": "きょう の ようす は おだやか でした。しょくじ は 8わり、すいぶん は りょうこう です。",
-            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wa,suibun ha ryoukou desu.",
+            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wari,suibun ha ryoukou desu.",
             "id": "Hari ini tenang. Makan 80%, cairan baik.",
             "level": "intermediate"
           },
@@ -1292,7 +1292,7 @@
         "report": [
           {
             "jp": "きょう の ようす は おだやか でした。しょくじ は 8わり、すいぶん は りょうこう です。",
-            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wa,suibun ha ryoukou desu.",
+            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wari,suibun ha ryoukou desu.",
             "id": "Hari ini tenang. Makan 80%, cairan baik.",
             "level": "intermediate"
           },
@@ -1420,7 +1420,7 @@
         "basic": [
           {
             "jp": "きょう の ようす は おだやか でした。しょくじ は 8わり、すいぶん は りょうこう です。",
-            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wa,suibun ha ryoukou desu.",
+            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wari,suibun ha ryoukou desu.",
             "id": "Hari ini tenang. Makan 80%, cairan baik.",
             "level": "intermediate"
           },
@@ -1515,6 +1515,186 @@
             "romaji": "renraku taisei o saikakunin itashimasu.",
             "id": "Kami cek kembali sistem komunikasi.",
             "level": "advanced"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: きょう の あさ から ねつ が あります。ひょうか: たいおん は さんじゅうはち ど ごぶ くらい です。さむけ が あります。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: kyou no asa kara netsu ga arimasu.hyouka: taion ha sanjuuhachi do gobu kurai desu.samuke ga arimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Demam. B: Sejak pagi ada demam. A: Suhu sekitar 38,5°C dan menggigil. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が たかい です。はいけい: きのう の よる から ねつ が つづいて います。ひょうか: たいおん は さんじゅうきゅう ど くらい です。しょくよく が ありません。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: netsu ga takai desu.haikei: kinou no yoru kara netsu ga tsuzuite imasu.hyouka: taion ha sanjuukyuu do kurai desu.shokuyoku ga arimasen.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Demam tinggi. B: Sejak tadi malam demam berlanjut. A: Suhu sekitar 39°C dan nafsu makan menurun. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: いま まで ふつう でした が さっき から ねつ っぽい です。ひょうか: かお が あかく、からだ が だるそう です。たいおん は さんじゅうはち ど くらい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: ima made futsuu deshita ga sakki kara netsu ppoi desu.hyouka: kao ga akaku,karada ga darusou desu.taion ha sanjuuhachi do kurai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Demam. B: Tadi normal, tapi baru saja terasa demam. A: Wajah kemerahan dan lemas. Suhu sekitar 38°C. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: せき が でて います。ひょうか: たいおん は さんじゅうはち ど はちぶ くらい です。のど が いたい と いいます。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: seki ga dete imasu.hyouka: taion ha sanjuuhachi do hachibu kurai desu.nodo ga itai to iimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Demam. B: Ada batuk. A: Suhu sekitar 38,8°C dan mengeluh sakit tenggorokan. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: みず を あまり のんで いません。ひょうか: たいおん は さんじゅうはち ど にぶ くらい です。くち が かわいて います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: mizu o amari nonde imasen.hyouka: taion ha sanjuuhachi do nibu kurai desu.kuchi ga kawaite imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Demam. B: Minum sedikit. A: Suhu sekitar 38,2°C dan mulut kering. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: きょう の ごご から いき づらそう です。ひょうか: さんそ ほうわど は きゅうじゅうに くらい です。はぁはぁ して います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: kyou no gogo kara iki zurasou desu.hyouka: sanso houwado ha kyuujuuni kurai desu.haahaa shite imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sejak sore terasa sesak. A: Saturasi sekitar 92 dan napas cepat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: あるく と くるしそう です。ひょうか: さんそ ほうわど は きゅうじゅう くらい です。いす に すわる と らく に なります。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: aruku to kurushisou desu.hyouka: sanso houwado ha kyuujuu kurai desu.isu ni suwaru to raku ni narimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sesak saat berjalan. A: Saturasi sekitar 90 dan lebih nyaman saat duduk. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: よる から いき が くるしい と いいます。ひょうか: ぜえぜえ と おと が します。さんそ ほうわど は きゅうじゅういち くらい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: yoru kara iki ga kurushii to iimasu.hyouka: zeezee to oto ga shimasu.sanso houwado ha kyuujuuichi kurai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sejak malam mengeluh sesak. A: Ada bunyi mengi. Saturasi sekitar 91. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: しょくご に むせ ました。ひょうか: せき が つづき、いき が あらい です。さんそ ほうわど は きゅうじゅういち くらい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: shokugo ni muse mashita.hyouka: seki ga tsuzuki,iki ga arai desu.sanso houwado ha kyuujuuichi kurai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Sesak napas. B: Tersedak setelah makan. A: Batuk berlanjut dan napas kasar. Saturasi sekitar 91. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: ねる と くるしそう です。ひょうか: あおむけ が つらく、からだ を おこす と らく です。さんそ ほうわど は きゅうじゅうに くらい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: neru to kurushisou desu.hyouka: aomuke ga tsuraku,karada o okosu to raku desu.sanso houwado ha kyuujuuni kurai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sesak saat berbaring. A: Sulit telentang, lebih nyaman saat duduk. Saturasi sekitar 92. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: さっき から ぼんやり して います。ひょうか: よびかけ へ の へんじ が おそい です。ねむそう です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sakki kara bonyari shite imasu.hyouka: yobikake he no henji ga osoi desu.nemusou desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Sejak tadi terlihat mengantuk. A: Respon lambat dan tampak mengantuk. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: さっき から こんらん して います。ひょうか: ばしょ が わからない ようす です。ことば が まとまりません。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sakki kara konran shite imasu.hyouka: basho ga wakaranai yousu desu.kotoba ga matomarimasen.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Sejak tadi tampak bingung. A: Tidak tahu tempat dan bicara tidak teratur. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: とつぜん ふらつき ました。ひょうか: すわって いて も ぐらぐら します。あぶない ので あんせい に しています。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: totsuzen furatsuki mashita.hyouka: suwatte ite mo guragura shimasu.abunai node ansei ni shiteimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Tiba-tiba sempoyongan. A: Goyah meski duduk. Kami istirahatkan karena berbahaya. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: すこし まえ に め を とじて しまいました。ひょうか: よびかけ で め を あけます が すぐ とじます。ぐったり して います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sukoshi mae ni me o tojite shimaimashita.hyouka: yobikake de me o akemasu ga sugu tojimasu.guttari shite imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Tadi sempat memejamkan mata. A: Membuka mata saat dipanggil tapi cepat menutup, tampak lemah. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: きょう は へんじ が すくない です。ひょうか: なまえ を よんで も うなずく だけ です。いつも より ちから が ありません。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: kyou ha henji ga sukunai desu.hyouka: namae o yonde mo unazuku dake desu.itsumo yori chikara ga arimasen.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Hari ini respon sedikit. A: Hanya mengangguk saat dipanggil, lebih lemah dari biasa. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: ゆうしょく の あと に はきました。ひょうか: にかい はきました。いま は あんせい に しています。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: yuushoku no ato ni hakimashita.hyouka: nikai hakimashita.ima ha ansei ni shiteimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Muntah. B: Setelah makan malam muntah. A: Muntah dua kali. Sekarang istirahat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: きょう の ひる から むかむか して います。ひょうか: いちど はきました。おなか が いたい と いいます。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: kyou no hiru kara mukamuka shite imasu.hyouka: ichido hakimashita.onaka ga itai to iimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Muntah. B: Sejak siang merasa mual. A: Muntah sekali dan mengeluh sakit perut. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: みず を のんで も はきそう です。ひょうか: はいた あと も むかむか が つづきます。だっすい が しんぱい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: mizu o nonde mo hakisou desu.hyouka: haita ato mo mukamuka ga tsuzukimasu.dassui ga shinpai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Muntah. B: Mudah muntah meski minum. A: Mual berlanjut setelah muntah. Khawatir dehidrasi. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: しょくご に むせ ました。ひょうか: はいた あと、せき が でて います。ごえん が しんぱい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: shokugo ni muse mashita.hyouka: haita ato,seki ga dete imasu.goen ga shinpai desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Muntah. B: Tersedak setelah makan. A: Setelah muntah batuk. Khawatir aspirasi. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: きょう は しょくよく が ありません。ひょうか: はく と き も あります。あんせい に して います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: kyou ha shokuyoku ga arimasen.hyouka: haku to ki mo arimasu.ansei ni shite imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Muntah. B: Hari ini nafsu makan turun. A: Ada rasa ingin muntah. Kami istirahatkan. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: さっき から むね の いたみ が あります。ひょうか: あせ を かいて いて、かおいろ が わるい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: sakki kara mune no itami ga arimasu.hyouka: ase o kaite ite,kaoiro ga warui desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Sejak tadi ada nyeri dada. A: Berkeringat dan wajah tampak pucat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が くるしい と いっています。はいけい: きょう の ごご から むね が おもい と いいます。ひょうか: いき が すこし はやい です。あんせい に して います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: mune ga kurushii to itteimasu.haikei: kyou no gogo kara mune ga omoi to iimasu.hyouka: iki ga sukoshi hayai desu.ansei ni shite imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Dada terasa sesak. B: Sejak sore terasa berat di dada. A: Napas sedikit cepat. Kami istirahatkan. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: いき を すう と いたい と いいます。ひょうか: うごく と いたみ が つよく なります。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: iki o suu to itai to iimasu.hyouka: ugoku to itami ga tsuyoku narimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Sakit saat tarik napas. A: Nyeri bertambah saat bergerak. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が くるしい と いっています。はいけい: さっき から ふあん そう です。ひょうか: どきどき して いる と いいます。かおいろ が すこし あおい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: mune ga kurushii to itteimasu.haikei: sakki kara fuan sou desu.hyouka: dokidoki shite iru to iimasu.kaoiro ga sukoshi aoi desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Dada terasa sesak. B: Tampak cemas sejak tadi. A: Mengeluh berdebar, wajah agak kebiruan. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: あるい た あと に いたい と いいます。ひょうか: あんせい に すると すこし らく に なります。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: arui ta ato ni itai to iimasu.hyouka: ansei ni suruto sukoshi raku ni narimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Nyeri setelah berjalan. A: Sedikit membaik saat istirahat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: あせ を かいて ふるえています。ひょうか: けっとう は ろくじゅう くらい です。あめ を なめて います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: ase o kaite furueteimasu.hyouka: kettou ha rokujuu kurai desu.ame o namete imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Berkeringat dan tremor. A: Gula darah sekitar 60. Sedang diberi permen. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: きょう は しょくじ が すくない です。ひょうか: あおい かお で、ふらふら します。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: kyou ha shokuji ga sukunai desu.hyouka: aoi kao de,furafura shimasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Hari ini makan sedikit. A: Wajah pucat dan pusing/sempoyongan. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: さっき から ぼんやり しています。ひょうか: あせ を かいて いて、へんじ が おそい です。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: sakki kara bonyari shiteimasu.hyouka: ase o kaite ite,henji ga osoi desu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Sejak tadi tampak bingung. A: Berkeringat dan respon lambat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: くすり の あと に ぐったり しました。ひょうか: ふるえ が あり、ちから が ありません。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: kusuri no ato ni guttari shimashita.hyouka: furue ga ari,chikara ga arimasen.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Setelah minum obat tampak lemas. A: Ada tremor dan tidak bertenaga. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: とつぜん ふらつき ました。ひょうか: いま は あんせい に して います。あせ が でて います。いらい: かんごし さん、かくにん を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: totsuzen furatsuki mashita.hyouka: ima ha ansei ni shite imasu.ase ga dete imasu.irai: kangoshi san,kakunin o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Tiba-tiba sempoyongan. A: Sekarang istirahat, berkeringat. R: Mohon perawat memeriksa..",
+            "level": "intermediate"
           }
         ],
         "observe": [
@@ -1677,6 +1857,186 @@
             "romaji": "renraku taisei o saikakunin itashimasu.",
             "id": "Kami cek kembali sistem komunikasi.",
             "level": "advanced"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: きょう の あさ から ねつ が あります。ひょうか: たいおん は さんじゅうはち ど ごぶ くらい です。さむけ が あります。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: kyou no asa kara netsu ga arimasu.hyouka: taion ha sanjuuhachi do gobu kurai desu.samuke ga arimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Demam. B: Sejak pagi ada demam. A: Suhu sekitar 38,5°C dan menggigil. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が たかい です。はいけい: きのう の よる から ねつ が つづいて います。ひょうか: たいおん は さんじゅうきゅう ど くらい です。しょくよく が ありません。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: netsu ga takai desu.haikei: kinou no yoru kara netsu ga tsuzuite imasu.hyouka: taion ha sanjuukyuu do kurai desu.shokuyoku ga arimasen.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Demam tinggi. B: Sejak tadi malam demam berlanjut. A: Suhu sekitar 39°C dan nafsu makan menurun. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: いま まで ふつう でした が さっき から ねつ っぽい です。ひょうか: かお が あかく、からだ が だるそう です。たいおん は さんじゅうはち ど くらい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: ima made futsuu deshita ga sakki kara netsu ppoi desu.hyouka: kao ga akaku,karada ga darusou desu.taion ha sanjuuhachi do kurai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Demam. B: Tadi normal, tapi baru saja terasa demam. A: Wajah kemerahan dan lemas. Suhu sekitar 38°C. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: せき が でて います。ひょうか: たいおん は さんじゅうはち ど はちぶ くらい です。のど が いたい と いいます。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: seki ga dete imasu.hyouka: taion ha sanjuuhachi do hachibu kurai desu.nodo ga itai to iimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Demam. B: Ada batuk. A: Suhu sekitar 38,8°C dan mengeluh sakit tenggorokan. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ねつ が あります。はいけい: みず を あまり のんで いません。ひょうか: たいおん は さんじゅうはち ど にぶ くらい です。くち が かわいて います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: netsu ga arimasu.haikei: mizu o amari nonde imasen.hyouka: taion ha sanjuuhachi do nibu kurai desu.kuchi ga kawaite imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Demam. B: Minum sedikit. A: Suhu sekitar 38,2°C dan mulut kering. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: きょう の ごご から いき づらそう です。ひょうか: さんそ ほうわど は きゅうじゅうに くらい です。はぁはぁ して います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: kyou no gogo kara iki zurasou desu.hyouka: sanso houwado ha kyuujuuni kurai desu.haahaa shite imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sejak sore terasa sesak. A: Saturasi sekitar 92 dan napas cepat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: あるく と くるしそう です。ひょうか: さんそ ほうわど は きゅうじゅう くらい です。いす に すわる と らく に なります。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: aruku to kurushisou desu.hyouka: sanso houwado ha kyuujuu kurai desu.isu ni suwaru to raku ni narimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sesak saat berjalan. A: Saturasi sekitar 90 dan lebih nyaman saat duduk. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: よる から いき が くるしい と いいます。ひょうか: ぜえぜえ と おと が します。さんそ ほうわど は きゅうじゅういち くらい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: yoru kara iki ga kurushii to iimasu.hyouka: zeezee to oto ga shimasu.sanso houwado ha kyuujuuichi kurai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sejak malam mengeluh sesak. A: Ada bunyi mengi. Saturasi sekitar 91. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: しょくご に むせ ました。ひょうか: せき が つづき、いき が あらい です。さんそ ほうわど は きゅうじゅういち くらい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: shokugo ni muse mashita.hyouka: seki ga tsuzuki,iki ga arai desu.sanso houwado ha kyuujuuichi kurai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Sesak napas. B: Tersedak setelah makan. A: Batuk berlanjut dan napas kasar. Saturasi sekitar 91. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いき が くるしそう です。はいけい: ねる と くるしそう です。ひょうか: あおむけ が つらく、からだ を おこす と らく です。さんそ ほうわど は きゅうじゅうに くらい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: iki ga kurushisou desu.haikei: neru to kurushisou desu.hyouka: aomuke ga tsuraku,karada o okosu to raku desu.sanso houwado ha kyuujuuni kurai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Sesak napas. B: Sesak saat berbaring. A: Sulit telentang, lebih nyaman saat duduk. Saturasi sekitar 92. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: さっき から ぼんやり して います。ひょうか: よびかけ へ の へんじ が おそい です。ねむそう です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sakki kara bonyari shite imasu.hyouka: yobikake he no henji ga osoi desu.nemusou desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Sejak tadi terlihat mengantuk. A: Respon lambat dan tampak mengantuk. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: さっき から こんらん して います。ひょうか: ばしょ が わからない ようす です。ことば が まとまりません。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sakki kara konran shite imasu.hyouka: basho ga wakaranai yousu desu.kotoba ga matomarimasen.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Sejak tadi tampak bingung. A: Tidak tahu tempat dan bicara tidak teratur. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: とつぜん ふらつき ました。ひょうか: すわって いて も ぐらぐら します。あぶない ので あんせい に しています。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: totsuzen furatsuki mashita.hyouka: suwatte ite mo guragura shimasu.abunai node ansei ni shiteimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Tiba-tiba sempoyongan. A: Goyah meski duduk. Kami istirahatkan karena berbahaya. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: すこし まえ に め を とじて しまいました。ひょうか: よびかけ で め を あけます が すぐ とじます。ぐったり して います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: sukoshi mae ni me o tojite shimaimashita.hyouka: yobikake de me o akemasu ga sugu tojimasu.guttari shite imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Tadi sempat memejamkan mata. A: Membuka mata saat dipanggil tapi cepat menutup, tampak lemah. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: いしき が いつも と ちがいます。はいけい: きょう は へんじ が すくない です。ひょうか: なまえ を よんで も うなずく だけ です。いつも より ちから が ありません。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: ishiki ga itsumo to chigaimasu.haikei: kyou ha henji ga sukunai desu.hyouka: namae o yonde mo unazuku dake desu.itsumo yori chikara ga arimasen.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Perubahan kesadaran. B: Hari ini respon sedikit. A: Hanya mengangguk saat dipanggil, lebih lemah dari biasa. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: ゆうしょく の あと に はきました。ひょうか: にかい はきました。いま は あんせい に しています。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: yuushoku no ato ni hakimashita.hyouka: nikai hakimashita.ima ha ansei ni shiteimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Muntah. B: Setelah makan malam muntah. A: Muntah dua kali. Sekarang istirahat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: きょう の ひる から むかむか して います。ひょうか: いちど はきました。おなか が いたい と いいます。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: kyou no hiru kara mukamuka shite imasu.hyouka: ichido hakimashita.onaka ga itai to iimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Muntah. B: Sejak siang merasa mual. A: Muntah sekali dan mengeluh sakit perut. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: みず を のんで も はきそう です。ひょうか: はいた あと も むかむか が つづきます。だっすい が しんぱい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: mizu o nonde mo hakisou desu.hyouka: haita ato mo mukamuka ga tsuzukimasu.dassui ga shinpai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Muntah. B: Mudah muntah meski minum. A: Mual berlanjut setelah muntah. Khawatir dehidrasi. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: しょくご に むせ ました。ひょうか: はいた あと、せき が でて います。ごえん が しんぱい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: shokugo ni muse mashita.hyouka: haita ato,seki ga dete imasu.goen ga shinpai desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Muntah. B: Tersedak setelah makan. A: Setelah muntah batuk. Khawatir aspirasi. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: おうと しました。はいけい: きょう は しょくよく が ありません。ひょうか: はく と き も あります。あんせい に して います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: outo shimashita.haikei: kyou ha shokuyoku ga arimasen.hyouka: haku to ki mo arimasu.ansei ni shite imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Muntah. B: Hari ini nafsu makan turun. A: Ada rasa ingin muntah. Kami istirahatkan. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: さっき から むね の いたみ が あります。ひょうか: あせ を かいて いて、かおいろ が わるい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: sakki kara mune no itami ga arimasu.hyouka: ase o kaite ite,kaoiro ga warui desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Sejak tadi ada nyeri dada. A: Berkeringat dan wajah tampak pucat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が くるしい と いっています。はいけい: きょう の ごご から むね が おもい と いいます。ひょうか: いき が すこし はやい です。あんせい に して います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: mune ga kurushii to itteimasu.haikei: kyou no gogo kara mune ga omoi to iimasu.hyouka: iki ga sukoshi hayai desu.ansei ni shite imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Dada terasa sesak. B: Sejak sore terasa berat di dada. A: Napas sedikit cepat. Kami istirahatkan. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: いき を すう と いたい と いいます。ひょうか: うごく と いたみ が つよく なります。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: iki o suu to itai to iimasu.hyouka: ugoku to itami ga tsuyoku narimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Sakit saat tarik napas. A: Nyeri bertambah saat bergerak. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が くるしい と いっています。はいけい: さっき から ふあん そう です。ひょうか: どきどき して いる と いいます。かおいろ が すこし あおい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: mune ga kurushii to itteimasu.haikei: sakki kara fuan sou desu.hyouka: dokidoki shite iru to iimasu.kaoiro ga sukoshi aoi desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Dada terasa sesak. B: Tampak cemas sejak tadi. A: Mengeluh berdebar, wajah agak kebiruan. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: むね が いたい と いっています。はいけい: あるい た あと に いたい と いいます。ひょうか: あんせい に すると すこし らく に なります。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: mune ga itai to itteimasu.haikei: arui ta ato ni itai to iimasu.hyouka: ansei ni suruto sukoshi raku ni narimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Nyeri dada. B: Nyeri setelah berjalan. A: Sedikit membaik saat istirahat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: あせ を かいて ふるえています。ひょうか: けっとう は ろくじゅう くらい です。あめ を なめて います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: ase o kaite furueteimasu.hyouka: kettou ha rokujuu kurai desu.ame o namete imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Berkeringat dan tremor. A: Gula darah sekitar 60. Sedang diberi permen. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: きょう は しょくじ が すくない です。ひょうか: あおい かお で、ふらふら します。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: kyou ha shokuji ga sukunai desu.hyouka: aoi kao de,furafura shimasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Hari ini makan sedikit. A: Wajah pucat dan pusing/sempoyongan. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: さっき から ぼんやり しています。ひょうか: あせ を かいて いて、へんじ が おそい です。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: sakki kara bonyari shiteimasu.hyouka: ase o kaite ite,henji ga osoi desu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Sejak tadi tampak bingung. A: Berkeringat dan respon lambat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: くすり の あと に ぐったり しました。ひょうか: ふるえ が あり、ちから が ありません。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: kusuri no ato ni guttari shimashita.hyouka: furue ga ari,chikara ga arimasen.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Setelah minum obat tampak lemas. A: Ada tremor dan tidak bertenaga. R: Mohon instruksi dokter..",
+            "level": "intermediate"
+          },
+          {
+            "jp": "じょうきょう: ていけっとう みたい です。はいけい: とつぜん ふらつき ました。ひょうか: いま は あんせい に して います。あせ が でて います。いらい: いし せんせい、しじ を おねがい します。",
+            "romaji": "joukyou: teikettou mitai desu.haikei: totsuzen furatsuki mashita.hyouka: ima ha ansei ni shite imasu.ase ga dete imasu.irai: ishi sensei,shiji o onegai shimasu.",
+            "id": "S: Seperti hipoglikemia. B: Tiba-tiba sempoyongan. A: Sekarang istirahat, berkeringat. R: Mohon instruksi dokter..",
+            "level": "intermediate"
           }
         ],
         "observe": [
