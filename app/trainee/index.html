@@ -763,6 +763,11 @@ const FALLBACK_PERSONA_ID = {
   dementia:"Pengguna: Bingung",
   family_anxious:"Keluarga: Cemas",
   family_complaint:"Keluarga: Keluhan"
+  ,colleague:"Rekan kerja"
+  ,leader:"Ketua tim"
+  ,nurse:"Perawat"
+  ,head_nurse:"Kepala perawat"
+  ,doctor:"Dokter"
 };
 const FALLBACK_CAT_ID = {
   bath:{ voice:"Menyapa", temperature:"Cek suhu", privacy:"Menjaga privasi", refusal:"Menangani penolakan", safety:"Keamanan" },
@@ -807,6 +812,28 @@ function updateCategories(){
   const scene = $("sceneSel").value;
   const cats = EX.scenes?.[scene] || [];
   fillSelect($("catSel"), cats, c=>c.key, c=>getCategoryLabel(scene, c));
+
+  // persona auto-switch (handover/report scenes)
+  try{
+    const personaNow = $("personaSel").value;
+    const has = (k)=> (EX?.personas||[]).some(p=>p.key===k);
+
+    // 申し送り：同僚/リーダーが基本
+    if (scene === "handover"){
+      if (!["colleague","leader"].includes(personaNow)){
+        if (has("colleague")) $("personaSel").value = "colleague";
+        else if (has("leader")) $("personaSel").value = "leader";
+      }
+    }
+
+    // 急変/転倒：家族系が選ばれていたらスタッフ側に寄せる
+    if (scene === "emergency" || scene === "fall"){
+      if (["family_anxious","family_complaint"].includes(personaNow)){
+        if (has("nurse")) $("personaSel").value = "nurse";
+        else if (has("leader")) $("personaSel").value = "leader";
+      }
+    }
+  }catch(e){}
 }
 
 function rebuildSelectLabels(){
@@ -972,7 +999,7 @@ function renderHistory(){
     const div = document.createElement("div");
     div.className = "msg";
     const meta = it.meta || {};
-    const title = it.role === "user" ? "あなた" : "AI（利用者/家族）";
+    const title = it.role === "user" ? "あなた" : `AI（${getPersonaLabelByKey(meta.persona)}）`;
     const tag = `${getSceneLabel(meta.scene)} / ${getPersonaLabelByKey(meta.persona)} / ${getCategoryLabel(meta.scene, {key: meta.category, label: (EX?.scenes?.[meta.scene]||[]).find(x=>x.key===meta.category)?.label || meta.category, label_id: (EX?.scenes?.[meta.scene]||[]).find(x=>x.key===meta.category)?.label_id || ""})} / ${meta.level}`;
     div.innerHTML = `
       <div class="who">
