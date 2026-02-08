@@ -125,12 +125,7 @@ export default async function handler(req, res) {
       user_angry: { label: "利用者：怒り", ai_role: "resident", ai_tone: "irritated, defensive, short answers" },
       dementia: { label: "利用者：少し混乱", ai_role: "resident", ai_tone: "confused, needs reassurance, short sentences" },
       family_anxious: { label: "家族：不安", ai_role: "family", ai_tone: "worried, asks safety questions" },
-      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" },
-      colleague: { label: "同僚（次の勤務者）", ai_role: "coworker", ai_tone: "brief, practical, supportive, asks for key details" },
-      leader: { label: "リーダー／主任", ai_role: "team_leader", ai_tone: "calm, decisive, confirms risks and assigns actions" },
-      nurse: { label: "看護師", ai_role: "nurse", ai_tone: "clinical, calm, asks focused assessment questions" },
-      head_nurse: { label: "師長", ai_role: "head_nurse", ai_tone: "professional, checks reporting quality and safety escalation" },
-      doctor: { label: "医師", ai_role: "doctor", ai_tone: "clinical, concise, gives orders and asks for essential vitals" }
+      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" }
     };
 
     const SCENES = {
@@ -138,9 +133,6 @@ export default async function handler(req, res) {
       meal: { label: "食事", focus: "posture, choking risk, pace, dignity" },
       toilet: { label: "排泄", focus: "privacy, timely assistance, hygiene" },
       night: { label: "夜間", focus: "anxiety, insomnia, wandering risk" },
-      emergency: { label: "急変", focus: "SBARで かんごし／いし へ ほうこく、すうち かくにん、しじ うけ" },
-      fall: { label: "転倒", focus: "あたま だぼく／しゅっけつ／いたみ、ばいたる、ほうこく と さいはつぼうし" },
-      handover: { label: "申し送り", focus: "しょくじ／すいぶん／はいせつ／すいみん／ちゅういてん を みじかく きょうゆう" },
       complaint: { label: "クレーム対応", focus: "apology, fact-finding, plan" },
       family_consultation: { label: "家族相談", focus: "clear explanation, empathy, professional" },
       team_coordination: { label: "チーム連携", focus: "reporting, coordination, clarity" },
@@ -237,114 +229,11 @@ export default async function handler(req, res) {
 夜 → よる
 午前 → ごぜん
 午後 → ごご
-
-【急変・医学用語】以下は医学用語として一般的な読み／言い回しを優先する：
-
-発熱 → ねつ が ある
-息苦しさ → いきが くるしい
-意識変容 → いしき の へんか
-嘔吐 → おうと
-胸痛 → むね の いたみ
-低血糖 → ていけっとう
-血糖 → けっとう
-SpO2 → えすぴーおーつー
-酸素 → さんそ
-指示 → しじ
-救急 → きゅうきゅう
-
     `.trim();
 
     const personaInfo = PERSONAS[persona] || PERSONAS.user_calm;
     const sceneInfo = SCENES[scene] || SCENES.bath;
     const categoryLabel = CATEGORIES[category] || category;
-
-
-    // ===== ROLEPLAY RESPONSE TEMPLATES (現場ロールを成立させる) =====
-    const maxQuestions = (plan === "trainee_lite") ? 1 : (plan === "trainee_standard") ? 2 : 3;
-
-    function buildRoleplayGuidance(sceneKey, personaKey){
-      // Keep this guidance short; the model must still obey max length constraints.
-      if (!sceneKey || !personaKey) return "";
-
-      // Emergency (急変)
-      if (sceneKey === "emergency"){
-        if (personaKey === "nurse"){
-          return [
-            "ROLEPLAY: You are a NURSE responding to an acute change.",
-            `Ask up to ${maxQuestions} short assessment questions (vitals/when/mental state/actions).`,
-            "Prefer these quick checks (pick only what fits): いつから / えすぴーおーつー / いしき / けつあつ / たいおう",
-            "End with a clear next action: すぐ かくにん します / いし に れんらく します など。",
-            "DO NOT include SBAR headings like S/B/A/R in ai.hira."
-          ].join("\n");
-        }
-        if (personaKey === "doctor"){
-          return [
-            "ROLEPLAY: You are a DOCTOR responding to a caregiver report and giving orders.",
-            "OUTPUT STYLE (ai.hira): 1) short acknowledgement, 2) (optional) ONE short question if key vitals are missing, 3) 1–2 clear orders.",
-            "Question rule: ask at most ONE question. If multiple vitals are missing, ask in one line: すうち（たいおん/えすぴーおーつー/けつあつ/けっとう）を おしえて。",
-            "Order rule: always include at least ONE order (example words: さんそ / けいかんさつ / いしき かくにん / きゅうきゅう そうだん).",
-            "SUGGESTED (suggested.hira): show a better caregiver report to the doctor that ends with: しじ を おねがい します。",
-            "Keep ai.hira concise; avoid long explanations. DO NOT include SBAR headings like S/B/A/R."
-          ].join("\n");
-        }
-        if (personaKey === "head_nurse"){
-          return [
-            "ROLEPLAY: You are the HEAD NURSE.",
-            "Confirm urgency, request structured info (じけいれつ/すうち/たいおう), and instruct escalation if needed.",
-            "Keep it professional and calm."
-          ].join("\n");
-        }
-        if (personaKey === "leader"){
-          return [
-            "ROLEPLAY: You are the TEAM LEADER.",
-            "Instruct to call nurse/doctor, ensure safety, and assign next actions (きろく/ほうこく).",
-            "Keep it brief and decisive."
-          ].join("\n");
-        }
-      }
-
-      // Fall (転倒)
-      if (sceneKey === "fall"){
-        if (personaKey === "nurse" || personaKey === "head_nurse"){
-          return [
-            "ROLEPLAY: You are nursing staff responding to a fall.",
-            `Ask up to ${maxQuestions} focused checks: あたま を うった か / しゅっけつ / いたみ / いしき / ばいたる.`,
-            "Instruct next action: あんせい / かんさつ / いし へ れんらく / きろく.",
-            "No long explanations."
-          ].join("\n");
-        }
-        if (personaKey === "leader" || personaKey === "colleague"){
-          return [
-            "ROLEPLAY: You are a coworker/leader receiving a fall report.",
-            "Confirm key facts (いつ/どこ/じょうきょう/けが/たいおう) and assign next steps.",
-            "Professional and concise."
-          ].join("\n");
-        }
-      }
-
-      // Handover (申し送り)
-      if (sceneKey === "handover"){
-        if (personaKey === "colleague"){
-          return [
-            "ROLEPLAY: You are a coworker receiving a handover.",
-            "Acknowledge and confirm the 5 items: しょくじ / すいぶん / はいせつ / すいみん / ちゅういてん.",
-            "Ask ONE clarification if needed, otherwise confirm next task.",
-            "Keep it friendly and practical."
-          ].join("\n");
-        }
-        if (personaKey === "leader"){
-          return [
-            "ROLEPLAY: You are the leader receiving a handover.",
-            "Confirm risks and priorities, and assign actions (みまもり/ほうこく/かくにん).",
-            "Concise."
-          ].join("\n");
-        }
-      }
-
-      return "";
-    }
-
-    const roleplayGuidance = buildRoleplayGuidance(scene, persona);
 
     const safeJson = (text) => {
       try { return JSON.parse(text); } catch {}
@@ -624,7 +513,6 @@ CURRENT ROLEPLAY SETUP:
 - Target Level: ${planConfig.vocabulary_level} (${planConfig.vocabulary_count} words)
 - Max Response Length: ${planConfig.max_sentence_chars} characters
 
-${roleplayGuidance ? ('ROLEPLAY GUIDANCE:\n' + roleplayGuidance + '\n') : ''}
 OUTPUT RULES:
 Return ONLY valid JSON (no markdown, no extra text).
 
