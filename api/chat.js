@@ -229,6 +229,18 @@ export default async function handler(req, res) {
 夜 → よる
 午前 → ごぜん
 午後 → ごご
+
+【急変・医学用語】以下は医学用語として一般的な読み／言い回しを優先する：
+
+発熱 → ねつ が ある
+息苦しさ → いきが くるしい
+意識変容 → いしき の へんか
+嘔吐 → おうと
+胸痛 → むね の いたみ
+低血糖 → ていけっとう
+血糖 → けっとう
+SpO2 → えすぴーおーつー
+
     `.trim();
 
     const personaInfo = PERSONAS[persona] || PERSONAS.user_calm;

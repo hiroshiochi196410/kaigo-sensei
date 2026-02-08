@@ -6,6 +6,7 @@
   <title>介護ロールプレイAI（日本語×ローマ字×インドネシア語）</title>
   <!-- プラン管理ライブラリ -->
   <script src="/plan-manager.js"></script>
+  <script src="/medical-dictionary.js"></script>
   <style>
     :root{
       --bg:#fafafa; --card:#fff; --bd:#e5e7eb; --txt:#111827; --muted:#6b7280;
@@ -188,7 +189,7 @@
         <input type="text" id="fallTemp" placeholder="例：36.8" />
       </div>
       <div>
-        <label>すぽつー（%）</label>
+        <label>えすぴーおーつー（%）</label>
         <input type="text" id="fallSpo2" placeholder="例：96" />
       </div>
       <div>
@@ -258,12 +259,12 @@
   <div style="margin-top:10px;">
     <label>きづいたこと（チェック）</label>
     <div class="chips">
-      <label class="chip"><input type="checkbox" id="sbarFever"> はつねつ</label>
-      <label class="chip"><input type="checkbox" id="sbarDyspnea"> いきぐるしさ／すぽつー ていか</label>
-      <label class="chip"><input type="checkbox" id="sbarAms"> いしき へんよう</label>
-      <label class="chip"><input type="checkbox" id="sbarVomit"> おうと</label>
-      <label class="chip"><input type="checkbox" id="sbarChest"> きょうつう（むねのいたみ）</label>
-      <label class="chip"><input type="checkbox" id="sbarHypo"> ていけっとう の うたがい</label>
+      <label class="chip"><input type="checkbox" id="sbarFever"> ねつ が ある</label>
+      <label class="chip"><input type="checkbox" id="sbarDyspnea"> いきが くるしい／えすぴーおーつー が ひくい</label>
+      <label class="chip"><input type="checkbox" id="sbarAms"> いしき の へんか（ぼんやり）</label>
+      <label class="chip"><input type="checkbox" id="sbarVomit"> おうと（はいた）</label>
+      <label class="chip"><input type="checkbox" id="sbarChest"> むね の いたみ</label>
+      <label class="chip"><input type="checkbox" id="sbarHypo"> ていけっとう の うたがい（けっとう が ひくい）</label>
     </div>
     <div class="row" style="margin-top:8px;">
       <div>
@@ -281,7 +282,7 @@
         <input type="text" id="sbarTemp" placeholder="例：38.2" />
       </div>
       <div>
-        <label>すぽつー（%）</label>
+        <label>えすぴーおーつー（%）</label>
         <input type="text" id="sbarSpo2" placeholder="例：92" />
       </div>
       <div>
@@ -1093,11 +1094,11 @@ function buildSbarText(targetPersonaKey){
 
   const ss = [];
 
-  if (sbarChecked("sbarFever")) ss.push("はつねつ");
-  if (sbarChecked("sbarDyspnea")) ss.push("いきぐるしさ");
-  if (sbarChecked("sbarAms")) ss.push("いしき へんよう");
+  if (sbarChecked("sbarFever")) ss.push("ねつ が ある");
+  if (sbarChecked("sbarDyspnea")) ss.push("いきが くるしい");
+  if (sbarChecked("sbarAms")) ss.push("いしき の へんか");
   if (sbarChecked("sbarVomit")) ss.push("おうと");
-  if (sbarChecked("sbarChest")) ss.push("むねの いたみ");
+  if (sbarChecked("sbarChest")) ss.push("むね の いたみ");
   if (sbarChecked("sbarHypo")) ss.push("ていけっとう の うたがい");
   if (other) ss.push(other);
 
@@ -1107,7 +1108,7 @@ function buildSbarText(targetPersonaKey){
   // ---- S（じょうきょう）
   let S = `${subj} が、${s1} です。`;
   if (onset) S += ` ${onset} から です。`;
-  if (sbarChecked("sbarDyspnea") && spo2) S += ` すぽつー は ${spo2}ぱーせんと です。`;
+  if (sbarChecked("sbarDyspnea") && spo2) S += ` えすぴーおーつー は ${spo2}ぱーせんと です。`;
   if (sbarChecked("sbarFever") && temp) S += ` たいおん は ${temp}ど です。`;
 
   // ---- B（はいけい）
@@ -1116,7 +1117,7 @@ function buildSbarText(targetPersonaKey){
   // ---- A（ひょうか）
   const vit = [];
   if (temp) vit.push(`たいおん ${temp}ど`);
-  if (spo2) vit.push(`すぽつー ${spo2}ぱーせんと`);
+  if (spo2) vit.push(`えすぴーおーつー ${spo2}ぱーせんと`);
   if (pulse) vit.push(`みゃく ${pulse}`);
   if (bp) vit.push(`けつあつ ${bp}`);
   if (rr) vit.push(`こきゅう ${rr}`);
@@ -1131,7 +1132,8 @@ function buildSbarText(targetPersonaKey){
   if (sbarChecked("sbarHypo") && glucose) R += " てんてき や とうぶん たいおう の ひつようが あるか、";
   R += ` ${req}`;
 
-  return `えす（じょうきょう）：${S}\nびー（はいけい）：${B}\nえー（ひょうか）：${A}\nあーる（いらい）：${R}`;
+  const out = `えす（じょうきょう）：${S}\nびー（はいけい）：${B}\nえー（ひょうか）：${A}\nあーる（いらい）：${R}`;
+  return (window.MED_TERM && typeof MED_TERM.apply === "function") ? MED_TERM.apply(out) : out;
 }
 
 
@@ -1546,7 +1548,13 @@ async function send(){
   return;
 }
 
-  const text = $("userInput").value.trim();
+  let text = $("userInput").value.trim();
+
+ // ★ 医学用語の自動補正（急変・報告文の品質安定）
+  if (window.MED_TERM && typeof MED_TERM.apply === "function") {
+    const fixed = MED_TERM.apply(text);
+    if (fixed) text = fixed;
+  }
   if (!text){ alert("入力が空です"); return; }
 
   const scene = $("sceneSel").value;
