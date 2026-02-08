@@ -218,7 +218,47 @@
       .features-grid { grid-template-columns: 1fr; }
       .hero { padding: 40px 20px 30px; }
     }
-  </style>
+      /* Future Promise Initiative */
+    .promise {
+      max-width: 1100px;
+      margin: 26px auto 0;
+      padding: 0 20px;
+    }
+    .promise-box{
+      background: rgba(255,255,255,0.96);
+      border-radius: 18px;
+      padding: 18px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .promise-box img{
+      width: 140px;
+      height: auto;
+      max-width: 40vw;
+    }
+    .promise-box h2{
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #111;
+    }
+    .promise-box p{
+      margin: 0 0 10px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .promise-link{
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 700;
+      border-bottom: 2px solid rgba(102,126,234,0.35);
+      padding-bottom: 2px;
+    }
+
+</style>
 </head>
 <body>
   <div class="hero">
@@ -335,8 +375,19 @@
     </div>
   </div>
 
+  <section class="promise" aria-label="未来への約束プロジェクト">
+    <div class="promise-box">
+      <img src="/public/future-promise-logo.png" alt="未来への約束プロジェクト ロゴ">
+      <div>
+        <h2>未来への約束プロジェクト <small style="font-weight:600;opacity:.8">Future Promise Initiative</small></h2>
+        <p>kaigo-senseiの収益の<strong>2%</strong>を、未来を担う子どもたちの学びへ継続活用します（国内1%／インドネシア1%）。拠出金額と実施内容は<strong>年1回公開</strong>します。</p>
+        <a class="promise-link" href="/future-promise/">理念を見る →</a>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    <p>&copy; 2026 介護ロールプレイAI. All rights reserved.</p>
+    <p>&copy; 2026 介護ロールプレイAI. All rights reserved. | <a href="/future-promise/">未来への約束プロジェクト</a></p>
   </footer>
 
   <script>
