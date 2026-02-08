@@ -133,6 +133,28 @@
     </div>
   </div>
 
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>しゅつりょく けいしき</label>
+      <select id="fallFormat">
+        <option value="narrative">こうとう（ぶん）</option>
+        <option value="items">きろく（こうもく）</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>げんいん（任意）</label>
+      <input type="text" id="fallCause" placeholder="例：すべった／つまづいた／ふらつき" />
+    </div>
+    <div>
+      <label>はっけん（任意）</label>
+      <input type="text" id="fallFound" placeholder="例：スタッフ が はっけん／こえかけ で きづいた" />
+    </div>
+  </div>
+
   <div style="margin-top:10px;">
     <label>けが／ようす（チェック）</label>
     <div class="chips">
@@ -993,7 +1015,7 @@ function sbarVal(id){ return ($(""+id)?.value || "").trim(); }
 function sbarChecked(id){ return !!($(""+id)?.checked); }
 
 function clearSbar(){
-  const ids = ["sbarName","sbarOnset","sbarOther","sbarTemp","sbarSpo2","sbarPulse","sbarBp","sbarRr","sbarGlucose","sbarBg","sbarAction"];
+  const ids = ["sbarName", "sbarOnset", "sbarOther", "sbarTemp", "sbarSpo2", "sbarPulse", "sbarBp", "sbarRr", "sbarGlucose", "sbarBg", "sbarAction"];
   for (const i of ids){ const el = $(i); if (el) el.value = ""; }
   const cbs = ["sbarFever","sbarDyspnea","sbarAms","sbarVomit","sbarChest","sbarHypo"];
   for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
@@ -1072,10 +1094,11 @@ function fallVal(id){ return ($(""+id)?.value || "").trim(); }
 function fallChecked(id){ return !!($(""+id)?.checked); }
 
 function clearFall(){
-  const ids = ["fallName","fallWhen","fallWhere","fallSituation","fallPainPart","fallOther","fallTemp","fallSpo2","fallPulse","fallBp","fallAction","fallPrevent"];
+  const ids = ["fallName","fallWhen","fallWhere","fallSituation","fallCause","fallFound","fallPainPart","fallOther","fallTemp","fallSpo2","fallPulse","fallBp","fallAction","fallPrevent"];
   for (const i of ids){ const el = $(i); if (el) el.value = ""; }
   const cbs = ["fallHead","fallBleed","fallPain","fallAms","fallVomit","fallFract"];
   for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
+  const ff = $("fallFormat"); if (ff) ff.value = "narrative";
 }
 
 function buildFallText(targetPersonaKey){
@@ -1084,6 +1107,10 @@ function buildFallText(targetPersonaKey){
   const when = fallVal("fallWhen");
   const where = fallVal("fallWhere");
   const situation = fallVal("fallSituation");
+  const cause = fallVal("fallCause");
+  const found = fallVal("fallFound");
+  const fmt = ($("fallFormat")?.value || "narrative"); // narrative | items
+
   const painPart = fallVal("fallPainPart");
   const other = fallVal("fallOther");
 
@@ -1100,24 +1127,17 @@ function buildFallText(targetPersonaKey){
   const inj = [];
   if (fallChecked("fallHead")) inj.push("あたま を うった かのうせい");
   if (fallChecked("fallBleed")) inj.push("しゅっけつ あり");
-  if (fallChecked("fallPain")) inj.push(painPart ? (`いたみ（${painPart}）`) : "いたみ あり");
+  if (fallChecked("fallPain")) inj.push(painPart ? (`いたみ（${painPart}）あり`) : "いたみ あり");
   if (fallChecked("fallAms")) inj.push("いしき が いつもと ちがう");
   if (fallChecked("fallVomit")) inj.push("おうと あり");
   if (fallChecked("fallFract")) inj.push("こっせつ の うたがい");
   if (other) inj.push(other);
-
-  const injStr = inj.length ? inj.join("、") : "けが は（ふめい）です。";
 
   const vit = [];
   if (temp) vit.push(`たいおん ${temp}ど`);
   if (spo2) vit.push(`すぽつー ${spo2}ぱーせんと`);
   if (pulse) vit.push(`みゃく ${pulse}`);
   if (bp) vit.push(`けつあつ ${bp}`);
-  const vitStr = vit.length ? vit.join("、") : "すうち は（ふめい）です。";
-
-  const w = when ? when : "（ふめい）";
-  const l = where ? where : "（ふめい）";
-  const s = situation ? situation : "（ふめい）";
 
   const req = (targetPersonaKey === "head_nurse")
     ? "しちょう、かくにん を おねがい します。"
@@ -1126,14 +1146,53 @@ function buildFallText(targetPersonaKey){
       : "かんごし さん、かくにん と しょち を おねがい します。";
 
   let act = action ? action : "いま、あんせい に しています。";
-  let prev = prevent ? prevent : "よぼう は（ふめい）です。";
+  const prev = prevent ? prevent : "";
 
-  // extra caution
-  if (fallChecked("fallHead") || fallChecked("fallAms") || fallChecked("fallVomit")){
+  // caution
+  const hasHeadRisk = (fallChecked("fallHead") || fallChecked("fallAms") || fallChecked("fallVomit"));
+  if (hasHeadRisk){
     act += " あたま の けが に ちゅうい します。";
   }
 
-  return `てんとう の ほうこく です。\nいつ：${w}\nどこ：${l}\nだれ：${subj}\nじょうきょう：${s}\nけが：${injStr}\nすうち：${vitStr}\nたいおう：${act}\nよぼう：${prev}\nいらい：${req}`;
+  if (fmt === "items"){
+    const lines = [];
+    lines.push("てんとう の ほうこく です。");
+    if (when) lines.push(`いつ：${when}`);
+    if (where) lines.push(`どこ：${where}`);
+    lines.push(`だれ：${subj}`);
+    if (situation) lines.push(`なにを していた：${situation}`);
+    if (cause) lines.push(`げんいん：${cause}`);
+    if (found) lines.push(`はっけん：${found}`);
+    lines.push(`けが：${inj.length ? inj.join("、") : "いまのところ なし"}`);
+    if (vit.length) lines.push(`すうち：${vit.join("、")}`);
+    if (act) lines.push(`たいおう：${act}`);
+    if (prev) lines.push(`よぼう：${prev}`);
+    lines.push(`いらい：${req}`);
+    return lines.join("\n");
+  }
+
+  // narrative (oral report)
+  const out = [];
+  out.push(`${subj} の てんとうを ほうこく します。`);
+
+  const s1 = [];
+  if (when) s1.push(`${when} に`);
+  if (where) s1.push(`${where} で`);
+  if (situation) s1.push(`${situation} ときに`);
+  s1.push("てんとう しました。");
+  out.push(s1.join(" "));
+
+  if (found) out.push(`はっけん は ${found} です。`);
+  if (cause) out.push(`げんいん は ${cause} の かのうせい が あります。`);
+
+  out.push(inj.length ? `けが は ${inj.join("、")} です。` : "けが は いまのところ ありません。");
+
+  if (vit.length) out.push(`${vit.join("、")} です。`);
+  if (act) out.push(`たいおう は ${act} です。`);
+  if (prev) out.push(`こんご は ${prev} を します。`);
+
+  out.push(req);
+  return out.join("\n");
 }
 function updatePersonasForScene(){
   const scene = $("sceneSel")?.value || "";
