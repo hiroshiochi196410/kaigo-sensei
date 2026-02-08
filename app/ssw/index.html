@@ -104,7 +104,100 @@
           <label>相手（ペルソナ）</label>
           <select id="personaSel"></select>
         </div>
+      
+<!-- 転倒：5W1H＋たいおう（看護師／師長／リーダーへ報告） -->
+<div id="fallPanel" class="card" style="margin-top:10px; display:none;">
+  <label>転倒報告（5W1H＋たいおう）</label>
+  <div class="sbarNote">チェックして「転倒報告文を作る」を押すと、入力欄に入ります（わかる はんいで OK）。</div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>利用者名（任意）</label>
+      <input type="text" id="fallName" placeholder="例：たなか" />
+    </div>
+    <div>
+      <label>いつ（任意）</label>
+      <input type="text" id="fallWhen" placeholder="例：10じ すぎ / 5ぷんまえ" />
+    </div>
+    <div>
+      <label>どこ（任意）</label>
+      <input type="text" id="fallWhere" placeholder="例：といれ の まえ / ろうか" />
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>じょうきょう（任意）</label>
+      <input type="text" id="fallSituation" placeholder="例：あるいて いる とちゅう / いどうちゅう / りしょうちゅう" />
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label>けが／ようす（チェック）</label>
+    <div class="chips">
+      <label class="chip"><input type="checkbox" id="fallHead"> あたま を うった かのうせい</label>
+      <label class="chip"><input type="checkbox" id="fallBleed"> しゅっけつ あり</label>
+      <label class="chip"><input type="checkbox" id="fallPain"> いたみ あり</label>
+      <label class="chip"><input type="checkbox" id="fallAms"> いしき が いつもと ちがう</label>
+      <label class="chip"><input type="checkbox" id="fallVomit"> おうと あり</label>
+      <label class="chip"><input type="checkbox" id="fallFract"> こっせつ の うたがい</label>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <div>
+        <label>いたみ の ばしょ（任意）</label>
+        <input type="text" id="fallPainPart" placeholder="例：みぎ ひざ / こし / かた" />
       </div>
+      <div>
+        <label>そのた（任意）</label>
+        <input type="text" id="fallOther" placeholder="例：すりきず / あざ / ふらつき" />
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label>すうち（わかる はんいで）</label>
+    <div class="sbarGrid">
+      <div>
+        <label>たいおん（ど）</label>
+        <input type="text" id="fallTemp" placeholder="例：36.8" />
+      </div>
+      <div>
+        <label>すぽつー（%）</label>
+        <input type="text" id="fallSpo2" placeholder="例：96" />
+      </div>
+      <div>
+        <label>みゃく（/ふん）</label>
+        <input type="text" id="fallPulse" placeholder="例：90" />
+      </div>
+      <div>
+        <label>けつあつ</label>
+        <input type="text" id="fallBp" placeholder="例：120/70" />
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>いま した たいおう（任意）</label>
+      <input type="text" id="fallAction" placeholder="例：あんせい、かんごし に れんらく、きず を ひやす" />
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>よぼう（任意）</label>
+      <input type="text" id="fallPrevent" placeholder="例：みまもり きょうか、くつ の かくにん、へや の せいり" />
+    </div>
+  </div>
+
+  <div class="btnRow" style="margin-top:10px;">
+    <button id="btnFallBuild" type="button">転倒報告文を作る</button>
+    <button id="btnFallClear" type="button">クリア</button>
+  </div>
+
+  <div class="sbarNote">※「転倒」では、あいて が かんごし／しちょう／りーだー のときが しぜんです（えらんだ あいて に あわせて ほうこく の いいかた が かわります）。</div>
+</div>
+</div>
 
       <div class="row" style="margin-top:10px;">
         <div>
@@ -965,6 +1058,83 @@ function buildSbarText(targetPersonaKey){
   return `えす（じょうきょう）：${S}\nびー（はいけい）：${B}\nえー（ひょうか）：${A}\nあーる（いらい）：${R}`;
 }
 
+
+// ===== fall report helper =====
+function isFallScene(){
+  return ($("sceneSel")?.value || "") === "fall";
+}
+function toggleFallPanel(){
+  const panel = $("fallPanel");
+  if (!panel) return;
+  panel.style.display = isFallScene() ? "block" : "none";
+}
+function fallVal(id){ return ($(""+id)?.value || "").trim(); }
+function fallChecked(id){ return !!($(""+id)?.checked); }
+
+function clearFall(){
+  const ids = ["fallName","fallWhen","fallWhere","fallSituation","fallPainPart","fallOther","fallTemp","fallSpo2","fallPulse","fallBp","fallAction","fallPrevent"];
+  for (const i of ids){ const el = $(i); if (el) el.value = ""; }
+  const cbs = ["fallHead","fallBleed","fallPain","fallAms","fallVomit","fallFract"];
+  for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
+}
+
+function buildFallText(targetPersonaKey){
+  // targetPersonaKey: nurse | head_nurse | leader
+  const name = fallVal("fallName");
+  const when = fallVal("fallWhen");
+  const where = fallVal("fallWhere");
+  const situation = fallVal("fallSituation");
+  const painPart = fallVal("fallPainPart");
+  const other = fallVal("fallOther");
+
+  const temp = fallVal("fallTemp");
+  const spo2 = fallVal("fallSpo2");
+  const pulse = fallVal("fallPulse");
+  const bp = fallVal("fallBp");
+
+  const action = fallVal("fallAction");
+  const prevent = fallVal("fallPrevent");
+
+  const subj = name ? (name + "さん") : "りようしゃ";
+
+  const inj = [];
+  if (fallChecked("fallHead")) inj.push("あたま を うった かのうせい");
+  if (fallChecked("fallBleed")) inj.push("しゅっけつ あり");
+  if (fallChecked("fallPain")) inj.push(painPart ? (`いたみ（${painPart}）`) : "いたみ あり");
+  if (fallChecked("fallAms")) inj.push("いしき が いつもと ちがう");
+  if (fallChecked("fallVomit")) inj.push("おうと あり");
+  if (fallChecked("fallFract")) inj.push("こっせつ の うたがい");
+  if (other) inj.push(other);
+
+  const injStr = inj.length ? inj.join("、") : "けが は（ふめい）です。";
+
+  const vit = [];
+  if (temp) vit.push(`たいおん ${temp}ど`);
+  if (spo2) vit.push(`すぽつー ${spo2}ぱーせんと`);
+  if (pulse) vit.push(`みゃく ${pulse}`);
+  if (bp) vit.push(`けつあつ ${bp}`);
+  const vitStr = vit.length ? vit.join("、") : "すうち は（ふめい）です。";
+
+  const w = when ? when : "（ふめい）";
+  const l = where ? where : "（ふめい）";
+  const s = situation ? situation : "（ふめい）";
+
+  const req = (targetPersonaKey === "head_nurse")
+    ? "しちょう、かくにん を おねがい します。"
+    : (targetPersonaKey === "leader")
+      ? "りーだー に きょうゆう します。"
+      : "かんごし さん、かくにん と しょち を おねがい します。";
+
+  let act = action ? action : "いま、あんせい に しています。";
+  let prev = prevent ? prevent : "よぼう は（ふめい）です。";
+
+  // extra caution
+  if (fallChecked("fallHead") || fallChecked("fallAms") || fallChecked("fallVomit")){
+    act += " あたま の けが に ちゅうい します。";
+  }
+
+  return `てんとう の ほうこく です。\nいつ：${w}\nどこ：${l}\nだれ：${subj}\nじょうきょう：${s}\nけが：${injStr}\nすうち：${vitStr}\nたいおう：${act}\nよぼう：${prev}\nいらい：${req}`;
+}
 function updatePersonasForScene(){
   const scene = $("sceneSel")?.value || "";
   const allow = allowedPersonaKeysForScene(scene);
@@ -1039,6 +1209,8 @@ function rebuildSelectLabels(){
 
   updateCategories();
   if (catVal) $("catSel").value = catVal;
+  toggleSbarPanel();
+  toggleFallPanel();
 }
 
 /* ========= examples ========= */
@@ -1479,7 +1651,7 @@ async function init(){
     populate();
 
     
-    toggleSbarPanel();
+    toggleSbarPanel(); toggleFallPanel();
 // apply settings to UI
     if ($("ttsSel")) $("ttsSel").value = SETTINGS.ttsSel || "off";
     if ($("ttsRate")) $("ttsRate").value = SETTINGS.ttsRate || "1";
@@ -1498,7 +1670,7 @@ async function init(){
     await syncSubscriptionStatus();
 
     // events
-    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); });
+    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); toggleFallPanel(); });
     $("btnExample").addEventListener("click", insertExample);
     
     $("btnSbarBuild")?.addEventListener("click", ()=>{
@@ -1513,6 +1685,19 @@ async function init(){
       setTimeout(()=>{$("okBox").style.display="none";}, 2200);
     });
     $("btnSbarClear")?.addEventListener("click", clearSbar);
+    $("btnFallBuild")?.addEventListener("click", ()=>{
+      if (!isFallScene()) return;
+      const target = $("personaSel")?.value || "nurse";
+      const txt = buildFallText(target);
+      $("userInput").value = txt;
+      // help user: set category to "report" when available
+      try{ const cats = EX.scenes?.["fall"] || []; if (cats.some(c=>c.key==="report")) $("catSel").value = "report"; }catch(e){}
+      $("okBox").style.display="block";
+      $("okBox").textContent = "転倒報告文を入力しました。必要なら編集して送信してください。";
+      setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+    });
+    $("btnFallClear")?.addEventListener("click", clearFall);
+
 $("btnClear").addEventListener("click", ()=>{
       if (!confirm("履歴を消しますか？")) return;
       history = [];
