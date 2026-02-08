@@ -73,6 +73,16 @@
 .planName{font-weight:700}
 .planPrice{color:var(--muted); font-size:12px}
 
+
+
+/* --- SBAR chips --- */
+.chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.chip{ display:flex; align-items:center; gap:6px; border:1px solid var(--bd); border-radius:999px; padding:6px 10px; background:#fff; font-size:13px; cursor:pointer; user-select:none; }
+.chip input{ margin:0; }
+.sbarNote{ font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5; }
+.sbarGrid{ display:grid; gap:8px; grid-template-columns: 1fr; }
+@media(min-width:720px){ .sbarGrid{ grid-template-columns: 1fr 1fr 1fr; } }
+
 </style>
 </head>
 <body>
@@ -110,6 +120,92 @@
           </select>
         </div>
       </div>
+
+<!-- 急変：SBAR（看護師／医師へ報告） -->
+<div id="sbarPanel" class="card" style="margin-top:10px; display:none;">
+  <label>急変SBAR（看護師／医師へ報告）</label>
+  <div class="sbarNote">チェックして「SBAR文を作る」を押すと、入力欄に入ります（数字はそのままでOK）。</div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>利用者名（任意）</label>
+      <input type="text" id="sbarName" placeholder="例：たなか" />
+    </div>
+    <div>
+      <label>いつから（任意）</label>
+      <input type="text" id="sbarOnset" placeholder="例：30ぷんまえ から" />
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label>きづいたこと（チェック）</label>
+    <div class="chips">
+      <label class="chip"><input type="checkbox" id="sbarFever"> はつねつ</label>
+      <label class="chip"><input type="checkbox" id="sbarDyspnea"> いきぐるしさ／すぽつー ていか</label>
+      <label class="chip"><input type="checkbox" id="sbarAms"> いしき へんよう</label>
+      <label class="chip"><input type="checkbox" id="sbarVomit"> おうと</label>
+      <label class="chip"><input type="checkbox" id="sbarChest"> きょうつう（むねのいたみ）</label>
+      <label class="chip"><input type="checkbox" id="sbarHypo"> ひくけっとう っぽい</label>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <div>
+        <label>そのた（任意）</label>
+        <input type="text" id="sbarOther" placeholder="例：あせが ひどい / ふらつく" />
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label>すうち（わかる はんいで）</label>
+    <div class="sbarGrid">
+      <div>
+        <label>たいおん（ど）</label>
+        <input type="text" id="sbarTemp" placeholder="例：38.2" />
+      </div>
+      <div>
+        <label>すぽつー（%）</label>
+        <input type="text" id="sbarSpo2" placeholder="例：92" />
+      </div>
+      <div>
+        <label>みゃく（/ふん）</label>
+        <input type="text" id="sbarPulse" placeholder="例：110" />
+      </div>
+      <div>
+        <label>けつあつ</label>
+        <input type="text" id="sbarBp" placeholder="例：90/60" />
+      </div>
+      <div>
+        <label>こきゅう（/ふん）</label>
+        <input type="text" id="sbarRr" placeholder="例：28" />
+      </div>
+      <div>
+        <label>けっとう（mg/dL）</label>
+        <input type="text" id="sbarGlucose" placeholder="例：60" />
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>はいけい（任意）</label>
+      <input type="text" id="sbarBg" placeholder="例：こうけつあつ、とうにょうびょう / いつもは おだやか" />
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div>
+      <label>いま した たいおう（任意）</label>
+      <input type="text" id="sbarAction" placeholder="例：あんせい、たいおんそくてい、さんそ じゅんび" />
+    </div>
+  </div>
+
+  <div class="btnRow" style="margin-top:10px;">
+    <button id="btnSbarBuild" type="button">SBAR文を作る</button>
+    <button id="btnSbarClear" type="button">クリア</button>
+  </div>
+
+  <div class="sbarNote">※「急変」では、あいて が かんごし／いし のときが いちばん しぜんです（えらんだ あいて に あわせて いらい の いいかた が かわります）。</div>
+</div>
 
       <div class="row" style="margin-top:10px;">
         <div>
@@ -791,6 +887,84 @@ function allowedPersonaKeysForScene(sceneKey){
   return PERSONA_ALLOW[sceneKey] || PERSONA_ALLOW.default;
 }
 
+// ===== emergency SBAR helper =====
+function isEmergencyScene(){
+  return ($("sceneSel")?.value || "") === "emergency";
+}
+function toggleSbarPanel(){
+  const panel = $("sbarPanel");
+  if (!panel) return;
+  panel.style.display = isEmergencyScene() ? "block" : "none";
+}
+function sbarVal(id){ return ($(""+id)?.value || "").trim(); }
+function sbarChecked(id){ return !!($(""+id)?.checked); }
+
+function clearSbar(){
+  const ids = ["sbarName","sbarOnset","sbarOther","sbarTemp","sbarSpo2","sbarPulse","sbarBp","sbarRr","sbarGlucose","sbarBg","sbarAction"];
+  for (const i of ids){ const el = $(i); if (el) el.value = ""; }
+  const cbs = ["sbarFever","sbarDyspnea","sbarAms","sbarVomit","sbarChest","sbarHypo"];
+  for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
+}
+
+function buildSbarText(targetPersonaKey){
+  // targetPersonaKey: nurse | doctor
+  const name = sbarVal("sbarName");
+  const onset = sbarVal("sbarOnset");
+  const other = sbarVal("sbarOther");
+
+  const temp = sbarVal("sbarTemp");
+  const spo2 = sbarVal("sbarSpo2");
+  const pulse = sbarVal("sbarPulse");
+  const bp = sbarVal("sbarBp");
+  const rr = sbarVal("sbarRr");
+  const glucose = sbarVal("sbarGlucose");
+
+  const bg = sbarVal("sbarBg");
+  const action = sbarVal("sbarAction");
+
+  const ss = [];
+
+  if (sbarChecked("sbarFever")) ss.push("はつねつ");
+  if (sbarChecked("sbarDyspnea")) ss.push("いきぐるしさ");
+  if (sbarChecked("sbarAms")) ss.push("いしき へんよう");
+  if (sbarChecked("sbarVomit")) ss.push("おうと");
+  if (sbarChecked("sbarChest")) ss.push("むねの いたみ");
+  if (sbarChecked("sbarHypo")) ss.push("ひくけっとう っぽい");
+  if (other) ss.push(other);
+
+  const subj = name ? (name + "さん") : "りようしゃ";
+  const s1 = ss.length ? ss.join("、") : "ぐあいが わるい";
+
+  // ---- S（じょうきょう）
+  let S = `${subj} が、${s1} です。`;
+  if (onset) S += ` ${onset} から です。`;
+  if (sbarChecked("sbarDyspnea") && spo2) S += ` すぽつー は ${spo2}ぱーせんと です。`;
+  if (sbarChecked("sbarFever") && temp) S += ` たいおん は ${temp}ど です。`;
+
+  // ---- B（はいけい）
+  let B = bg ? `はいけい は、${bg} です。` : "はいけい は、（ふめい）です。";
+
+  // ---- A（ひょうか）
+  const vit = [];
+  if (temp) vit.push(`たいおん ${temp}ど`);
+  if (spo2) vit.push(`すぽつー ${spo2}ぱーせんと`);
+  if (pulse) vit.push(`みゃく ${pulse}`);
+  if (bp) vit.push(`けつあつ ${bp}`);
+  if (rr) vit.push(`こきゅう ${rr}`);
+  if (glucose) vit.push(`けっとう ${glucose}`);
+  let A = vit.length ? `すうち は、${vit.join("、")} です。` : "すうち は、（ふめい）です。";
+
+  // ---- R（いらい）
+  const req = (targetPersonaKey === "doctor")
+    ? "しじ を おねがい します。"
+    : "かくにん を おねがい します。";
+  let R = action ? `いま、${action} を しています。` : "いま、あんせい に しています。";
+  if (sbarChecked("sbarHypo") && glucose) R += " てんてき や とうぶん たいおう の ひつようが あるか、";
+  R += ` ${req}`;
+
+  return `えす（じょうきょう）：${S}\nびー（はいけい）：${B}\nえー（ひょうか）：${A}\nあーる（いらい）：${R}`;
+}
+
 function updatePersonasForScene(){
   const scene = $("sceneSel")?.value || "";
   const allow = allowedPersonaKeysForScene(scene);
@@ -1304,7 +1478,9 @@ async function init(){
 
     populate();
 
-    // apply settings to UI
+    
+    toggleSbarPanel();
+// apply settings to UI
     if ($("ttsSel")) $("ttsSel").value = SETTINGS.ttsSel || "off";
     if ($("ttsRate")) $("ttsRate").value = SETTINGS.ttsRate || "1";
     if ($("ttsAuto")) $("ttsAuto").value = SETTINGS.ttsAuto || "off";
@@ -1322,9 +1498,22 @@ async function init(){
     await syncSubscriptionStatus();
 
     // events
-    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); });
+    $("sceneSel").addEventListener("change", ()=>{ updateCategories(); updatePersonasForScene(); toggleSbarPanel(); });
     $("btnExample").addEventListener("click", insertExample);
-    $("btnClear").addEventListener("click", ()=>{
+    
+    $("btnSbarBuild")?.addEventListener("click", ()=>{
+      if (!isEmergencyScene()) return;
+      const target = $("personaSel")?.value || "nurse";
+      const txt = buildSbarText(target);
+      $("userInput").value = txt;
+      // help user: set category to "call" when available
+      try{ const cats = EX.scenes?.["emergency"] || []; if (cats.some(c=>c.key==="call")) $("catSel").value = "call"; }catch(e){}
+      $("okBox").style.display="block";
+      $("okBox").textContent = "SBAR文を入力しました。必要なら編集して送信してください。";
+      setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+    });
+    $("btnSbarClear")?.addEventListener("click", clearSbar);
+$("btnClear").addEventListener("click", ()=>{
       if (!confirm("履歴を消しますか？")) return;
       history = [];
       ls.set("aiga_history_"+VARIANT, history);
