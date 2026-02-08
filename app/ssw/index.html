@@ -104,8 +104,9 @@
           <label>相手（ペルソナ）</label>
           <select id="personaSel"></select>
         </div>
-      
-<!-- 転倒：5W1H＋たいおう（看護師／師長／リーダーへ報告） -->
+      </div>
+
+      <!-- 転倒：5W1H＋たいおう（看護師／師長／リーダーへ報告） -->
 <div id="fallPanel" class="card" style="margin-top:10px; display:none;">
   <label>転倒報告（5W1H＋たいおう）</label>
   <div class="sbarNote">チェックして「転倒報告文を作る」を押すと、入力欄に入ります（わかる はんいで OK）。</div>
@@ -196,7 +197,6 @@
   </div>
 
   <div class="sbarNote">※「転倒」では、あいて が かんごし／しちょう／りーだー のときが しぜんです（えらんだ あいて に あわせて ほうこく の いいかた が かわります）。</div>
-</div>
 </div>
 
       <div class="row" style="margin-top:10px;">
@@ -1686,17 +1686,46 @@ async function init(){
     });
     $("btnSbarClear")?.addEventListener("click", clearSbar);
     $("btnFallBuild")?.addEventListener("click", ()=>{
-      if (!isFallScene()) return;
-      const target = $("personaSel")?.value || "nurse";
-      const txt = buildFallText(target);
-      $("userInput").value = txt;
-      // help user: set category to "report" when available
-      try{ const cats = EX.scenes?.["fall"] || []; if (cats.some(c=>c.key==="report")) $("catSel").value = "report"; }catch(e){}
+  try{
+    if (!isFallScene()){
+      if ($("okBox")){
+        $("okBox").style.display="block";
+        $("okBox").textContent = "シーンを「転倒」にしてから押してください。";
+        setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+      }
+      return;
+    }
+    const target = $("personaSel")?.value || "nurse";
+    const txt = buildFallText(target);
+
+    const input = $("userInput");
+    if (input){
+      input.value = txt;
+      input.focus();
+      // 入力欄が画面外になりやすいので、見える位置に移動
+      try{ input.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){}
+    }
+
+    // help user: set category to "report" when available
+    try{
+      const cats = EX.scenes?.["fall"] || [];
+      if (cats.some(c=>c.key==="report")) $("catSel").value = "report";
+    }catch(e){}
+
+    if ($("okBox")){
       $("okBox").style.display="block";
       $("okBox").textContent = "転倒報告文を入力しました。必要なら編集して送信してください。";
       setTimeout(()=>{$("okBox").style.display="none";}, 2200);
-    });
-    $("btnFallClear")?.addEventListener("click", clearFall);
+    }
+  }catch(e){
+    console.error("fall build error", e);
+    if ($("errBox")){
+      $("errBox").style.display="block";
+      $("errBox").textContent = "転倒報告文の作成でエラー: " + String(e.message || e);
+    }
+  }
+});
+$("btnFallClear")?.addEventListener("click", clearFall);
 
 $("btnClear").addEventListener("click", ()=>{
       if (!confirm("履歴を消しますか？")) return;
