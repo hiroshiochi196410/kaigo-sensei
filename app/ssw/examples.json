@@ -59,31 +59,6 @@
       "key": "family_complaint",
       "label": "家族：クレーム",
       "label_id": "Keluarga: Keluhan"
-    },
-    {
-      "key": "colleague",
-      "label": "同僚：申し送り",
-      "label_id": "Rekan kerja"
-    },
-    {
-      "key": "leader",
-      "label": "リーダー／主任",
-      "label_id": "Ketua tim"
-    },
-    {
-      "key": "nurse",
-      "label": "看護師",
-      "label_id": "Perawat"
-    },
-    {
-      "key": "head_nurse",
-      "label": "師長",
-      "label_id": "Kepala perawat"
-    },
-    {
-      "key": "doctor",
-      "label": "医師",
-      "label_id": "Dokter"
     }
   ],
   "scenes": {
@@ -1126,64 +1101,28 @@
       }
     },
     "handover": {
-      "colleague": {
+      "user_calm": {
         "report": [
           {
-            "jp": "きょう の ようす を ほうこく します。おだやか でした。",
-            "romaji": "kyou no yousu o houkoku shimasu.odayaka deshita.",
-            "id": "Saya laporkan kondisi hari ini. Tenang.",
-            "level": "beginner"
-          },
-          {
-            "jp": "しょくじ は 8わ です。みず は 500みり くらい です。",
-            "romaji": "shokuji ha 8wa desu.mizu ha 500miri kurai desu.",
-            "id": "Makan 80%. Minum sekitar 500 ml.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "といれ は ひる に 2かい。べん は 1かい ありました。",
-            "romaji": "toire ha hiru ni 2kai.ben ha 1kai arimashita.",
-            "id": "Toilet 2x siang. BAB 1x.",
+            "jp": "きょう の ようす は おだやか でした。しょくじ は 8わ、すいぶん は りょうこう です。",
+            "romaji": "kyou no yousu ha odayaka deshita.shokuji ha 8wa,suibun ha ryoukou desu.",
+            "id": "Hari ini tenang. Makan 80%, cairan baik.",
             "level": "intermediate"
           }
         ],
         "confirm": [
           {
-            "jp": "ねつ は ありましたか。",
-            "romaji": "netsu ha arimashitaka.",
-            "id": "Ada demam?",
-            "level": "beginner"
-          },
-          {
-            "jp": "よる は ねむれましたか。",
-            "romaji": "yoru ha nemuremashitaka.",
-            "id": "Apakah bisa tidur malam?",
-            "level": "beginner"
-          },
-          {
-            "jp": "むせ は ありましたか。",
-            "romaji": "muse ha arimashitaka.",
-            "id": "Ada tersedak/batuk saat makan?",
-            "level": "beginner"
+            "jp": "しょくじ の ぺーす は だいじょうぶ でしたか。",
+            "romaji": "shokuji no pe-su ha daijoubu deshitaka.",
+            "id": "Apakah tempo makan aman?",
+            "level": "intermediate"
           }
         ],
         "request": [
           {
-            "jp": "つぎ の しょくじ は ゆっくり すすめて ください。",
-            "romaji": "tsugi no shokuji ha yukkuri susumete kudasai.",
-            "id": "Tolong lanjutkan makan pelan-pelan.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "よる は みまもり を つよめて ください。",
-            "romaji": "yoru ha mimamori o tsuyomete kudasai.",
-            "id": "Tolong tingkatkan pengawasan malam.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "あるく とき は てすり を つかう ように こえかけ して ください。",
-            "romaji": "aruku toki ha tesuri o tsukau youni koekake shite kudasai.",
-            "id": "Tolong ingatkan pakai pegangan saat berjalan.",
+            "jp": "つぎ の しょくじ は ゆっくり すすめて いただけますか。",
+            "romaji": "tsugi no shokuji ha yukkuri susumete itadakemasuka.",
+            "id": "Tolong lanjutkan makan pelan ya.",
             "level": "intermediate"
           }
         ],
@@ -1193,100 +1132,142 @@
             "romaji": "shokuji chuu ni sukoshi muse ga arimashita.",
             "id": "Saat makan sempat tersedak sedikit.",
             "level": "intermediate"
-          },
-          {
-            "jp": "といれ いどう で ふらつき が ありました。",
-            "romaji": "toire idou de furatsuki ga arimashita.",
-            "id": "Saat ke toilet sempat oleng.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "よる に あるきまわり が ありました。",
-            "romaji": "yoru ni arukimawari ga arimashita.",
-            "id": "Malam ada berjalan-jalan (keluyuran).",
-            "level": "intermediate"
           }
         ]
       },
-      "leader": {
+      "user_angry": {
         "report": [
           {
-            "jp": "しゅにん、きょう の じょうきょう を ほうこく します。",
-            "romaji": "shunin,kyou no joukyou o houkoku shimasu.",
-            "id": "Ketua, saya laporkan kondisi hari ini.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "しょくじ は 6わ。すいぶん は すくなめ でした。",
-            "romaji": "shokuji ha 6wa.suibun ha sukuname deshita.",
-            "id": "Makan 60%. Minum sedikit.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "よる は ふあん が つよく、こえかけ で おちつきました。",
-            "romaji": "yoru ha fuan ga tsuyoku,koekake de ochitsukimashita.",
-            "id": "Malam cemas, tenang setelah diajak bicara.",
+            "jp": "きょう は ふきげん が ありましたが、こえかけ で おちつきました。",
+            "romaji": "kyou ha fukigen ga arimashitaga,koekake de ochitsukimashita.",
+            "id": "Hari ini sempat marah, tenang setelah komunikasi.",
             "level": "intermediate"
           }
         ],
         "confirm": [
           {
-            "jp": "ほうこく して おいた ほう が よい こと は ありますか。",
-            "romaji": "houkoku shite oita hou ga yoi koto ha arimasuka.",
-            "id": "Apakah ada hal yang sebaiknya saya laporkan?",
-            "level": "intermediate"
-          },
-          {
-            "jp": "かぞく へ の れんらく は ひつよう ですか。",
-            "romaji": "kazoku he no renraku ha hitsuyou desuka.",
-            "id": "Perlu menghubungi keluarga?",
-            "level": "intermediate"
-          },
-          {
-            "jp": "きょう の たいおう で だいじょうぶ でしたか。",
-            "romaji": "kyou no taiou de daijoubu deshitaka.",
-            "id": "Apakah tindakan hari ini sudah tepat?",
+            "jp": "いたみ の へんか を かくにん しましたか。",
+            "romaji": "itami no henka o kakunin shimashitaka.",
+            "id": "Sudah cek perubahan nyeri?",
             "level": "intermediate"
           }
         ],
         "request": [
           {
-            "jp": "たいおう の しじ を おねがいします。",
-            "romaji": "taiou no shiji o onegai shimasu.",
-            "id": "Mohon arahan tindak lanjut.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "みまもり の たいせい を みなおして いい ですか。",
-            "romaji": "mimamori no taisei o minaoshite ii desuka.",
-            "id": "Boleh saya meninjau ulang sistem pengawasan?",
-            "level": "intermediate"
-          },
-          {
-            "jp": "ほうこく しょ を さくせい して も よい ですか。",
-            "romaji": "houkoku sho o sakusei shite mo yoi desuka.",
-            "id": "Boleh saya membuat laporan tertulis?",
+            "jp": "こえかけ は みじかく、ゆっくり おねがい します。",
+            "romaji": "koekake ha mijikaku,yukkuri onegai shimasu.",
+            "id": "Tolong bicara singkat dan pelan.",
             "level": "intermediate"
           }
         ],
         "incident": [
           {
-            "jp": "さっき つまずき そう に なりました。ころび は ありません。",
-            "romaji": "sakki tsumazuki sou ni narimashita.korobi ha arimasen.",
-            "id": "Tadi hampir tersandung. Tidak jatuh.",
+            "jp": "といれ いどう で ふらつき が ありました。",
+            "romaji": "toire idou de furatsuki ga arimashita.",
+            "id": "Saat pindah ke toilet sempat oleng.",
             "level": "intermediate"
-          },
+          }
+        ]
+      },
+      "dementia": {
+        "report": [
           {
-            "jp": "きゅうに くるしそう です。いま かんごし さん を よびます。",
-            "romaji": "kyuu ni kurushisou desu.ima kangoshi san o yobimasu.",
-            "id": "Tiba-tiba sesak. Saya panggil perawat.",
+            "jp": "よる に まよい が あり、みまもり を きょうか しました。",
+            "romaji": "yoru ni mayoi ga ari,mimamori o kyouka shimashita.",
+            "id": "Malam ada kebingungan, pengawasan ditingkatkan.",
             "level": "intermediate"
-          },
+          }
+        ],
+        "confirm": [
           {
-            "jp": "きょう くれーむ が ありました。ないよう を きろく しました。",
-            "romaji": "kyou kureemu ga arimashita.naiyou o kiroku shimasu.",
-            "id": "Ada keluhan hari ini. Saya catat isinya.",
+            "jp": "よる の すいみん を かくにん してください。",
+            "romaji": "yoru no suimin o kakunin shitekudasai.",
+            "id": "Tolong cek tidur malamnya.",
             "level": "intermediate"
+          }
+        ],
+        "request": [
+          {
+            "jp": "まよい が あれば、すぐに おこえかけ ください。",
+            "romaji": "mayoi ga areba,suguni okoekake kudasai.",
+            "id": "Jika bingung, tolong segera ajak bicara.",
+            "level": "intermediate"
+          }
+        ],
+        "incident": [
+          {
+            "jp": "よる に あるきまわり が ありました。",
+            "romaji": "yoru ni arukimawari ga arimashita.",
+            "id": "Malam ada mondar-mandir.",
+            "level": "intermediate"
+          }
+        ]
+      },
+      "family_anxious": {
+        "report": [
+          {
+            "jp": "ごかぞく より おといあわせ が ありました。よる の けあ を せつめい しました。",
+            "romaji": "gokazoku yori otoiawase ga arimashita.yoru no kea o setsumei shimashita.",
+            "id": "Keluarga bertanya. Saya jelaskan perawatan malam.",
+            "level": "advanced"
+          }
+        ],
+        "confirm": [
+          {
+            "jp": "れんらく たいおう の たんとう を かくにん します。",
+            "romaji": "renraku taiou no tantou o kakunin shimasu.",
+            "id": "Saya konfirmasi penanggung jawab komunikasi.",
+            "level": "advanced"
+          }
+        ],
+        "request": [
+          {
+            "jp": "ごかぞく へ の れんらく を おねがい いたします。",
+            "romaji": "gokazoku he no renraku o onegai itashimasu.",
+            "id": "Tolong hubungi keluarga.",
+            "level": "advanced"
+          }
+        ],
+        "incident": [
+          {
+            "jp": "ごかぞく との やりとり で ふあん が つよく なりました。",
+            "romaji": "gokazoku tono yaritori de fuan ga tsuyoku narimashita.",
+            "id": "Saat komunikasi dengan keluarga, cemas meningkat.",
+            "level": "advanced"
+          }
+        ]
+      },
+      "family_complaint": {
+        "report": [
+          {
+            "jp": "くれーむ を うけ、ないよう を きろく し ほうこく します。",
+            "romaji": "kure-mu o uke,naiyou o kiroku shi houkoku shimasu.",
+            "id": "Keluhan diterima, dicatat dan dilaporkan.",
+            "level": "advanced"
+          }
+        ],
+        "confirm": [
+          {
+            "jp": "けっか ほうこく の じかん を かくにん します。",
+            "romaji": "kekka houkoku no jikan o kakunin shimasu.",
+            "id": "Saya konfirmasi waktu laporan hasil.",
+            "level": "advanced"
+          }
+        ],
+        "request": [
+          {
+            "jp": "じょうし へ の ほうこく を おねがい いたします。",
+            "romaji": "joushi he no houkoku o onegai itashimasu.",
+            "id": "Tolong lapor atasan.",
+            "level": "advanced"
+          }
+        ],
+        "incident": [
+          {
+            "jp": "くれーむ の でんわ が ありました。",
+            "romaji": "kure-mu no denwa ga arimashita.",
+            "id": "Ada telepon keluhan.",
+            "level": "advanced"
           }
         ]
       }
@@ -1461,146 +1442,6 @@
             "level": "advanced"
           }
         ]
-      },
-      "nurse": {
-        "notice": [
-          {
-            "jp": "かんごし さん、りようしゃ さん が いつも と ちがいます。",
-            "romaji": "kangoshi san,riyousha san ga itsumo to chigaimasu.",
-            "id": "Perawat, kondisi pengguna berbeda dari biasanya.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "いき が はやく、くるしそう です。",
-            "romaji": "iki ga hayaku,kurushisou desu.",
-            "id": "Napas cepat, tampak sesak.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "いしき は ありますが、ぼーっと しています。",
-            "romaji": "ishiki ha arimasuga,boo tto shite imasu.",
-            "id": "Sadar tapi melamun/lemah.",
-            "level": "intermediate"
-          }
-        ],
-        "call": [
-          {
-            "jp": "すぐに きて ください。ばしょ は しょくどう です。",
-            "romaji": "suguni kite kudasai.basho ha shokudou desu.",
-            "id": "Tolong datang segera. Lokasi di ruang makan.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "たいおん と けつあつ を はかって います。",
-            "romaji": "taion to ketsuatsu o hakatte imasu.",
-            "id": "Saya ukur suhu dan tekanan darah.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "しちょう に も れんらく しますか。",
-            "romaji": "shichou ni mo renraku shimasuka.",
-            "id": "Apakah perlu menghubungi kepala ruangan?",
-            "level": "intermediate"
-          }
-        ],
-        "observe": [
-          {
-            "jp": "たいおん は 37てん8ど です。",
-            "romaji": "taion ha 37ten8do desu.",
-            "id": "Suhu 37.8°C.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "こきゅう は 1ぷん に 24かい くらい です。",
-            "romaji": "kokyuu ha 1pun ni 24kai kurai desu.",
-            "id": "Napas sekitar 24x/menit.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "かおいろ が あおい です。",
-            "romaji": "kaoiro ga aoi desu.",
-            "id": "Wajah tampak pucat/kebiruan.",
-            "level": "intermediate"
-          }
-        ],
-        "first": [
-          {
-            "jp": "あんぜん の ため、すわって ください。",
-            "romaji": "anzen no tame,suwatte kudasai.",
-            "id": "Demi aman, silakan duduk.",
-            "level": "beginner"
-          },
-          {
-            "jp": "むり に うごかないで ください。",
-            "romaji": "muri ni ugokanaide kudasai.",
-            "id": "Jangan bergerak paksa.",
-            "level": "beginner"
-          },
-          {
-            "jp": "みず は いま は のまないで ください。",
-            "romaji": "mizu ha ima ha nomanaide kudasai.",
-            "id": "Untuk saat ini jangan minum dulu.",
-            "level": "intermediate"
-          }
-        ]
-      },
-      "doctor": {
-        "notice": [
-          {
-            "jp": "せんせい、りようしゃ さん が きゅうに くるしそう です。",
-            "romaji": "sensei,riyousha san ga kyuu ni kurushisou desu.",
-            "id": "Dokter, pengguna tiba-tiba sesak.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "ばしょ は しょくどう です。じこ は ありません。",
-            "romaji": "basho ha shokudou desu.jiko ha arimasen.",
-            "id": "Lokasi di ruang makan. Tidak ada kecelakaan.",
-            "level": "intermediate"
-          }
-        ],
-        "call": [
-          {
-            "jp": "いま の たいおん は 37てん8ど、こきゅう は 24かい です。",
-            "romaji": "ima no taion ha 37ten8do,kokyuu ha 24kai desu.",
-            "id": "Suhu 37.8°C, napas 24x.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "しせい を ととのえて、やすませて います。",
-            "romaji": "shisei o totonoete,yasumasete imasu.",
-            "id": "Saya atur posisi dan istirahatkan.",
-            "level": "intermediate"
-          }
-        ],
-        "observe": [
-          {
-            "jp": "いしき は あります。はなしかけ に こたえます。",
-            "romaji": "ishiki ha arimasu.hanashikake ni kotaemasu.",
-            "id": "Sadar dan merespons.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "ぱるす は はやめ です。",
-            "romaji": "parusu ha hayame desu.",
-            "id": "Nadi agak cepat.",
-            "level": "intermediate"
-          }
-        ],
-        "first": [
-          {
-            "jp": "しじ を おねがいします。",
-            "romaji": "shiji o onegai shimasu.",
-            "id": "Mohon instruksi.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "きんきゅう たいおう が ひつよう ですか。",
-            "romaji": "kinkyuu taiou ga hitsuyou desuka.",
-            "id": "Apakah perlu penanganan darurat?",
-            "level": "intermediate"
-          }
-        ]
       }
     },
     "fall": {
@@ -1771,156 +1612,6 @@
             "romaji": "saihatsu boushi no taisaku o kouchiku shi,shidou o okonaimasu.",
             "id": "Kami buat pencegahan dan lakukan pembinaan.",
             "level": "advanced"
-          }
-        ]
-      },
-      "nurse": {
-        "check": [
-          {
-            "jp": "ころびました。いたみ は ありますか。",
-            "romaji": "korobimashita.itami ha arimasuka.",
-            "id": "Jatuh. Apakah ada sakit?",
-            "level": "intermediate"
-          },
-          {
-            "jp": "あたま を うって いませんか。",
-            "romaji": "atama o utte imasenka.",
-            "id": "Apakah kepala terbentur?",
-            "level": "intermediate"
-          },
-          {
-            "jp": "うごけますか。",
-            "romaji": "ugokemasu ka.",
-            "id": "Bisa bergerak?",
-            "level": "beginner"
-          }
-        ],
-        "report": [
-          {
-            "jp": "かんごし さん、りようしゃ さん が ころびました。",
-            "romaji": "kangoshi san,riyousha san ga korobimashita.",
-            "id": "Perawat, pengguna jatuh.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "いま は すわって います。きず は みえません。",
-            "romaji": "ima ha suwatte imasu.kizu ha miemasen.",
-            "id": "Sekarang duduk. Luka tidak terlihat.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "ばしょ は といれ の まえ です。",
-            "romaji": "basho ha toire no mae desu.",
-            "id": "Lokasi di depan toilet.",
-            "level": "intermediate"
-          }
-        ],
-        "comfort": [
-          {
-            "jp": "だいじょうぶ。ゆっくり いきましょう。",
-            "romaji": "daijoubu.yukkuri ikimashou.",
-            "id": "Tidak apa-apa. Pelan-pelan.",
-            "level": "beginner"
-          },
-          {
-            "jp": "いたい ところ を おしえて ください。",
-            "romaji": "itai tokoro o oshiete kudasai.",
-            "id": "Tolong beri tahu bagian yang sakit.",
-            "level": "intermediate"
-          }
-        ],
-        "prevent": [
-          {
-            "jp": "つぎ から は てすり を つかいましょう。",
-            "romaji": "tsugi kara ha tesuri o tsukaimashou.",
-            "id": "Mulai sekarang gunakan pegangan.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "あるく とき は いっしょ に いきます。",
-            "romaji": "aruku toki ha issho ni ikimasu.",
-            "id": "Saat berjalan saya akan menemani.",
-            "level": "intermediate"
-          }
-        ]
-      },
-      "head_nurse": {
-        "check": [
-          {
-            "jp": "しちょう、ころび の あと です。いま かくにん して います。",
-            "romaji": "shichou,korobi no ato desu.ima kakunin shite imasu.",
-            "id": "Kepala ruangan, setelah jatuh. Saya sedang cek.",
-            "level": "intermediate"
-          }
-        ],
-        "report": [
-          {
-            "jp": "いつ、どこで、だれが ころんだか ほうこく します。",
-            "romaji": "itsu,doko de,dare ga koronda ka houkoku shimasu.",
-            "id": "Saya laporkan kapan/di mana/siapa yang jatuh.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "たいおう は すわらせて みまもり、かんごし さん を よびました。",
-            "romaji": "taiou ha suwarasete mimamori,kangoshi san o yobimashita.",
-            "id": "Tindakan: dudukkan & awasi, panggil perawat.",
-            "level": "intermediate"
-          }
-        ],
-        "comfort": [
-          {
-            "jp": "いま は あんしん できる ように つきそいます。",
-            "romaji": "ima ha anshin dekiru youni tsukisoimasu.",
-            "id": "Saya akan mendampingi agar tenang.",
-            "level": "intermediate"
-          }
-        ],
-        "prevent": [
-          {
-            "jp": "さいはつ ぼうし の ため、みまもり たいせい を みなおします。",
-            "romaji": "saihatsu boushi no tame,mimamori taisei o minaoshimasu.",
-            "id": "Untuk pencegahan ulang, kami tinjau pengawasan.",
-            "level": "intermediate"
-          }
-        ]
-      },
-      "leader": {
-        "check": [
-          {
-            "jp": "りーだー、いま ころび の あと を かくにん しています。",
-            "romaji": "riidaa,ima korobi no ato o kakunin shite imasu.",
-            "id": "Leader, saya sedang cek setelah jatuh.",
-            "level": "intermediate"
-          }
-        ],
-        "report": [
-          {
-            "jp": "ばしょ は といれ の まえ です。いま かんごし さん を よびました。",
-            "romaji": "basho ha toire no mae desu.ima kangoshi san o yobimashita.",
-            "id": "Lokasi depan toilet. Saya panggil perawat.",
-            "level": "intermediate"
-          },
-          {
-            "jp": "いんしでんと として きろく します。",
-            "romaji": "inshidento toshite kiroku shimasu.",
-            "id": "Saya catat sebagai insiden.",
-            "level": "intermediate"
-          }
-        ],
-        "comfort": [
-          {
-            "jp": "だいじょうぶ。ここ で すわって ください。",
-            "romaji": "daijoubu.koko de suwatte kudasai.",
-            "id": "Tidak apa-apa. Silakan duduk di sini.",
-            "level": "intermediate"
-          }
-        ],
-        "prevent": [
-          {
-            "jp": "しばらく は ふたり で みまもり します。",
-            "romaji": "shibaraku ha futari de mimamori shimasu.",
-            "id": "Untuk sementara, kami awasi berdua.",
-            "level": "intermediate"
           }
         ]
       }

@@ -125,14 +125,7 @@ export default async function handler(req, res) {
       user_angry: { label: "利用者：怒り", ai_role: "resident", ai_tone: "irritated, defensive, short answers" },
       dementia: { label: "利用者：少し混乱", ai_role: "resident", ai_tone: "confused, needs reassurance, short sentences" },
       family_anxious: { label: "家族：不安", ai_role: "family", ai_tone: "worried, asks safety questions" },
-      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" },
-
-      // staff-side (handover / reporting)
-      colleague: { label: "同僚（申し送り）", ai_role: "colleague", ai_tone: "friendly, practical, asks clarifying questions" },
-      leader: { label: "リーダー／主任", ai_role: "leader", ai_tone: "calm, directive, focuses on priorities and safety" },
-      nurse: { label: "看護師", ai_role: "nurse", ai_tone: "professional, quick assessment, gives clear instructions" },
-      head_nurse: { label: "師長", ai_role: "head_nurse", ai_tone: "formal, risk-focused, confirms reporting and documentation" },
-      doctor: { label: "医師", ai_role: "doctor", ai_tone: "concise, medical, asks SBAR-style questions" }
+      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" }
     };
 
     const SCENES = {
@@ -141,13 +134,6 @@ export default async function handler(req, res) {
       toilet: { label: "排泄", focus: "privacy, timely assistance, hygiene" },
       night: { label: "夜間", focus: "anxiety, insomnia, wandering risk" },
       complaint: { label: "クレーム対応", focus: "apology, fact-finding, plan" },
-
-      // internal communication
-      handover: { label: "申し送り", focus: "handover to colleague/leader: concise report, confirm, request, incidents" },
-      emergency: { label: "急変", focus: "urgent response and reporting to nurse/doctor; observation and safety" },
-      fall: { label: "転倒", focus: "injury check, immediate safety, reporting, prevention" },
-
-      // (Phase2/SSW expansion keys - kept for forward compatibility)
       family_consultation: { label: "家族相談", focus: "clear explanation, empathy, professional" },
       team_coordination: { label: "チーム連携", focus: "reporting, coordination, clarity" },
       incident_reporting: { label: "事故報告", focus: "accuracy, timeline, action plan" },
@@ -156,7 +142,6 @@ export default async function handler(req, res) {
     };
 
     const CATEGORIES = {
-      // bath/meal/toilet/night
       voice: "声かけ（安心・説明）",
       temperature: "温度確認",
       privacy: "羞恥・プライバシー",
@@ -173,30 +158,11 @@ export default async function handler(req, res) {
       anxiety: "不安/混乱",
       pain: "痛み/体調",
       wander: "徘徊/起き上がり",
-
-      // complaint
       apology: "謝罪/受容",
       fact: "事実確認",
       plan: "対応方針",
       escalate: "上席/連携",
-      followup: "報告/再発防止",
-
-      // handover
-      report: "申し送り（報告）",
-      confirm: "申し送り（確認）",
-      request: "申し送り（依頼）",
-      incident: "申し送り（出来事）",
-
-      // emergency
-      notice: "急変（気づき）",
-      call: "急変（連絡）",
-      observe: "急変（観察）",
-      first: "急変（初動）",
-
-      // fall
-      check: "転倒（確認）",
-      comfort: "転倒（安心）",
-      prevent: "転倒（再発防止）"
+      followup: "報告/再発防止"
     };
 
     // 介護頻出語の正確な読み辞書
