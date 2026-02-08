@@ -735,6 +735,35 @@ function heuristicAnnotations(tri){
   return { danger_words: danger.slice(0,5), keigo_points: keigo.slice(0,5), vocab: [] };
 }
 
+
+function showErr(msg){
+  try{
+    const b = $("errBox");
+    if (!b) return;
+    b.style.display = "block";
+    b.textContent = msg;
+  }catch(e){}
+}
+function showOk(msg){
+  try{
+    const b = $("okBox");
+    if (!b) return;
+    b.style.display = "block";
+    b.textContent = msg;
+    setTimeout(()=>{ try{ b.style.display="none"; }catch(e){} }, 2200);
+  }catch(e){}
+}
+
+// tri object safety: always have something to show
+function normalizeTri(tri, fallbackText=""){
+  const o = tri || {};
+  const hira = String((o.hira || o.jp_hira || o.jp || o.ja || o.text || "")).trim() || String(fallbackText || "").trim();
+  const romaji = String((o.romaji || o.ro || "")).trim();
+  const indo = String((o.indo || o.indonesian || o.id || "")).trim();
+  const id = String((o.id || "")).trim();
+  return { hira, romaji, indo, id };
+}
+
 function normalizeAnnotations(ann, tri){
   // AIが返さない場合はヒューリスティックで補う
   const base = ann && typeof ann === "object" ? ann : heuristicAnnotations(tri || {});
@@ -1533,13 +1562,19 @@ async function send(){
     const ann = normalizeAnnotations(out.annotations || null, out.ai || {});
     const scoreVal = Number(out.score?.scene_skill || 0);
 
-    lastAi = out.ai || null;
-    lastSuggested = out.suggested || null;
     lastAnnotations = ann;
 
     // add to history: user + ai
-    history.push({ role:"user", tri: out.user || {}, meta:{ scene, persona, category, level } });
-    history.push({ role:"ai", tri: out.ai || {}, ann, score: out.score || null, meta:{ scene, persona, category, level } });
+    const userTri = normalizeTri(out.user, text);
+    const aiTri = normalizeTri(out.ai, "");
+    if (!aiTri.hira) aiTri.hira = "（AIの応答が取得できませんでした）";
+    // add to history: user + ai
+    history.push({ role:"user", tri: userTri, meta:{ scene, persona, category, level } });
+    history.push({ role:"ai", tri: aiTri, ann, score: out.score || null, meta:{ scene, persona, category, level } });
+
+    // keep latest for UI boxes
+    lastAi = aiTri;
+    lastSuggested = out.suggested || null;
 
     // persist
     ls.set("aiga_history_"+VARIANT, history);
@@ -1759,17 +1794,24 @@ async function init(){
     $("btnExample").addEventListener("click", insertExample);
     
     $("btnSbarBuild")?.addEventListener("click", ()=>{
-      if (!isEmergencyScene()) return;
-      const target = $("personaSel")?.value || "nurse";
-      const txt = buildSbarText(target);
-      $("userInput").value = txt;
-      // help user: set category to "call" when available
-      try{ const cats = EX.scenes?.["emergency"] || []; if (cats.some(c=>c.key==="call")) $("catSel").value = "call"; }catch(e){}
-      $("okBox").style.display="block";
-      $("okBox").textContent = "SBAR文を入力しました。必要なら編集して送信してください。";
-      setTimeout(()=>{$("okBox").style.display="none";}, 2200);
+      try{
+        if (!isEmergencyScene()){
+          showOk("シーンを「急変」にしてから押してください。");
+          return;
+        }
+        const target = $("personaSel")?.value || "nurse";
+        const sbarTxt = buildSbarText(target);
+        $("userInput").value = sbarTxt;
+        // help user: set category to "call" when available
+        try{ const cats = EX.scenes?.["emergency"] || []; if (cats.some(c=>c.key==="call")) $("catSel").value = "call"; }catch(e){}
+        showOk("SBAR文を入力しました。必要なら編集して送信してください。");
+      }catch(e){
+        console.error("sbar build error", e);
+        showErr("SBAR文の作成でエラー: " + String(e.message || e));
+      }
     });
     $("btnSbarClear")?.addEventListener("click", clearSbar);
+    $("btnFallBuild")?.addEventListener("click", clearSbar);
     $("btnFallBuild")?.addEventListener("click", ()=>{
   try{
     if (!isFallScene()){
