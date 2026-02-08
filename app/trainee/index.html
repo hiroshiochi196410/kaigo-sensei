@@ -684,6 +684,7 @@ let STATS = ls.get("aiga_stats_"+VARIANT, { scenes:{}, categories:{} });
 let lastSuggested = null;
 let lastAi = null;
 let lastAnnotations = null;
+let lastExampleKey = null;
 
 let history = ls.get("aiga_history_"+VARIANT, []);
 let unlocked = ls.get("aiga_unlocked_"+VARIANT, false);
@@ -822,15 +823,63 @@ function rebuildSelectLabels(){
 /* ========= examples ========= */
 function pickExample(scene, persona, category, level){
   try{
-    const arr = EX.examples?.[scene]?.[persona]?.[category] || [];
+    if (!EX || !EX.examples) return null;
+    const sceneObj = EX.examples?.[scene] || {};
+
+    const tryGet = (p, c) => (sceneObj?.[p]?.[c] || []);
+
+    const priorities = [
+      [persona, category],
+      [persona, "basic"],
+      ["user_calm", category],
+      ["user_calm", "basic"],
+    ];
+
+    let arr = [];
+    for (const [p, c] of priorities){
+      const a = tryGet(p, c);
+      if (a && a.length){ arr = a; break; }
+    }
+
+    // same category, any persona
+    if (!arr.length && category){
+      for (const p of Object.keys(sceneObj)){
+        const a = sceneObj?.[p]?.[category];
+        if (a && a.length){ arr = a; break; }
+      }
+    }
+
+    // any category, any persona (scene fallback)
+    if (!arr.length){
+      outer:
+      for (const p of Object.keys(sceneObj)){
+        const cats = sceneObj?.[p] || {};
+        for (const c of Object.keys(cats)){
+          const a = cats[c];
+          if (a && a.length){ arr = a; break outer; }
+        }
+      }
+    }
+
+    if (!arr.length) return null;
+
     const filtered = (level === "beginner") ? arr.filter(x=>x.level==="beginner") :
                      (level === "intermediate") ? arr.filter(x=>x.level==="intermediate") :
                      (level === "advanced") ? arr.filter(x=>x.level==="advanced") : arr;
     const pool = filtered.length ? filtered : arr;
     if (!pool.length) return null;
-    return pool[Math.floor(Math.random()*pool.length)];
+
+    const keyBase = `${scene}|${persona}|${category}|${level||""}`;
+    let idx = Math.floor(Math.random()*pool.length);
+    if (pool.length > 1 && lastExampleKey === keyBase){
+      idx = (idx + 1 + Math.floor(Math.random() * (pool.length - 1))) % pool.length;
+    }
+    lastExampleKey = keyBase;
+
+    return pool[idx];
   }catch(e){ return null; }
 }
+
 
 function insertExample(){
   const scene = $("sceneSel").value;
