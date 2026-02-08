@@ -138,6 +138,9 @@ export default async function handler(req, res) {
       meal: { label: "食事", focus: "posture, choking risk, pace, dignity" },
       toilet: { label: "排泄", focus: "privacy, timely assistance, hygiene" },
       night: { label: "夜間", focus: "anxiety, insomnia, wandering risk" },
+      emergency: { label: "急変", focus: "SBARで かんごし／いし へ ほうこく、すうち かくにん、しじ うけ" },
+      fall: { label: "転倒", focus: "あたま だぼく／しゅっけつ／いたみ、ばいたる、ほうこく と さいはつぼうし" },
+      handover: { label: "申し送り", focus: "しょくじ／すいぶん／はいせつ／すいみん／ちゅういてん を みじかく きょうゆう" },
       complaint: { label: "クレーム対応", focus: "apology, fact-finding, plan" },
       family_consultation: { label: "家族相談", focus: "clear explanation, empathy, professional" },
       team_coordination: { label: "チーム連携", focus: "reporting, coordination, clarity" },
@@ -245,6 +248,9 @@ export default async function handler(req, res) {
 低血糖 → ていけっとう
 血糖 → けっとう
 SpO2 → えすぴーおーつー
+酸素 → さんそ
+指示 → しじ
+救急 → きゅうきゅう
 
     `.trim();
 
@@ -273,10 +279,12 @@ SpO2 → えすぴーおーつー
         }
         if (personaKey === "doctor"){
           return [
-            "ROLEPLAY: You are a DOCTOR giving instructions based on a report.",
-            `Ask up to ${maxQuestions} essentials (えすぴーおーつー/けつあつ/いしき/けっとう).`,
-            "Give 1–2 clear orders (e.g., さんそ / けいかんさつ / きゅうきゅう そうだん).",
-            "DO NOT include SBAR headings like S/B/A/R in ai.hira."
+            "ROLEPLAY: You are a DOCTOR responding to a caregiver report and giving orders.",
+            "OUTPUT STYLE (ai.hira): 1) short acknowledgement, 2) (optional) ONE short question if key vitals are missing, 3) 1–2 clear orders.",
+            "Question rule: ask at most ONE question. If multiple vitals are missing, ask in one line: すうち（たいおん/えすぴーおーつー/けつあつ/けっとう）を おしえて。",
+            "Order rule: always include at least ONE order (example words: さんそ / けいかんさつ / いしき かくにん / きゅうきゅう そうだん).",
+            "SUGGESTED (suggested.hira): show a better caregiver report to the doctor that ends with: しじ を おねがい します。",
+            "Keep ai.hira concise; avoid long explanations. DO NOT include SBAR headings like S/B/A/R."
           ].join("\n");
         }
         if (personaKey === "head_nurse"){
