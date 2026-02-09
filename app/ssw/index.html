@@ -1573,8 +1573,12 @@ function triHtml(tri, opts = {}){
   const lines = [];
 
   const hiraText = tri?.hira || tri?.jp || "";
-  const romaText = tri?.romaji || "";
-  const idText = tri?.id || "";
+  let romaText = tri?.romaji || tri?.ro || "";
+  romaText = String(romaText || "").trim();
+  if (!romaText || /^[0-9]+$/.test(romaText)) romaText = "—";
+  let idText = tri?.id || tri?.indo || tri?.indonesian || "";
+  idText = String(idText || "").trim();
+  if (!idText || /^[0-9]+$/.test(idText)) idText = "—";
 
   if (mode === "all" || mode === "ja"){
     lines.push(`
