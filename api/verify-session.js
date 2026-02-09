@@ -1,3 +1,4 @@
+import { setSignedCookie, clearCookie } from "./_lib/signedCookie.js";
 function mapPriceToPlan(priceId, priceMeta) {
   const metaPlan = priceMeta?.plan_key || null;
   const metaLimit = priceMeta?.daily_limit || null;
@@ -43,6 +44,28 @@ export default async function handler(req, res) {
     const price = sub?.items?.data?.[0]?.price || null;
     const priceId = price?.id || null;
     const { plan_key, daily_limit } = mapPriceToPlan(priceId, price?.metadata);
+
+    // ---- server-side access cookie (paid/unpaid判定をサーバでも維持) ----
+    try {
+      const tok = process.env.TOKEN_SECRET;
+      if (tok) {
+        const cancelAtPeriodEnd = sub?.cancel_at_period_end ?? null;
+        const accessActive = (subStatus === "active" || subStatus === "trialing") && !cancelAtPeriodEnd;
+        const expMs = (sub?.current_period_end ? Number(sub.current_period_end) * 1000 : (Date.now() + 35*24*60*60*1000));
+        const maxAge = Math.max(0, Math.floor((expMs - Date.now()) / 1000));
+        const secure = process.env.NODE_ENV === "production";
+        if (accessActive) {
+          setSignedCookie(res, "ks_access", { v: 1, active: true, plan_key, subscription_id: sub?.id || null, exp: expMs }, tok, {
+            httpOnly: true, sameSite: "Lax", secure, path: "/", maxAgeSeconds: maxAge || (35*24*60*60)
+          });
+        } else {
+          clearCookie(res, "ks_access", { path: "/" });
+        }
+      }
+    } catch (e) {
+      console.warn("access cookie error", e);
+    }
+
 
     return res.status(200).json({
       paid,
