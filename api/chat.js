@@ -125,7 +125,14 @@ export default async function handler(req, res) {
       user_angry: { label: "利用者：怒り", ai_role: "resident", ai_tone: "irritated, defensive, short answers" },
       dementia: { label: "利用者：少し混乱", ai_role: "resident", ai_tone: "confused, needs reassurance, short sentences" },
       family_anxious: { label: "家族：不安", ai_role: "family", ai_tone: "worried, asks safety questions" },
-      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" }
+      family_complaint: { label: "家族：クレーム", ai_role: "family", ai_tone: "complaining, expects apology and plan" },
+
+      // 報告/連携（同僚・上司・医療職）
+      colleague: { label: "同僚", ai_role: "colleague", ai_tone: "professional, concise, cooperative" },
+      leader: { label: "師長/リーダー", ai_role: "leader", ai_tone: "calm, directive, asks clarifying questions" },
+      nurse: { label: "看護師", ai_role: "nurse", ai_tone: "clinical, supportive, asks SBAR questions" },
+      head_nurse: { label: "主任/看護師長", ai_role: "head_nurse", ai_tone: "clinical, supervisory, prioritizes safety" },
+      doctor: { label: "医師", ai_role: "doctor", ai_tone: "clinical, decisive, asks key questions, gives instructions" }
     };
 
     const SCENES = {
@@ -134,6 +141,12 @@ export default async function handler(req, res) {
       toilet: { label: "排泄", focus: "privacy, timely assistance, hygiene" },
       night: { label: "夜間", focus: "anxiety, insomnia, wandering risk" },
       complaint: { label: "クレーム対応", focus: "apology, fact-finding, plan" },
+
+      // Phase2（現場寄りの連携）
+      emergency: { label: "急変", focus: "SBAR, vitals, urgent communication, safety-first" },
+      fall: { label: "転倒", focus: "5W1H, injury check, head strike risk, observation, reporting" },
+      handover: { label: "申し送り", focus: "SOAP, concise handover, tasks, risks, next actions" },
+
       family_consultation: { label: "家族相談", focus: "clear explanation, empathy, professional" },
       team_coordination: { label: "チーム連携", focus: "reporting, coordination, clarity" },
       incident_reporting: { label: "事故報告", focus: "accuracy, timeline, action plan" },
@@ -147,6 +160,24 @@ export default async function handler(req, res) {
       privacy: "羞恥・プライバシー",
       refusal: "拒否対応",
       safety: "安全配慮",
+
+      // emergency
+      notice: "気づき",
+      call: "連絡",
+      observe: "観察",
+      first: "初動",
+
+      // fall
+      check: "確認",
+      report: "報告",
+      comfort: "安心",
+      prevent: "予防",
+
+      // handover
+      confirm: "確認",
+      request: "依頼",
+      incident: "出来事",
+
       start: "開始/準備",
       swallow: "嚥下/むせ",
       pace: "ペース調整",
@@ -513,6 +544,17 @@ CURRENT ROLEPLAY SETUP:
 - Target Level: ${planConfig.vocabulary_level} (${planConfig.vocabulary_count} words)
 - Max Response Length: ${planConfig.max_sentence_chars} characters
 
+CONVERSATION CONTEXT (IMPORTANT):
+- The user payload includes "recent_context" (last turns). Use it to keep the conversation consistent.
+- Always respond to the latest "input".
+- If the user is reporting/handing over (scene: emergency/fall/handover), behave as the selected persona (nurse/doctor/leader/colleague):
+  1) acknowledge, 2) ask 1-3 key questions if needed, 3) give immediate next actions (no diagnosis).
+
+LANGUAGE FIELDS (IMPORTANT):
+- "hira": Japanese in hiragana (convert kanji/katakana to hiragana).
+- "romaji": Hepburn-style romaji of "hira".
+- "id": Indonesian (Bahasa Indonesia) translation. Keep natural. If "hira" is long, you may summarize in Indonesian, but do NOT leave it blank.
+
 OUTPUT RULES:
 Return ONLY valid JSON (no markdown, no extra text).
 
@@ -577,6 +619,54 @@ NOTES:
       if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
 
       const out = result.json || {};
+
+      // ---- Fallback: if long Japanese text consumes tokens, romaji/ID can be missing.
+      // We fill missing "romaji" / "id" with a lightweight second pass.
+      const isBlank = (v) => !v || !String(v).trim();
+      const need = {};
+      for (const k of ["user","ai","suggested"]) {
+        const obj = out?.[k] || {};
+        const hira = String(obj.hira || "").trim();
+        const romaji = String(obj.romaji || "").trim();
+        const id = String(obj.id || "").trim();
+        if (hira && (isBlank(romaji) || isBlank(id))) {
+          need[k] = hira;
+        }
+      }
+
+      if (Object.keys(need).length) {
+        const sys2 = `You convert Japanese text into romaji (Hepburn) and Indonesian (Bahasa Indonesia).
+
+Return ONLY valid JSON.
+
+INPUT JSON:
+{ "items": { "user": "...", "ai": "...", "suggested": "..." } }
+
+OUTPUT JSON:
+{ "items": { "user": { "romaji": "...", "id": "..." }, "ai": { "romaji": "...", "id": "..." }, "suggested": { "romaji": "...", "id": "..." } } }
+
+RULES:
+- If input includes kanji/katakana, infer the common reading.
+- Keep Indonesian natural. For very long Japanese, Indonesian may be a concise summary (but never blank).
+`;
+
+        const tr = await callOpenAI({
+          system: sys2,
+          user: JSON.stringify({ items: need }, null, 2),
+          temperature: 0,
+          maxTokens: 800
+        });
+
+        if (tr.ok) {
+          const items = tr.json?.items || tr.json || {};
+          for (const k of Object.keys(items)) {
+            out[k] = out[k] || {};
+            if (isBlank(out[k].romaji) && !isBlank(items?.[k]?.romaji)) out[k].romaji = items[k].romaji;
+            if (isBlank(out[k].id) && !isBlank(items?.[k]?.id)) out[k].id = items[k].id;
+          }
+        }
+      }
+
       return res.status(200).json({
         user: out.user || {},
         ai: out.ai || {},
