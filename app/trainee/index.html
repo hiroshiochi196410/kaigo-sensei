@@ -1337,7 +1337,8 @@ function buildSbarText(targetPersonaKey){
   }
 
   if (targetPersonaKey === "doctor"){
-    R += " いし せんせい、しじ を おねがい します。";
+    // 医師への呼びかけは「せんせい」で統一（「いし せんせい」は不自然）
+    R += " せんせい、しじ を おねがい します。";
   } else {
     R += " かんごし さん、かくにん と しょち を おねがい します。";
   }
