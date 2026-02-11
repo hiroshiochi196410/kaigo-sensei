@@ -36,6 +36,10 @@
     .tri .line{ padding:8px; border:1px dashed var(--bd); border-radius:10px; }
     .tri .k{ font-size:11px; color:var(--muted); margin-bottom:4px;}
     .tri .v{ white-space:pre-wrap; font-size:14px; }
+    
+    .tri .v.clamp{ display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden; }
+    .moreBtn{ margin-top:6px; border:1px solid var(--bd); background:#fff; padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted); cursor:pointer; }
+    .moreBtn:hover{ background:var(--btn2); }
     .small{ font-size:12px; color:var(--muted); }
     .err{ color:#b91c1c; font-size:12px; white-space:pre-wrap; }
     .ok{ color:#065f46; font-size:12px; }
@@ -1737,6 +1741,12 @@ function insertExample(){
 }
 
 /* ========= render ========= */
+function needsClamp(raw){
+  const s = String(raw || "");
+  return (s.length > 260) || (s.split("
+").length > 6);
+}
+
 function triHtml(tri, opts = {}){
   const mode = $("displayMode").value;
   const idx = (typeof opts.idx === "number") ? opts.idx : -1;
@@ -1763,7 +1773,7 @@ function triHtml(tri, opts = {}){
             <button class="ttsBtn" type="button" data-idx="${idx}" data-field="hira" ${canHira ? "" : "disabled"} title="読み上げ">▶</button>
           </div>
         </div>
-        <div class="v">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>
+        <div class="v ${needsClamp(hiraTextRaw)?"clamp":""}" id="v_${idx}_hira">${applyHighlights(hiraText, hl.danger, hl.keigo)}</div>${needsClamp(hiraTextRaw)?`<button class="moreBtn" type="button" data-target="v_${idx}_hira">もっと見る</button>`:""}
       </div>
     `);
   }
@@ -1776,7 +1786,7 @@ function triHtml(tri, opts = {}){
             <button class="ttsBtn" type="button" data-idx="${idx}" data-field="romaji" ${canRoma ? "" : "disabled"} title="読み上げ">▶</button>
           </div>
         </div>
-        <div class="v">${applyHighlights(romaText, hl.dangerRoma, hl.keigoRoma)}</div>
+        <div class="v ${needsClamp(romaText)?"clamp":""}" id="v_${idx}_romaji">${applyHighlights(romaText || "—", hl.dangerRoma, hl.keigoRoma)}</div>${needsClamp(romaText)?`<button class="moreBtn" type="button" data-target="v_${idx}_romaji">もっと見る</button>`:""}
       </div>
     `);
   }
@@ -1784,7 +1794,7 @@ function triHtml(tri, opts = {}){
     lines.push(`
       <div class="line">
         <div class="k">インドネシア語</div>
-        <div class="v">${esc(idText)}</div>
+        <div class="v ${needsClamp(idText)?"clamp":""}" id="v_${idx}_id">${esc(idText || "—")}</div>${needsClamp(idText)?`<button class="moreBtn" type="button" data-target="v_${idx}_id">もっと見る</button>`:""}
       </div>
     `);
   }
@@ -2449,6 +2459,18 @@ $("btnClear").addEventListener("click", ()=>{
       // 読み上げは（漢字）などの補足を省いて自然に
       speakOnce(stripParenForTts(text), "ja-JP");
     });
+
+    // Expand/collapse long text in history
+    document.addEventListener("click", (e)=>{
+      const b = e.target.closest(".moreBtn");
+      if (!b) return;
+      const tid = b.dataset.target || "";
+      const el = tid ? document.getElementById(tid) : null;
+      if (!el) return;
+      el.classList.toggle("clamp");
+      b.textContent = el.classList.contains("clamp") ? "もっと見る" : "たたむ";
+    });
+
 
     // Reset learning log
     $("btnResetLog")?.addEventListener("click", ()=>{
