@@ -1872,8 +1872,12 @@ async function copyDebugState(){
   const persona = $("personaSel")?.value || "";
   const category = $("catSel")?.value || "";
   const level = $("levelSel")?.value || "";
-  const plan = (typeof PlanManager !== "undefined" && PlanManager.getCurrentPlan) ? PlanManager.getCurrentPlan() : null;
-  const limit = (typeof PlanManager !== "undefined" && PlanManager.checkDailyLimit) ? PlanManager.checkDailyLimit() : null;
+  // unlocked=false（無料体験中）は「トライアル回数」だけを状態として出す
+  const trialLimit = CFG?.trial_limit ?? 3;
+  const plan = (unlocked && typeof PlanManager !== "undefined" && PlanManager.getCurrentPlan) ? PlanManager.getCurrentPlan() : null;
+  const limit = unlocked
+    ? ((typeof PlanManager !== "undefined" && PlanManager.checkDailyLimit) ? PlanManager.checkDailyLimit() : null)
+    : ({ allowed: trialUsed < trialLimit, remaining: Math.max(0, trialLimit - trialUsed), used: trialUsed, limit: trialLimit, mode: "trial" });
   const snap = {
     at: new Date().toISOString(),
     variant: VARIANT,
@@ -1898,7 +1902,8 @@ async function applyChatResult(out, payload){
   const { text, scene, persona, category, level, userItem, aiItem } = payload;
 
   // ★ プラン管理：使用回数をカウント（成功時のみ）
-  if (typeof PlanManager !== 'undefined') {
+  // 無料体験中（unlocked=false）はトライアル回数だけを減らす。
+  if (unlocked && typeof PlanManager !== 'undefined') {
     try { PlanManager.recordUsage(); } catch (_) {}
   }
 
@@ -2026,21 +2031,21 @@ async function send(){
 
   if (isSending) return;
 
-  // ★ プラン管理：使用回数チェック
-  if (typeof PlanManager !== 'undefined') {
+  if (maybeLock()) {
+    $("errBox").style.display="block";
+    $("errBox").textContent = "ロック中です（無料体験の回数終了など）。購入で解除してください。";
+    setStatus("ロック");
+    return;
+  }
+
+  // ★ プラン管理：使用回数チェック（解除済みのみ）
+  if (unlocked && typeof PlanManager !== 'undefined') {
     if (!PlanManager.canUse()) {
       $("errBox").style.display="block";
       $("errBox").textContent = "本日の利用回数が上限に達しています。プランの購入/変更で解除できます。";
       setStatus("制限");
       return;
     }
-  }
-
-  if (maybeLock()) {
-    $("errBox").style.display="block";
-    $("errBox").textContent = "ロック中です（無料体験の回数終了など）。購入で解除してください。";
-    setStatus("ロック");
-    return;
   }
 
   const text = $("userInput").value.trim();
@@ -2055,9 +2060,10 @@ async function send(){
 
   // ★ プラン管理：現在のプランを取得
   const defaultPlan = (VARIANT === "ssw") ? "ssw_standard" : "trainee_standard";
-  const currentPlan = (typeof PlanManager !== 'undefined') ? PlanManager.getCurrentPlan() : defaultPlan;
+  const currentPlan = (unlocked && typeof PlanManager !== 'undefined') ? PlanManager.getCurrentPlan() : defaultPlan;
 
-  const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, plan: currentPlan, ctx: getCtxFromHistory() };
+  // 無料体験中は plan を送らず、variant/selection で制御する（混入防止）
+  const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, plan: (unlocked ? currentPlan : null), ctx: getCtxFromHistory() };
 
   // ★ 送信直後に履歴へ反映（APIエラーでも会話が再現できる）
   const userItem = { role:"user", tri: buildUserFallbackTri(text, user_lang), meta:{ scene, persona, category, level } };
@@ -2144,7 +2150,7 @@ function applyEntitlementFromBilling(planKey){
   // planKey: "trainee_lite" | "trainee_standard" | "ssw_standard" | "ssw_pro" | null
   if (typeof PlanManager === 'undefined' || !PlanManager.setCurrentPlan) return;
 
-  const key = planKey || "trainee_lite";
+  const key = planKey || ((VARIANT === "ssw") ? "ssw_standard" : "trainee_lite");
   PlanManager.setCurrentPlan(key);
 }
 

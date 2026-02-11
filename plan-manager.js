@@ -1,6 +1,21 @@
 // plan-manager.js - 4タイプのプラン管理と使用回数制限
 
 const PlanManager = (() => {
+  // ========== 画面（variant）判定 ==========
+  const detectVariantFromPath = () => {
+    try {
+      const p = (location && location.pathname) ? location.pathname : '';
+      if (p.includes('/app/ssw')) return 'ssw';
+      if (p.includes('/app/trainee')) return 'trainee';
+    } catch (e) {}
+    return 'app';
+  };
+
+  // variant別にキーを分けて、SSW画面にtraineeのプランが混ざる事故を防ぐ
+  const VARIANT = detectVariantFromPath();
+
+  const keyOf = (baseKey) => `ks_${VARIANT}_${baseKey}`;
+
   // ========== プラン設定 ==========
   const PLAN_LIMITS = {
     trainee_lite: {
@@ -73,12 +88,28 @@ const PlanManager = (() => {
 
   // ========== プラン情報の取得 ==========
   const getCurrentPlan = () => {
-    return storage.get('selected_plan', 'trainee_lite');
+    const defaultPlan = (VARIANT === 'ssw') ? 'ssw_standard' : 'trainee_lite';
+    const k = keyOf('selected_plan');
+    const v = storage.get(k, null);
+    if (v && PLAN_LIMITS[v]) return v;
+
+    // 旧キー救済：同variantの値だけ引き継ぐ（混入は無視）
+    const legacy = storage.get('selected_plan', null);
+    if (legacy && PLAN_LIMITS[legacy]) {
+      const ok = (VARIANT === 'ssw') ? String(legacy).startsWith('ssw_') : String(legacy).startsWith('trainee_');
+      if (ok) {
+        storage.set(k, legacy);
+        return legacy;
+      }
+    }
+    return defaultPlan;
   };
 
   const setCurrentPlan = (planKey) => {
-    const key = (planKey && PLAN_LIMITS[planKey]) ? planKey : 'trainee_lite';
-    storage.set('selected_plan', key);
+    const fallback = (VARIANT === 'ssw') ? 'ssw_standard' : 'trainee_lite';
+    const key = (planKey && PLAN_LIMITS[planKey]) ? planKey : fallback;
+    // variant別に保存
+    storage.set(keyOf('selected_plan'), key);
 
     // 表示更新
     try { updateUsageDisplay(); } catch (e) {}
@@ -95,7 +126,8 @@ const PlanManager = (() => {
 
   const getPlanConfig = (plan = null) => {
     const currentPlan = plan || getCurrentPlan();
-    return PLAN_LIMITS[currentPlan] || PLAN_LIMITS.trainee_lite;
+    const fallback = (VARIANT === 'ssw') ? PLAN_LIMITS.ssw_standard : PLAN_LIMITS.trainee_lite;
+    return PLAN_LIMITS[currentPlan] || fallback;
   };
 
   // ========== 使用回数管理 ==========
@@ -106,7 +138,7 @@ const PlanManager = (() => {
   const getUsageData = (plan = null) => {
     const currentPlan = plan || getCurrentPlan();
     const today = getTodayKey();
-    const key = `usage_${currentPlan}_${today}`;
+    const key = keyOf(`usage_${currentPlan}_${today}`);
     const usage = storage.get(key, { count: 0, date: today });
     
     // 日付が変わったらリセット
@@ -144,7 +176,7 @@ const PlanManager = (() => {
   const incrementUsage = (plan = null) => {
     const currentPlan = plan || getCurrentPlan();
     const today = getTodayKey();
-    const key = `usage_${currentPlan}_${today}`;
+    const key = keyOf(`usage_${currentPlan}_${today}`);
     const usage = storage.get(key, { count: 0, date: today });
     
     usage.count += 1;
@@ -315,7 +347,7 @@ const PlanManager = (() => {
     
     if (!config.save_examples) return { allowed: false, reason: 'このプランでは例文保存はご利用いただけません' };
     
-    const saved = storage.get('saved_examples', []);
+    const saved = storage.get(keyOf('saved_examples'), []);
     
     if (config.save_limit >= 999999) return { allowed: true, used: saved.length, limit: Infinity };
     
@@ -375,7 +407,16 @@ if (typeof window !== 'undefined') {
 
   async function openCustomerPortal() {
     try {
-      const subscriptionId = localStorage.getItem('subscription_id');
+      // variant別に保存している場合を優先（旧キーも救済）
+      const v = (function(){
+        try {
+          const p = (location && location.pathname) ? location.pathname : '';
+          if (p.includes('/app/ssw')) return 'ssw';
+          if (p.includes('/app/trainee')) return 'trainee';
+        } catch (e) {}
+        return 'app';
+      })();
+      const subscriptionId = localStorage.getItem(`ks_${v}_subscription_id`) || localStorage.getItem('subscription_id');
       if (!subscriptionId) {
         alert('サブスクリプション情報が見つかりません。購入後に再読み込みしてください。');
         return;
