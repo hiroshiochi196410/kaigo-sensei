@@ -265,7 +265,6 @@ export default async function handler(req, res) {
     const personaInfo = PERSONAS[persona] || PERSONAS.user_calm;
     const sceneInfo = SCENES[scene] || SCENES.bath;
     const categoryLabel = CATEGORIES[category] || category;
-
     const safeJson = (text) => {
       try { return JSON.parse(text); } catch {}
       const m = text.match(/\{[\s\S]*\}/);
@@ -273,30 +272,167 @@ export default async function handler(req, res) {
       try { return JSON.parse(m[0]); } catch { return {}; }
     };
 
-    async function callOpenAI({ system, user, temperature = 0.3, maxTokens = 900 }) {
-      const r = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model,
-          temperature,
-          max_tokens: maxTokens,
-          response_format: { type: "json_object" },
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: user }
-          ]
-        })
+    // Strict response schema (best-effort). We also validate + repair server-side.
+    const AIGA_RESPONSE_SCHEMA = {
+      name: "aiga_response_v1",
+      strict: true,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["user","ai","feedback_jp","suggested","annotations","score"],
+        properties: {
+          user: {
+            type: "object",
+            additionalProperties: false,
+            required: ["hira","romaji","id"],
+            properties: {
+              hira: { type: "string" },
+              romaji: { type: "string" },
+              id: { type: "string" }
+            }
+          },
+          ai: {
+            type: "object",
+            additionalProperties: false,
+            required: ["hira","romaji","id"],
+            properties: {
+              hira: { type: "string" },
+              romaji: { type: "string" },
+              id: { type: "string" }
+            }
+          },
+          feedback_jp: { type: "string" },
+          suggested: {
+            type: "object",
+            additionalProperties: false,
+            required: ["hira","romaji","id"],
+            properties: {
+              hira: { type: "string" },
+              romaji: { type: "string" },
+              id: { type: "string" }
+            }
+          },
+          annotations: {
+            type: "object",
+            additionalProperties: false,
+            required: ["danger_words","keigo_points","vocab"],
+            properties: {
+              danger_words: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["hira","romaji","level","note_jp"],
+                  properties: {
+                    hira: { type: "string" },
+                    romaji: { type: "string" },
+                    level: { type: "string" },
+                    note_jp: { type: "string" }
+                  }
+                }
+              },
+              keigo_points: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["phrase_hira","phrase_romaji","note_jp"],
+                  properties: {
+                    phrase_hira: { type: "string" },
+                    phrase_romaji: { type: "string" },
+                    note_jp: { type: "string" }
+                  }
+                }
+              },
+              vocab: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["hira","romaji","id","note_jp"],
+                  properties: {
+                    hira: { type: "string" },
+                    romaji: { type: "string" },
+                    id: { type: "string" },
+                    note_jp: { type: "string" }
+                  }
+                }
+              }
+            }
+          },
+          score: {
+            type: "object",
+            additionalProperties: false,
+            required: ["scene_skill","reason_jp","next_focus_hira"],
+            properties: {
+              scene_skill: { type: "number" },
+              reason_jp: { type: "string" },
+              next_focus_hira: { type: "array", items: { type: "string" } }
+            }
+          }
+        }
+      }
+    };
+
+    const looksJapanese = (s) => /[぀-ヿ㐀-鿿]/.test(String(s || ""));
+    const isBlank = (v) => !v || !String(v).trim();
+
+    const normalizeTriple = (t) => {
+      const out = {
+        hira: String(t?.hira || ""),
+        romaji: String(t?.romaji || ""),
+        id: String(t?.id || "")
+      };
+      // Addressing the doctor: "いし せんせい" is unnatural → "せんせい"
+      out.hira = out.hira.replace(/いし\s*せんせい/g, "せんせい").replace(/いしせんせい/g, "せんせい");
+      out.romaji = out.romaji.replace(/\bishi\s*sensei\b/gi, "sensei");
+      out.id = out.id.replace(/\bDokter\s+Ishi+i?\b/gi, "Dokter");
+      return out;
+    };
+
+    const validateTriple = (t) => {
+      if (!t) return false;
+      return !isBlank(t.hira) && !isBlank(t.romaji) && !isBlank(t.id);
+    };
+
+    async function callOpenAI({ system, user, temperature = 0.3, maxTokens = 900, responseSchema = null }) {
+      const makeBody = (useSchema) => ({
+        model,
+        temperature,
+        max_tokens: maxTokens,
+        response_format: useSchema
+          ? { type: "json_schema", json_schema: responseSchema }
+          : { type: "json_object" },
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user }
+        ]
       });
 
-      const j = await r.json();
-      if (!r.ok) return { ok: false, body: j };
+      // Try strict schema first (when provided). If unsupported, fall back to json_object.
+      const tryOnce = async (useSchema) => {
+        const r = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(makeBody(useSchema))
+        });
+        const j = await r.json();
+        if (!r.ok) return { ok: false, body: j, status: r.status };
+        const text = j.choices?.[0]?.message?.content || "";
+        return { ok: true, json: safeJson(text), raw: text };
+      };
 
-      const text = j.choices?.[0]?.message?.content || "";
-      return { ok: true, json: safeJson(text) };
+      if (responseSchema) {
+        const r1 = await tryOnce(true);
+        if (r1.ok) return r1;
+        // Schema unsupported or model error → fallback
+        return await tryOnce(false);
+      }
+
+      return await tryOnce(false);
     }
 
     // ========== STAGE 3: PLAN-AWARE PROMPT ==========
@@ -545,15 +681,26 @@ CURRENT ROLEPLAY SETUP:
 - Max Response Length: ${planConfig.max_sentence_chars} characters
 
 CONVERSATION CONTEXT (IMPORTANT):
+
+NATURAL DIALOGUE (CRITICAL):
+- Speak as the selected persona in a real workplace.
+- Be concise: 1-2 short sentences in Japanese. Avoid long explanations.
+- Do NOT repeat the user's SBAR/5W1H headings. Respond to the content.
+- Ask at most 1 short question when needed.
 - The user payload includes "recent_context" (last turns). Use it to keep the conversation consistent.
 - Always respond to the latest "input".
 - If the user is reporting/handing over (scene: emergency/fall/handover), behave as the selected persona (nurse/doctor/leader/colleague):
   1) acknowledge, 2) ask 1-3 key questions if needed, 3) give immediate next actions (no diagnosis).
 
-LANGUAGE FIELDS (IMPORTANT):
-- "hira": Japanese in hiragana (convert kanji/katakana to hiragana).
-- "romaji": Hepburn-style romaji of "hira".
-- "id": Indonesian (Bahasa Indonesia) translation. Keep natural. If "hira" is long, you may summarize in Indonesian, but do NOT leave it blank.
+LANGUAGE FIELDS (CRITICAL):
+- "hira": Japanese (mainly hiragana; medical terms may include short kanji in parentheses).
+- "romaji": Hepburn-style romaji that matches "hira".
+- "id": Indonesian (Bahasa Indonesia) translation. Keep natural.
+
+ABSOLUTE REQUIREMENT:
+- NEVER omit or leave blank: user.romaji, user.id, ai.romaji, ai.id, suggested.romaji, suggested.id
+- If you are running out of tokens, SHORTEN the Japanese drastically, but STILL output all 3 languages for each field.
+- Addressing doctors: say "せんせい" (NOT "いし せんせい"). Indonesian: use "Dokter" (no name).
 
 OUTPUT RULES:
 Return ONLY valid JSON (no markdown, no extra text).
@@ -569,7 +716,7 @@ ROMAJI RULE:
 - Use Hepburn-style romaji
 
 HIRAGANA CONVERSION RULES (CRITICAL):
-- "hira" must be ONLY hiragana (no kanji, no katakana)
+- Outside parentheses, use hiragana only. Kanji are allowed ONLY inside parentheses after the reading. No katakana.
 - Use the MOST COMMON READING (訓読み preferred for daily words)
 - Follow the dictionary below EXACTLY for care-related terms
 
@@ -599,7 +746,7 @@ NOTES:
 - "suggested" is an alternative/better way the user could have said it
 - "annotations" helps learning (use empty arrays if not applicable)
 - "score.scene_skill": 1-5 score of appropriateness/politeness
-- ${planConfig.include_indonesian ? 'Include Indonesian translations' : 'Indonesian can be brief or omitted'}
+- Include Indonesian translations (never omit; can be brief)
 - ${planConfig.provide_hints ? 'Provide helpful vocabulary hints' : 'Focus on professional feedback'}
       `.trim();
 
@@ -613,16 +760,27 @@ NOTES:
         system,
         user: JSON.stringify(userPayload, null, 2),
         temperature: 0.3,
-        maxTokens: planConfig.max_tokens
+        maxTokens: Math.max(planConfig.max_tokens, 900),
+        responseSchema: AIGA_RESPONSE_SCHEMA
       });
 
       if (!result.ok) return res.status(502).json({ error: "OpenAI error", details: result.body });
 
-      const out = result.json || {};
+      let out = result.json || {};
 
-      // ---- Fallback: if long Japanese text consumes tokens, romaji/ID can be missing.
+      // Ensure required objects exist
+      out.user = out.user || { hira: "", romaji: "", id: "" };
+      out.ai = out.ai || { hira: "", romaji: "", id: "" };
+      out.suggested = out.suggested || { hira: "", romaji: "", id: "" };
+
+      // Preserve raw JP input for display (important for checklist-generated text)
+      // If the input is not Japanese, keep model-normalized user.hira.
+      if (looksJapanese(prompt)) {
+        out.user.hira = String(prompt);
+      }
+
+      // ---- Fallback/Repair: long text can cause romaji/ID to be missing.
       // We fill missing "romaji" / "id" with a lightweight second pass.
-      const isBlank = (v) => !v || !String(v).trim();
       const need = {};
       for (const k of ["user","ai","suggested"]) {
         const obj = out?.[k] || {};
@@ -654,7 +812,8 @@ RULES:
           system: sys2,
           user: JSON.stringify({ items: need }, null, 2),
           temperature: 0,
-          maxTokens: 800
+          maxTokens: 900,
+          responseSchema: null
         });
 
         if (tr.ok) {
@@ -667,6 +826,78 @@ RULES:
         }
       }
 
+      // Normalize common awkward expressions
+      out.user = normalizeTriple(out.user);
+      out.ai = normalizeTriple(out.ai);
+      out.suggested = normalizeTriple(out.suggested);
+
+      // ---- Validation + one repair attempt (stronger guarantee)
+      const aiTooLong = String(out.ai.hira || "").length > planConfig.max_sentence_chars;
+      const aiTooChatty = (String(out.ai.hira || "").match(/。/g) || []).length > 3;
+      const aiHasHeadings = /えす（|びー（|えー（|あるー（|sbar|5w1h/i.test(String(out.ai.hira || ""));
+      const missingCore = !validateTriple(out.ai) || !validateTriple(out.suggested) || !validateTriple(out.user);
+
+      if (missingCore || aiTooLong || aiTooChatty || aiHasHeadings) {
+        const repairSystem = `You are AIGA. You must output valid JSON that matches the required shape.
+
+GOAL:
+- Ensure user/ai/suggested each has hira/romaji/id (never blank).
+- Make ai.hira natural and concise (1-2 short sentences), under ${planConfig.max_sentence_chars} characters.
+- Do NOT include SBAR headings in ai.hira.
+- Addressing doctors: use "せんせい" (NOT "いし せんせい"). Indonesian: "Dokter".
+
+Return ONLY valid JSON.`;
+
+        const repairUser = JSON.stringify({
+          input: String(prompt),
+          recent_context: ctx,
+          selection: { scene, persona, category, level, variant, plan: planConfig.plan_name },
+          draft: out
+        }, null, 2);
+
+        const repaired = await callOpenAI({
+          system: repairSystem,
+          user: repairUser,
+          temperature: 0.2,
+          maxTokens: Math.max(planConfig.max_tokens, 900),
+          responseSchema: AIGA_RESPONSE_SCHEMA
+        });
+
+        if (repaired.ok && repaired.json) {
+          out = repaired.json;
+          // Keep raw JP input if applicable
+          out.user = out.user || { hira: "", romaji: "", id: "" };
+          if (looksJapanese(prompt)) out.user.hira = String(prompt);
+
+          // Fill missing romaji/id again if needed
+          const need2 = {};
+          for (const k of ["user","ai","suggested"]) {
+            const hira = String(out?.[k]?.hira || "").trim();
+            if (hira && (isBlank(out?.[k]?.romaji) || isBlank(out?.[k]?.id))) need2[k] = hira;
+          }
+          if (Object.keys(need2).length) {
+            const tr2 = await callOpenAI({
+              system: `You convert Japanese text into romaji (Hepburn) and Indonesian (Bahasa Indonesia). Return ONLY JSON {"items":{...}} as in prior instructions. Never blank.`,
+              user: JSON.stringify({ items: need2 }, null, 2),
+              temperature: 0,
+              maxTokens: 900
+            });
+            if (tr2.ok) {
+              const items = tr2.json?.items || tr2.json || {};
+              for (const k of Object.keys(items)) {
+                out[k] = out[k] || {};
+                if (isBlank(out[k].romaji) && !isBlank(items?.[k]?.romaji)) out[k].romaji = items[k].romaji;
+                if (isBlank(out[k].id) && !isBlank(items?.[k]?.id)) out[k].id = items[k].id;
+              }
+            }
+          }
+
+          out.user = normalizeTriple(out.user);
+          out.ai = normalizeTriple(out.ai);
+          out.suggested = normalizeTriple(out.suggested);
+        }
+      }
+
       return res.status(200).json({
         user: out.user || {},
         ai: out.ai || {},
@@ -674,12 +905,12 @@ RULES:
         suggested: out.suggested || {},
         annotations: out.annotations || { danger_words: [], keigo_points: [], vocab: [] },
         score: out.score || {},
-        trace: { 
-          persona, 
-          scene, 
-          category, 
-          level, 
-          variant, 
+        trace: {
+          persona,
+          scene,
+          category,
+          level,
+          variant,
           plan: planConfig.plan_name,
           vocabulary_level: planConfig.vocabulary_level,
           max_chars: planConfig.max_sentence_chars
