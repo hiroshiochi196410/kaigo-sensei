@@ -1137,11 +1137,40 @@ let VARIANT = detectVariantFromPath();
 const LONG_UNIT_COST = 5;      // 長文は5unit
 const LONG_TEXT_THRESHOLD = 120; // これ以上（目安）は長文扱い
 function estimateCostUnits(text){
+  if (FORCE_NEXT_UNITS) return FORCE_NEXT_UNITS;
   const s = String(text || '');
   const compactLen = s.replace(/\s+/g,'').length;
   const isLong = (compactLen >= LONG_TEXT_THRESHOLD) || s.includes('\n');
   return isLong ? LONG_UNIT_COST : 1;
 }
+
+// ===== force unit costing for document buttons (SBAR/SOAP/転倒報告) =====
+let FORCE_NEXT_UNITS = null;
+function setForceNextUnits(units){
+  FORCE_NEXT_UNITS = Number(units) || null;
+  updateSendButtonCost();
+}
+function clearForceNextUnits(){
+  FORCE_NEXT_UNITS = null;
+  updateSendButtonCost();
+}
+function isUnlockedNow(){
+  try{ return !!ls.get("aiga_unlocked_"+VARIANT, false); }catch(e){ return false; }
+}
+function updateSendButtonCost(){
+  try{
+    const btn = $("btnSend");
+    if (!btn) return;
+    if (!isUnlockedNow()){
+      btn.textContent = "送信";
+      return;
+    }
+    const txt = String($("userInput")?.value || "").trim();
+    const u = txt ? estimateCostUnits(txt) : 1;
+    btn.textContent = "送信（-" + u + "unit）";
+  }catch(e){}
+}
+
 
 let SETTINGS = Object.assign({}, DEFAULT_SETTINGS, ls.get("aiga_settings_"+VARIANT, {}));
 let STATS = ls.get("aiga_stats_"+VARIANT, { scenes:{}, categories:{} });
@@ -1166,6 +1195,7 @@ function setTrialInfo(){
   const limit = CFG?.trial_limit ?? 3;
   const remain = Math.max(0, limit - trialUsed);
   $("trialInfo").textContent = unlocked ? "✅ 解除済み" : `お試し残り: ${remain}/${limit}`;
+  try{ updateSendButtonCost(); }catch(e){}
 }
 
 function maybeLock(){
@@ -1266,6 +1296,8 @@ function clearSbar(){
   for (const i of ids){ const el = $(i); if (el) el.value = ""; }
   const cbs = ["sbarFever","sbarDyspnea","sbarAms","sbarVomit","sbarChest","sbarHypo"];
   for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
+  try{ clearForceNextUnits(); }catch(e){}
+  try{ updateSendButtonCost(); }catch(e){}
 }
 
 
@@ -1424,6 +1456,8 @@ function clearSoap(){
   for (const i of ids){ const el = $(i); if (el) el.value = ""; }
   const f = $("soapFormat"); if (f) f.value = "narrative";
   const msg = $("soapLocalMsg"); if (msg){ msg.style.display="none"; msg.textContent=""; }
+  try{ clearForceNextUnits(); }catch(e){}
+  try{ updateSendButtonCost(); }catch(e){}
 }
 
 function buildSoapText(targetPersonaKey){
@@ -1501,6 +1535,8 @@ function clearFall(){
   const cbs = ["fallHead","fallBleed","fallPain","fallAms","fallVomit","fallFract"];
   for (const c of cbs){ const el = $(c); if (el) el.checked = false; }
   const ff = $("fallFormat"); if (ff) ff.value = "narrative";
+  try{ clearForceNextUnits(); }catch(e){}
+  try{ updateSendButtonCost(); }catch(e){}
 }
 
 function buildFallText(targetPersonaKey){
@@ -2028,6 +2064,7 @@ async function retryLastSend(){
   try{
     const out = await postChat({ text: p.text, meta: p.meta });
     await applyChatResult(out, p);
+    try{ clearForceNextUnits(); }catch(e){}
 
     lastFailedSend = null;
     updateRetryButton();
@@ -2038,6 +2075,7 @@ async function retryLastSend(){
     setTimeout(()=>{$("okBox").style.display="none";}, 1200);
 
     $("userInput").value = "";
+    try{ updateSendButtonCost(); }catch(e){}
   }catch(e){
     const msg = String(e.message || e);
     p.aiItem.tri = { hira:"（AIの応答が取得できませんでした）", romaji:"", id:`エラー: ${msg}` };
@@ -2116,11 +2154,13 @@ async function send(){
   try{
     const out = await postChat({ text, meta });
     await applyChatResult(out, { text, scene, persona, category, level, userItem, aiItem, meta, costUnits });
+    try{ clearForceNextUnits(); }catch(e){}
 
     lastFailedSend = null;
     updateRetryButton();
 
     $("userInput").value = "";
+    try{ updateSendButtonCost(); }catch(e){}
     setStatus("完了");
     $("okBox").style.display="block";
     $("okBox").textContent = "OK。続けて入力できます。";
@@ -2337,6 +2377,7 @@ async function init(){
         const target = $("personaSel")?.value || "nurse";
         const sbarTxt = buildSbarText(target);
         $("userInput").value = sbarTxt;
+        setForceNextUnits(LONG_UNIT_COST);
         // help user: set category to "call" when available
         try{ const cats = EX.scenes?.["emergency"] || []; if (cats.some(c=>c.key==="call")) $("catSel").value = "call"; }catch(e){}
         showLocalMsg("sbarLocalMsg", "SBAR文を入力欄に入れました。下の「送信」で練習できます。", false);
@@ -2361,6 +2402,7 @@ async function init(){
         const input = $("userInput");
         if (input){
           input.value = txt;
+          setForceNextUnits(LONG_UNIT_COST);
           try{ input.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){}
           input.focus();
         }
@@ -2394,6 +2436,7 @@ async function init(){
     const input = $("userInput");
     if (input){
       input.value = txt;
+          setForceNextUnits(LONG_UNIT_COST);
       input.focus();
       // 入力欄が画面外になりやすいので、見える位置に移動
       try{ input.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){}
@@ -2433,6 +2476,11 @@ $("btnClear").addEventListener("click", ()=>{
     $("userInput").addEventListener("keydown", (e)=>{
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") send();
     });
+    $("userInput").addEventListener("input", ()=>{
+      try{ if (FORCE_NEXT_UNITS && !$("userInput").value.trim()) clearForceNextUnits(); }catch(e){}
+      try{ updateSendButtonCost(); }catch(e){}
+    });
+    try{ updateSendButtonCost(); }catch(e){}
     $("btnPay").addEventListener("click", startCheckout);
     $("btnCloseLock").addEventListener("click", ()=>{ $("lock").style.display="none"; });
     $("btnUnlock").addEventListener("click", unlockByCode);
