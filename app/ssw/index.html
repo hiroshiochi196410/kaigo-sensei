@@ -90,6 +90,11 @@
 /* small UX helpers */
 .flashFocus{ outline:2px solid #111827; box-shadow: 0 0 0 3px rgba(17,24,39,.12); }
 
+/* hint text (JP+ID) */
+.hint{ font-size:12px; color:var(--muted); margin:-2px 0 6px; line-height:1.4; }
+.hint .id{ display:block; opacity:.95; }
+textarea.miniArea{ min-height:46px; padding:10px; resize:vertical; }
+
 </style>
 </head>
 <body>
@@ -136,7 +141,8 @@
   <div class="row" style="margin-top:10px;">
     <div>
       <label>じょうきょう（任意）</label>
-      <input type="text" id="fallSituation" placeholder="例：あるいて いる とちゅう / いどうちゅう / りしょうちゅう" />
+      <div class="hint">例：あるいて いる とちゅう / いどうちゅう / りしょうちゅう<span class="id">Contoh: saat berjalan / pindah posisi / bangun dari tempat tidur</span></div>
+      <textarea id="fallSituation" class="miniArea" placeholder="ここに入力 / Isi di sini"></textarea>
     </div>
   </div>
 
@@ -209,14 +215,16 @@
   <div class="row" style="margin-top:10px;">
     <div>
       <label>いま した たいおう（任意）</label>
-      <input type="text" id="fallAction" placeholder="例：あんせい、かんごし に れんらく、きず を ひやす" />
+      <div class="hint">例：あんせい、かんごし に れんらく、きず を ひやす<span class="id">Contoh: istirahat, hubungi perawat, kompres luka</span></div>
+      <textarea id="fallAction" class="miniArea" placeholder="ここに入力 / Isi di sini"></textarea>
     </div>
   </div>
 
   <div class="row" style="margin-top:10px;">
     <div>
       <label>よぼう（任意）</label>
-      <input type="text" id="fallPrevent" placeholder="例：みまもり きょうか、くつ の かくにん、へや の せいり" />
+      <div class="hint">例：みまもり きょうか、くつ の かくにん、へや の せいり<span class="id">Contoh: tingkatkan pengawasan, cek alas kaki, rapikan kamar</span></div>
+      <textarea id="fallPrevent" class="miniArea" placeholder="ここに入力 / Isi di sini"></textarea>
     </div>
   </div>
 
@@ -310,14 +318,16 @@
   <div class="row" style="margin-top:10px;">
     <div>
       <label>はいけい（任意）</label>
-      <input type="text" id="sbarBg" placeholder="例：こうけつあつ、とうにょうびょう / いつもは おだやか" />
+      <div class="hint">例：こうけつあつ、とうにょうびょう / いつもは おだやか<span class="id">Contoh: hipertensi, diabetes / biasanya tenang</span></div>
+      <textarea id="sbarBg" class="miniArea" placeholder="ここに入力 / Isi di sini"></textarea>
     </div>
   </div>
 
   <div class="row" style="margin-top:10px;">
     <div>
       <label>いま した たいおう（任意）</label>
-      <input type="text" id="sbarAction" placeholder="例：あんせい、たいおんそくてい、さんそ じゅんび" />
+      <div class="hint">例：あんせい、たいおんそくてい、さんそ じゅんび<span class="id">Contoh: istirahat, cek suhu, siapkan oksigen</span></div>
+      <textarea id="sbarAction" class="miniArea" placeholder="ここに入力 / Isi di sini"></textarea>
     </div>
   </div>
 

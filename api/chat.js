@@ -85,8 +85,10 @@ export default async function handler(req, res) {
         provide_hints: false,
         feedback_style: "professional",
         feedback_length: "detailed",
-        include_romaji: false,
-        include_indonesian: false,
+        // Phase2方針: 全プランで「日本語/ローマ字/インドネシア語」の3段表示を維持
+        // （学習アプリの核。省略するとUI/学習体験が崩れる）
+        include_romaji: true,
+        include_indonesian: true,
         scenarios: ["all_basic", "family_consultation", "team_coordination", "incident_reporting"],
         save_examples: true,
         save_limit: 200,
@@ -131,8 +133,9 @@ export default async function handler(req, res) {
         provide_hints: false,
         feedback_style: "expert",
         feedback_length: "comprehensive",
-        include_romaji: false,
-        include_indonesian: false,
+        // Phase2方針: 全プランで3段表示
+        include_romaji: true,
+        include_indonesian: true,
         scenarios: ["all", "medical_coordination", "advanced_family", "leadership", "training"],
         save_examples: true,
         save_limit: 999999,
