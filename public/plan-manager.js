@@ -1,39 +1,58 @@
-// plan-manager.js - 4タイプのプラン管理と使用回数制限
+// plan-manager.js - 4タイプのプラン管理（ユニット制）と利用制限
 
 const PlanManager = (() => {
-  // ========== プラン設定 ==========
-  const PLAN_LIMITS = {
-    trainee_lite: {
-      name: 'trainee ライト',
-      daily_limit: 30,
-      price: 980,
-      features: ['30回/日', 'N5語彙', '基礎3シナリオ', 'ローマ字+ID語']
-    },
-    trainee_standard: {
-      name: 'trainee スタンダード',
-      daily_limit: 70,
-      price: 1680,
-      features: ['70回/日', 'N5-N4語彙', '全5シナリオ', '例文保存50件', '簡易レポート']
-    },
-    ssw_standard: {
-      name: 'ssw スタンダード',
-      daily_limit: 100,
-      price: 2680,
-      features: ['100回/日', 'N4-N3語彙+敬語', '高度8シナリオ', '例文保存200件', '詳細レポート']
-    },
-    ssw_pro: {
-      name: 'ssw プロ',
-      daily_limit: 150,
-      price: 4980,
-      features: ['150回/日', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
-    },
-    ssw_professional: {
-      name: 'ssw プロフェッショナル',
-      daily_limit: 150,
-      price: 4980,
-      features: ['150回/日', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
-    }
+  // ========== 画面（variant）判定 ==========
+  const detectVariantFromPath = () => {
+    try {
+      const p = (location && location.pathname) ? location.pathname : '';
+      if (p.includes('/app/ssw')) return 'ssw';
+      if (p.includes('/app/trainee')) return 'trainee';
+    } catch (e) {}
+    return 'app';
   };
+
+  // variant別にキーを分けて、SSW画面にtraineeのプランが混ざる事故を防ぐ
+  const VARIANT = detectVariantFromPath();
+
+  const keyOf = (baseKey) => `ks_${VARIANT}_${baseKey}`;
+
+  // 1回=1unit / 長文=5unit（利益率設計に基づく）
+  const LONG_UNITS = 5;
+
+  // ========== プラン設定 ==========
+// 利益率70%を「満額使用でも」守るためのユニット上限（長文=5unit）
+const PLAN_LIMITS = {
+  trainee_lite: {
+    name: 'trainee ライト',
+    daily_units: 17,
+    price: 980,
+    features: ['17unit/日（長文は5unit）', 'N5語彙', '基礎3シナリオ', 'ローマ字+ID語']
+  },
+  trainee_standard: {
+    name: 'trainee スタンダード',
+    daily_units: 30,
+    price: 1680,
+    features: ['30unit/日（長文は5unit）', 'N5-N4語彙', '全5シナリオ', '例文保存50件', '簡易レポート']
+  },
+  ssw_standard: {
+    name: 'ssw スタンダード',
+    daily_units: 48,
+    price: 2680,
+    features: ['48unit/日（長文は5unit）', 'N4-N3語彙+敬語', '高度8シナリオ', '例文保存200件', '詳細レポート']
+  },
+  ssw_pro: {
+    name: 'ssw プロ',
+    daily_units: 89,
+    price: 4980,
+    features: ['89unit/日（長文は5unit）', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
+  },
+  ssw_professional: {
+    name: 'ssw プロフェッショナル',
+    daily_units: 89,
+    price: 4980,
+    features: ['89unit/日（長文は5unit）', 'N3-N2語彙+謙譲語', '全12シナリオ', '例文保存無制限', 'AI分析', '優先サポート']
+  }
+};
 
   // ========== ローカルストレージ管理 ==========
   const storage = {
@@ -73,12 +92,28 @@ const PlanManager = (() => {
 
   // ========== プラン情報の取得 ==========
   const getCurrentPlan = () => {
-    return storage.get('selected_plan', 'trainee_lite');
+    const defaultPlan = (VARIANT === 'ssw') ? 'ssw_standard' : 'trainee_lite';
+    const k = keyOf('selected_plan');
+    const v = storage.get(k, null);
+    if (v && PLAN_LIMITS[v]) return v;
+
+    // 旧キー救済：同variantの値だけ引き継ぐ（混入は無視）
+    const legacy = storage.get('selected_plan', null);
+    if (legacy && PLAN_LIMITS[legacy]) {
+      const ok = (VARIANT === 'ssw') ? String(legacy).startsWith('ssw_') : String(legacy).startsWith('trainee_');
+      if (ok) {
+        storage.set(k, legacy);
+        return legacy;
+      }
+    }
+    return defaultPlan;
   };
 
   const setCurrentPlan = (planKey) => {
-    const key = (planKey && PLAN_LIMITS[planKey]) ? planKey : 'trainee_lite';
-    storage.set('selected_plan', key);
+    const fallback = (VARIANT === 'ssw') ? 'ssw_standard' : 'trainee_lite';
+    const key = (planKey && PLAN_LIMITS[planKey]) ? planKey : fallback;
+    // variant別に保存
+    storage.set(keyOf('selected_plan'), key);
 
     // 表示更新
     try { updateUsageDisplay(); } catch (e) {}
@@ -95,114 +130,118 @@ const PlanManager = (() => {
 
   const getPlanConfig = (plan = null) => {
     const currentPlan = plan || getCurrentPlan();
-    return PLAN_LIMITS[currentPlan] || PLAN_LIMITS.trainee_lite;
+    const fallback = (VARIANT === 'ssw') ? PLAN_LIMITS.ssw_standard : PLAN_LIMITS.trainee_lite;
+    return PLAN_LIMITS[currentPlan] || fallback;
   };
 
-  // ========== 使用回数管理 ==========
+
+const getDailyLimitUnits = (config) => {
+  // 後方互換：旧daily_limitが残っていても拾えるようにする
+  const v = (config && (config.daily_units ?? config.daily_limit));
+  return (typeof v === 'number' && isFinite(v)) ? v : 0;
+};
+
+// ========== 使用状況（ユニット）管理 ==========
+
   const getTodayKey = () => {
-    return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  };
+  // ローカル日付（日本時間）で日次リセットする（UTCずれ防止）
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`; // YYYY-MM-DD
+};
 
   const getUsageData = (plan = null) => {
-    const currentPlan = plan || getCurrentPlan();
-    const today = getTodayKey();
-    const key = `usage_${currentPlan}_${today}`;
-    const usage = storage.get(key, { count: 0, date: today });
-    
-    // 日付が変わったらリセット
-    if (usage.date !== today) {
-      usage.count = 0;
-      usage.date = today;
-      storage.set(key, usage);
-    }
-    
-    return usage;
-  };
+  const currentPlan = plan || getCurrentPlan();
+  const today = getTodayKey();
+  const key = keyOf(`usage_${currentPlan}_${today}`);
+  const usage = storage.get(key, { units: 0, date: today });
 
-  const checkDailyLimit = (plan = null) => {
-    const currentPlan = plan || getCurrentPlan();
-    const config = getPlanConfig(currentPlan);
-    const usage = getUsageData(currentPlan);
-    
-    // 無制限プランの場合
-    if (config.daily_limit >= 999999) {
-      return { allowed: true, remaining: Infinity, used: usage.count, limit: config.daily_limit };
-    }
-    
-    // 制限に達しているか確認
-    const allowed = usage.count < config.daily_limit;
-    const remaining = Math.max(0, config.daily_limit - usage.count);
-    
-    return {
-      allowed,
-      remaining,
-      used: usage.count,
-      limit: config.daily_limit
-    };
-  };
-
-  const incrementUsage = (plan = null) => {
-    const currentPlan = plan || getCurrentPlan();
-    const today = getTodayKey();
-    const key = `usage_${currentPlan}_${today}`;
-    const usage = storage.get(key, { count: 0, date: today });
-    
-    usage.count += 1;
+  // 日付が変わったらリセット
+  if (usage.date !== today) {
+    usage.units = 0;
     usage.date = today;
     storage.set(key, usage);
-    
-    return usage.count;
+  }
+
+  // 旧形式救済（count → units）
+  if (typeof usage.count === 'number' && typeof usage.units !== 'number') {
+    usage.units = usage.count;
+    delete usage.count;
+    storage.set(key, usage);
+  }
+
+  return usage;
+};
+
+  const checkDailyLimit = (requiredUnits = 1, plan = null) => {
+  const currentPlan = plan || getCurrentPlan();
+  const config = getPlanConfig(currentPlan);
+  const usage = getUsageData(currentPlan);
+
+  const limitUnits = getDailyLimitUnits(config);
+
+  // 無制限プランの場合
+  if (limitUnits >= 999999) {
+    return { allowed: true, remaining: Infinity, used: usage.units, limit: limitUnits, required: requiredUnits, unit: 'unit' };
+  }
+
+  const req = Math.max(1, Number(requiredUnits) || 1);
+
+  // 制限に達しているか確認（「今回の消費」も考慮）
+  const allowed = (usage.units + req) <= limitUnits;
+  const remaining = Math.max(0, limitUnits - usage.units);
+
+  return {
+    allowed,
+    remaining,         // 現在の残り（今回の消費前）
+    used: usage.units,
+    limit: limitUnits,
+    required: req,
+    unit: 'unit'
   };
+};
+
+  const incrementUsage = (consumedUnits = 1, plan = null) => {
+  const currentPlan = plan || getCurrentPlan();
+  const today = getTodayKey();
+  const key = keyOf(`usage_${currentPlan}_${today}`);
+  const usage = storage.get(key, { units: 0, date: today });
+
+  const add = Math.max(1, Number(consumedUnits) || 1);
+  usage.units = (Number(usage.units) || 0) + add;
+  usage.date = today;
+  storage.set(key, usage);
+
+  return usage.units;
+};
 
   // ========== UI表示更新 ==========
   const updateUsageDisplay = (elementId = 'usageInfo') => {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-    
-    const status = checkDailyLimit();
-    const config = getPlanConfig();
+  const element = document.getElementById(elementId);
+  if (!element) return;
 
-    // 表示テキスト（色はテキスト部分だけに適用）
-    let statusText = '';
-    let statusColor = '#10b981'; // 緑
+  const status = checkDailyLimit(1);
+  const config = getPlanConfig();
+  const limitUnits = getDailyLimitUnits(config);
 
-    if (status.remaining === Infinity) {
-      statusText = `今日の利用: ${status.used}回（無制限）`;
-      statusColor = '#10b981';
+  if (status.remaining === Infinity) {
+    element.textContent = `今日の利用: ${status.used} unit（無制限）`;
+    element.style.color = '#10b981';
+  } else {
+    element.textContent = `今日の残り: ${status.remaining}/${limitUnits} unit（長文は${LONG_UNITS}unit）`;
+
+    // 残りユニットに応じて色を変更
+    if (status.remaining === 0) {
+      element.style.color = '#ef4444'; // 赤
+    } else if (status.remaining <= LONG_UNITS) {
+      element.style.color = '#f59e0b'; // 黄
     } else {
-      statusText = `今日の残り: ${status.remaining}/${status.limit}回`;
-
-      if (status.remaining === 0) {
-        statusColor = '#ef4444'; // 赤
-      } else if (status.remaining <= 5) {
-        statusColor = '#f59e0b'; // 黄
-      } else {
-        statusColor = '#10b981'; // 緑
-      }
+      element.style.color = '#10b981'; // 緑
     }
-
-    // 右上（利用状況の横）に「解約/プラン管理」ボタンを表示
-    // ※二重生成を防ぐため、常に同じ構造で上書きしてからイベントを付与
-    const btnId = `managePlanBtn_${elementId}`;
-    element.innerHTML = `
-      <span id="${elementId}_text" style="color:${statusColor}; font-weight:600;">${statusText}</span>
-      <button id="${btnId}" type="button"
-        style="margin-left:10px; padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; cursor:pointer; font-size:12px;">
-        解約/プラン管理
-      </button>
-    `;
-
-    const btn = document.getElementById(btnId);
-    if (btn) {
-      btn.onclick = async () => {
-        try {
-          await openCustomerPortal();
-        } catch (e) {
-          alert(e?.message || 'Customer Portal を開けませんでした。');
-        }
-      };
-    }
-  };
+  }
+};
 
   // ========== アップグレードモーダル ==========
   const showUpgradeModal = (used, limit, currentPlan) => {
@@ -228,10 +267,10 @@ const PlanManager = (() => {
       <div style="background:#fff; border-radius:16px; padding:32px; max-width:480px; margin:20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
         <h2 style="margin:0 0 16px; font-size:24px; color:#111;">今日の利用上限に達しました</h2>
         <p style="margin:0 0 8px; font-size:16px; color:#666;">
-          今日は<strong>${used}回</strong>利用しました（上限: ${limit}回/日）
+          今日は<strong>${used} unit</strong>利用しました（上限: ${limit} unit/日）
         </p>
         <p style="margin:0 0 24px; font-size:14px; color:#888;">
-          明日0時にリセットされます。
+          明日0時（日本時間）にリセットされます。
         </p>
         
         ${nextPlan ? `
@@ -295,22 +334,22 @@ const PlanManager = (() => {
   };
 
   // ========== 使用前のチェック ==========
-  const canUse = (showModal = true) => {
-    const status = checkDailyLimit();
-    
-    if (!status.allowed && showModal) {
-      showUpgradeModal(status.used, status.limit, getCurrentPlan());
-    }
-    
-    return status.allowed;
-  };
+  const canUse = (requiredUnits = 1, showModal = true) => {
+  const status = checkDailyLimit(requiredUnits);
+
+  if (!status.allowed && showModal) {
+    showUpgradeModal(status.used, status.limit, getCurrentPlan());
+  }
+
+  return status.allowed;
+};
 
   // ========== 使用を記録 ==========
-  const recordUsage = () => {
-    const count = incrementUsage();
-    updateUsageDisplay();
-    return count;
-  };
+  const recordUsage = (consumedUnits = 1) => {
+  const units = incrementUsage(consumedUnits);
+  updateUsageDisplay();
+  return units;
+};
 
   // ========== シナリオアクセス制限 ==========
   const canAccessScenario = (scenarioId) => {
@@ -340,7 +379,7 @@ const PlanManager = (() => {
     
     if (!config.save_examples) return { allowed: false, reason: 'このプランでは例文保存はご利用いただけません' };
     
-    const saved = storage.get('saved_examples', []);
+    const saved = storage.get(keyOf('saved_examples'), []);
     
     if (config.save_limit >= 999999) return { allowed: true, used: saved.length, limit: Infinity };
     
@@ -400,12 +439,16 @@ if (typeof window !== 'undefined') {
 
   async function openCustomerPortal() {
     try {
-      // variant（trainee/ssw）ごとに保持している subscription_id を優先
-      const variant = (location.pathname.includes('/app/ssw') || location.pathname.includes('/ssw')) ? 'ssw' : 'trainee';
-      const subscriptionId =
-        localStorage.getItem(`stripe_sub_id_${variant}`) ||
-        localStorage.getItem('subscription_id') ||
-        localStorage.getItem('stripe_sub_id');
+      // variant別に保存している場合を優先（旧キーも救済）
+      const v = (function(){
+        try {
+          const p = (location && location.pathname) ? location.pathname : '';
+          if (p.includes('/app/ssw')) return 'ssw';
+          if (p.includes('/app/trainee')) return 'trainee';
+        } catch (e) {}
+        return 'app';
+      })();
+      const subscriptionId = localStorage.getItem(`ks_${v}_subscription_id`) || localStorage.getItem('subscription_id');
       if (!subscriptionId) {
         alert('サブスクリプション情報が見つかりません。購入後に再読み込みしてください。');
         return;

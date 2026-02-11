@@ -3,10 +3,10 @@ function mapPriceToPlan(priceId, priceMeta) {
   const metaLimit = priceMeta?.daily_limit || null;
 
   const PLAN_BY_ID = {
-    [process.env.STRIPE_PRICE_ID_TRAINEE_LITE]: { plan_key: "trainee_lite", daily_limit: 30 },
-    [process.env.STRIPE_PRICE_ID_TRAINEE_STANDARD]: { plan_key: "trainee_standard", daily_limit: 70 },
-    [process.env.STRIPE_PRICE_ID_SSW_STANDARD]: { plan_key: "ssw_standard", daily_limit: 100 },
-    [process.env.STRIPE_PRICE_ID_SSW_PRO]: { plan_key: "ssw_pro", daily_limit: 150 },
+    [process.env.STRIPE_PRICE_ID_TRAINEE_LITE]: { plan_key: "trainee_lite", daily_limit: 17 },
+    [process.env.STRIPE_PRICE_ID_TRAINEE_STANDARD]: { plan_key: "trainee_standard", daily_limit: 30 },
+    [process.env.STRIPE_PRICE_ID_SSW_STANDARD]: { plan_key: "ssw_standard", daily_limit: 48 },
+    [process.env.STRIPE_PRICE_ID_SSW_PRO]: { plan_key: "ssw_pro", daily_limit: 89 },
   };
 
   if (metaPlan) {

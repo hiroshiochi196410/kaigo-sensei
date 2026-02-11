@@ -1123,6 +1123,16 @@ let CFG = null;
 let EX = null;
 let VARIANT = detectVariantFromPath();
 
+// ===== unit costing =====
+const LONG_UNIT_COST = 5;      // 長文は5unit
+const LONG_TEXT_THRESHOLD = 120; // これ以上（目安）は長文扱い
+function estimateCostUnits(text){
+  const s = String(text || '');
+  const compactLen = s.replace(/\s+/g,'').length;
+  const isLong = (compactLen >= LONG_TEXT_THRESHOLD) || s.includes('\n');
+  return isLong ? LONG_UNIT_COST : 1;
+}
+
 let SETTINGS = Object.assign({}, DEFAULT_SETTINGS, ls.get("aiga_settings_"+VARIANT, {}));
 let STATS = ls.get("aiga_stats_"+VARIANT, { scenes:{}, categories:{} });
 
@@ -1911,11 +1921,12 @@ async function copyDebugState(){
 
 async function applyChatResult(out, payload){
   const { text, scene, persona, category, level, userItem, aiItem } = payload;
+  const costUnits = payload.costUnits || payload?.meta?.cost_units || 1;
 
-  // ★ プラン管理：使用回数をカウント（成功時のみ）
+  // ★ プラン管理：ユニットを消費（成功時のみ）
   // 無料体験中（unlocked=false）はトライアル回数だけを減らす。
   if (unlocked && typeof PlanManager !== 'undefined') {
-    try { PlanManager.recordUsage(); } catch (_) {}
+    try { PlanManager.recordUsage(costUnits); } catch (_) {}
   }
 
   // trial count（成功時のみ）
@@ -1987,6 +1998,7 @@ async function retryLastSend(){
   if (!lastFailedSend || isSending) return;
 
   const p = lastFailedSend;
+  if (!p.costUnits) { try { p.costUnits = estimateCostUnits(p.text); } catch(_) { p.costUnits = 1; } }
 
   // refresh ctx
   try{ p.meta.ctx = getCtxFromHistory(); }catch(_){ }
@@ -2049,18 +2061,21 @@ async function send(){
     return;
   }
 
-  // ★ プラン管理：使用回数チェック（解除済みのみ）
+
+  const text = $("userInput").value.trim();
+  if (!text){ alert("入力が空です"); return; }
+
+  const costUnits = estimateCostUnits(text);
+  // ★ プラン管理：ユニット上限チェック（解除済みのみ / 長文は5unit）
   if (unlocked && typeof PlanManager !== 'undefined') {
-    if (!PlanManager.canUse()) {
+    const st = PlanManager.checkDailyLimit(costUnits);
+    if (!st.allowed) {
       $("errBox").style.display="block";
-      $("errBox").textContent = "本日の利用回数が上限に達しています。プランの購入/変更で解除できます。";
+      $("errBox").textContent = `本日の上限に達しています（残り ${st.remaining}/${st.limit} unit）。この送信は ${st.required} unit です。`;
       setStatus("制限");
       return;
     }
   }
-
-  const text = $("userInput").value.trim();
-  if (!text){ alert("入力が空です"); return; }
 
   const scene = $("sceneSel").value;
   const persona = $("personaSel").value;
@@ -2074,7 +2089,7 @@ async function send(){
   const currentPlan = (unlocked && typeof PlanManager !== 'undefined') ? PlanManager.getCurrentPlan() : defaultPlan;
 
   // 無料体験中は plan を送らず、variant/selection で制御する（混入防止）
-  const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, plan: (unlocked ? currentPlan : null), ctx: getCtxFromHistory() };
+  const meta = { stage: 3, scene, persona, category, level, user_lang, variant: VARIANT, plan: (unlocked ? currentPlan : null), cost_units: costUnits, ctx: getCtxFromHistory() };
 
   // ★ 送信直後に履歴へ反映（APIエラーでも会話が再現できる）
   const userItem = { role:"user", tri: buildUserFallbackTri(text, user_lang), meta:{ scene, persona, category, level } };
@@ -2091,7 +2106,7 @@ async function send(){
 
   try{
     const out = await postChat({ text, meta });
-    await applyChatResult(out, { text, scene, persona, category, level, userItem, aiItem, meta });
+    await applyChatResult(out, { text, scene, persona, category, level, userItem, aiItem, meta, costUnits });
 
     lastFailedSend = null;
     updateRetryButton();
@@ -2112,7 +2127,7 @@ async function send(){
     $("errBox").textContent = msg;
     setStatus("エラー");
 
-    lastFailedSend = { text, meta, scene, persona, category, level, userItem, aiItem, error: msg };
+    lastFailedSend = { text, meta, scene, persona, category, level, userItem, aiItem, costUnits, error: msg };
     updateRetryButton();
   }finally{
     isSending = false;

@@ -20,12 +20,16 @@ export default async function handler(req, res) {
     const plan = meta?.plan || "trainee_lite"; // NEW: プラン情報
     const ctx = Array.isArray(meta?.ctx) ? meta.ctx.slice(-6) : [];
 
+    // unit costing: 1unit=通常 / 5unit=長文
+    const costUnits = Number(meta?.cost_units || 1);
+    const isLong = costUnits >= 5;
+
     // ========== 4-TIER PLAN SETTINGS ==========
     
     const PLAN_SETTINGS = {
       trainee_lite: {
         plan_name: "trainee ライト",
-        daily_limit: 30,
+        daily_limit: 17,
         vocabulary_level: "N5-only",
         vocabulary_count: 500,
         max_sentence_words: 10,
@@ -47,7 +51,7 @@ export default async function handler(req, res) {
       },
       trainee_standard: {
         plan_name: "trainee スタンダード",
-        daily_limit: 70,
+        daily_limit: 30,
         vocabulary_level: "N5-N4",
         vocabulary_count: 1500,
         max_sentence_words: 15,
@@ -70,7 +74,7 @@ export default async function handler(req, res) {
       },
       ssw_standard: {
         plan_name: "ssw スタンダード",
-        daily_limit: 100,
+        daily_limit: 48,
         vocabulary_level: "N4-N3",
         vocabulary_count: 3000,
         max_sentence_words: 25,
@@ -91,9 +95,32 @@ export default async function handler(req, res) {
         support_level: "email_24h",
         audio_quality: "high"
       },
+      ssw_pro: {
+        plan_name: "ssw プロ",
+        daily_limit: 89,
+        vocabulary_level: "N3-N2",
+        vocabulary_count: 6000,
+        max_sentence_words: 35,
+        max_sentence_chars: 180,
+        max_tokens: 1000,
+        use_simple_grammar: false,
+        grammar_types: ["keigo_advanced", "honorific", "humble", "complex_conditionals"],
+        provide_hints: false,
+        feedback_style: "expert",
+        feedback_length: "comprehensive",
+        include_romaji: true,
+        include_indonesian: true,
+        scenarios: ["all", "medical_coordination", "advanced_family", "leadership", "training"],
+        save_examples: true,
+        save_limit: 999999,
+        learning_analysis: "ai_powered",
+        customization: "full",
+        support_level: "priority_12h",
+        audio_quality: "premium"
+      },
       ssw_professional: {
         plan_name: "ssw プロフェッショナル",
-        daily_limit: 999999,
+        daily_limit: 89,
         vocabulary_level: "N3-N2",
         vocabulary_count: 6000,
         max_sentence_words: 35,
@@ -584,7 +611,7 @@ FEEDBACK EXAMPLE:
 ◆ れんしゅう かだい：
 つぎかいは、より ぐたいてきな じかんや ほうほうを しめしてみましょう。"
 `;
-      } else if (plan === "ssw_professional") {
+      } else if (plan === "ssw_professional" || plan === "ssw_pro") {
         planPromptModifier = `
 ========== SSW PROFESSIONAL MODE (リーダー・管理職候補向け) ==========
 
@@ -710,7 +737,7 @@ CRITICAL LENGTH CONSTRAINTS:
 - If ${plan === 'trainee_lite'}, keep it 30-40 chars
 - If ${plan === 'trainee_standard'}, keep it 50-70 chars
 - If ${plan === 'ssw_standard'}, keep it 80-120 chars
-- If ${plan === 'ssw_professional'}, keep it 120-180 chars
+- If ${(plan === 'ssw_professional' || plan === 'ssw_pro')}, keep it 120-180 chars
 
 ROMAJI RULE:
 - Use Hepburn-style romaji
@@ -760,7 +787,7 @@ NOTES:
         system,
         user: JSON.stringify(userPayload, null, 2),
         temperature: 0.3,
-        maxTokens: Math.max(planConfig.max_tokens, 900),
+        maxTokens: (isLong ? Math.min(Math.max(planConfig.max_tokens, 600), 900) : Math.min(planConfig.max_tokens, 420)),
         responseSchema: AIGA_RESPONSE_SCHEMA
       });
 
@@ -812,7 +839,7 @@ RULES:
           system: sys2,
           user: JSON.stringify({ items: need }, null, 2),
           temperature: 0,
-          maxTokens: 900,
+          maxTokens: 350,
           responseSchema: null
         });
 
@@ -859,7 +886,7 @@ Return ONLY valid JSON.`;
           system: repairSystem,
           user: repairUser,
           temperature: 0.2,
-          maxTokens: Math.max(planConfig.max_tokens, 900),
+          maxTokens: (isLong ? Math.min(Math.max(planConfig.max_tokens, 600), 900) : Math.min(planConfig.max_tokens, 420)),
           responseSchema: AIGA_RESPONSE_SCHEMA
         });
 
@@ -880,7 +907,7 @@ Return ONLY valid JSON.`;
               system: `You convert Japanese text into romaji (Hepburn) and Indonesian (Bahasa Indonesia). Return ONLY JSON {"items":{...}} as in prior instructions. Never blank.`,
               user: JSON.stringify({ items: need2 }, null, 2),
               temperature: 0,
-              maxTokens: 900
+              maxTokens: 350
             });
             if (tr2.ok) {
               const items = tr2.json?.items || tr2.json || {};
