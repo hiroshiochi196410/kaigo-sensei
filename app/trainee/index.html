@@ -845,18 +845,27 @@ function playBlob(blob) {
 }
 
 // 既存UI互換：単発再生
+function sanitizeTtsText(t){
+  return String(t||"")
+    .replace(/[（(][^）)]*[）)]/g, "")
+    .replace(/\s{2,}/g, " " )
+    .trim();
+}
+
+
 async function speakOnce(text, speedLabel='ふつう') {
   try {
-    if (!text || !text.trim()) return;
+    const cleanText = sanitizeTtsText(text);
+    if (!cleanText) return;
     const rate = speedLabelToRate(speedLabel);
 
     // キャッシュキー（rateも含める）
-    const key = await sha256Hex('ja|' + rate + '|' + text.trim());
+    const key = await sha256Hex('ja|' + rate + '|' + cleanText);
     let cached = await idbGet(key);
 
     if (!cached) {
       __ttsAbort = new AbortController();
-      const blob = await fetchTtsMp3Blob(text.trim(), rate, __ttsAbort.signal);
+      const blob = await fetchTtsMp3Blob(cleanText, rate, __ttsAbort.signal);
       __ttsAbort = null;
       cached = blob;
       // 失敗しても再生は続ける
@@ -1171,14 +1180,14 @@ async function loadJson(path){
 }
 
 function setTrialInfo(){
-  const limit = CFG?.trial_limit ?? 3;
+  const limit = CFG?.trial_limit ?? 10;
   const remain = Math.max(0, limit - trialUsed);
-  $("trialInfo").textContent = unlocked ? "✅ 解除済み" : `お試し残り: ${remain}/${limit}`;
+  $("trialInfo").textContent = unlocked ? "✅ 解除済み" : `お試し残り: ${remain}/${limit} unit`;
 }
 
 function maybeLock(){
   if (unlocked) return false;
-  const limit = CFG?.trial_limit ?? 3;
+  const limit = CFG?.trial_limit ?? 10;
   if (trialUsed >= limit){
     $("lock").style.display = "flex";
     // デフォルトプラン（trainee=light / ssw=pro）
@@ -1912,7 +1921,7 @@ async function copyDebugState(){
   const category = $("catSel")?.value || "";
   const level = $("levelSel")?.value || "";
   // unlocked=false（無料体験中）は「トライアル回数」だけを状態として出す
-  const trialLimit = CFG?.trial_limit ?? 3;
+  const trialLimit = CFG?.trial_limit ?? 10;
   const plan = (unlocked && typeof PlanManager !== "undefined" && PlanManager.getCurrentPlan) ? PlanManager.getCurrentPlan() : null;
   const limit = unlocked
     ? ((typeof PlanManager !== "undefined" && PlanManager.checkDailyLimit) ? PlanManager.checkDailyLimit() : null)
@@ -1943,13 +1952,13 @@ async function applyChatResult(out, payload){
 
   // ★ プラン管理：ユニットを消費（成功時のみ）
   // 無料体験中（unlocked=false）はトライアル回数だけを減らす。
-  if (unlocked && typeof PlanManager !== 'undefined') {
+  if (typeof PlanManager !== 'undefined') {
     try { PlanManager.recordUsage(costUnits); } catch (_) {}
   }
 
   // trial count（成功時のみ）
   if (!unlocked){
-    trialUsed += 1;
+    trialUsed += costUnits;
     ls.set("aiga_trialUsed_"+VARIANT, trialUsed);
     setTrialInfo();
   }
@@ -2084,6 +2093,18 @@ async function send(){
   if (!text){ alert("入力が空です"); return; }
 
   const costUnits = estimateCostUnitsWithScene(text, $("sceneSel").value);
+
+  // ★ 無料お試し：長文は多く消費（例：5unit）
+  const trialLimit = (CFG && typeof CFG.trial_limit === 'number') ? CFG.trial_limit : 10;
+  if (!unlocked) {
+    if ((trialUsed + costUnits) > trialLimit) {
+      const remain = Math.max(0, trialLimit - trialUsed);
+      $("errBox").style.display="block";
+      $("errBox").textContent = "無料お試しの上限です（残り " + remain + "/" + trialLimit + " unit）。購入で解除できます。";
+      setStatus("制限");
+      return;
+    }
+  }
   // ★ プラン管理：ユニット上限チェック（解除済みのみ / 長文は5unit）
   if (unlocked && typeof PlanManager !== 'undefined') {
     const st = PlanManager.checkDailyLimit(costUnits);
