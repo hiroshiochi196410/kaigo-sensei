@@ -230,7 +230,7 @@ const getDailyLimitUnits = (config) => {
     element.textContent = `今日の利用: ${status.used} unit（無制限）`;
     element.style.color = '#10b981';
   } else {
-    element.textContent = `今日の残り: ${status.remaining}/${limitUnits} unit（長文は${LONG_UNITS}unit）`;
+    element.textContent = `今日の残り: ${status.remaining}/${limitUnits} unit（急変/転倒/申し送り=${LONG_UNITS}unit）`;
 
     // 残りユニットに応じて色を変更
     if (status.remaining === 0) {
