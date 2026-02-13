@@ -1,0 +1,53 @@
+{
+  "appName": "kaigo-sensei",
+  "dailyUnits": 120,
+  "longFormScenes": [
+    "急変",
+    "転倒",
+    "申し送り"
+  ],
+  "scenes": [
+    {
+      "id": "kinkyu",
+      "labelJP": "急変",
+      "labelID": "Kondisi darurat"
+    },
+    {
+      "id": "tentou",
+      "labelJP": "転倒",
+      "labelID": "Jatuh"
+    },
+    {
+      "id": "moushiokuri",
+      "labelJP": "申し送り",
+      "labelID": "Serah terima"
+    },
+    {
+      "id": "nyuyoku",
+      "labelJP": "入浴",
+      "labelID": "Mandi"
+    },
+    {
+      "id": "shokuji",
+      "labelJP": "食事",
+      "labelID": "Makan"
+    }
+  ],
+  "roles": [
+    {
+      "id": "senior",
+      "labelJP": "先輩",
+      "labelID": "Senior"
+    },
+    {
+      "id": "user",
+      "labelJP": "利用者",
+      "labelID": "Pengguna"
+    },
+    {
+      "id": "family",
+      "labelJP": "家族",
+      "labelID": "Keluarga"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "kinkyu": [
+    {
+      "jp": "顔色が悪いです。大丈夫ですか？",
+      "romaji": "kaoiro ga warui desu. daijoubu desu ka?",
+      "id": "Wajahnya pucat. Apakah baik-baik saja?"
+    },
+    {
+      "jp": "息が苦しそうです。看護師を呼びます。",
+      "romaji": "iki ga kurushisou desu. kangoshi wo yobimasu.",
+      "id": "Napasnya terlihat sulit. Saya panggil perawat."
+    }
+  ],
+  "tentou": [
+    {
+      "jp": "転びました。どこが痛いですか？",
+      "romaji": "korobimashita. doko ga itai desu ka?",
+      "id": "Anda jatuh. Bagian mana yang sakit?"
+    },
+    {
+      "jp": "動かないでください。確認します。",
+      "romaji": "ugokanaide kudasai. kakunin shimasu.",
+      "id": "Tolong jangan bergerak. Saya periksa dulu."
+    }
+  ],
+  "moushiokuri": [
+    {
+      "jp": "本日のバイタルは安定しています。",
+      "romaji": "honjitsu no baitaru wa antei shiteimasu.",
+      "id": "Tanda vital hari ini stabil."
+    },
+    {
+      "jp": "食事は半分ほど摂取しました。",
+      "romaji": "shokuji wa hanbun hodo sesshu shimashita.",
+      "id": "Makan sekitar setengah porsi."
+    }
+  ],
+  "nyuyoku": [
+    {
+      "jp": "お湯の温度は大丈夫ですか？",
+      "romaji": "oyu no ondo wa daijoubu desu ka?",
+      "id": "Apakah suhu airnya nyaman?"
+    },
+    {
+      "jp": "滑りやすいので気をつけてください。",
+      "romaji": "suberiyasui node kiwotsukete kudasai.",
+      "id": "Hati-hati, licin."
+    }
+  ],
+  "shokuji": [
+    {
+      "jp": "ゆっくり噛んで食べましょう。",
+      "romaji": "yukkuri kande tabemashou.",
+      "id": "Mari makan pelan-pelan dan mengunyah."
+    },
+    {
+      "jp": "飲み込みにくいですか？",
+      "romaji": "nomikomini-kui desu ka?",
+      "id": "Apakah sulit menelan?"
+    }
+  ]
+}
