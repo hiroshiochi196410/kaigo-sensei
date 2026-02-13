@@ -19,7 +19,36 @@
       <a href="./trainee/">trainee</a>
       <a href="./ssw/">ssw</a>
     </p>
+    <p id="auto" style="color:#374151;"></p>
     <p>README.md に、組み込み方法と前提APIを書いています。</p>
   </div>
+
+  <script>
+    // 「壊れた」に見えないように、最後に開いた入口へ自動遷移（なければ trainee）。
+    // 入口をクリックした時に localStorage を更新しておく。
+    (function () {
+      function setLast(v){ try{ localStorage.setItem('ks_last_entry', v); }catch(e){} }
+      document.querySelectorAll('a[href]').forEach(function(a){
+        a.addEventListener('click', function(){
+          if (a.getAttribute('href').indexOf('ssw') !== -1) setLast('ssw');
+          if (a.getAttribute('href').indexOf('trainee') !== -1) setLast('trainee');
+        });
+      });
+
+      var last = 'trainee';
+      try{ last = localStorage.getItem('ks_last_entry') || 'trainee'; }catch(e){}
+      var target = (last === 'ssw') ? './ssw/' : './trainee/';
+
+      var el = document.getElementById('auto');
+      if (el) el.textContent = '自動で ' + (last === 'ssw' ? 'ssw' : 'trainee') + ' を開きます…';
+
+      // 少し待ってから遷移（ブラウザの戻るで戻れなくならないように replace）
+      setTimeout(function(){
+        if (location.pathname.endsWith('/') || location.pathname.endsWith('index.html')) {
+          location.replace(target);
+        }
+      }, 700);
+    })();
+  </script>
 </body>
 </html>
