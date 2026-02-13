@@ -4,14 +4,14 @@
   "subtitle": "実践的な専門スキルを磨く",
   "target_audience": "特定技能（実務経験者）",
   "target_jlpt": "N4-N3",
-  
   "default_scene": "complaint",
   "default_persona": "family_anxious",
   "default_level": "intermediate",
-  
-  "available_levels": ["intermediate", "advanced"],
+  "available_levels": [
+    "intermediate",
+    "advanced"
+  ],
   "trial_limit": 10,
-  
   "features": {
     "show_furigana": false,
     "show_romaji": false,
@@ -23,7 +23,6 @@
     "case_studies": true,
     "professional_feedback": true
   },
-  
   "focus_areas": [
     "家族対応",
     "クレーム処理",
@@ -32,7 +31,6 @@
     "記録・報告",
     "リーダーシップ"
   ],
-  
   "learning_goals": [
     "複雑な状況に適切に対応できる",
     "家族との専門的なコミュニケーション",
@@ -40,7 +38,6 @@
     "正確な記録と報告",
     "後輩への指導"
   ],
-  
   "pricing": {
     "plans": [
       {
@@ -73,14 +70,11 @@
       }
     ]
   },
-  
   "stripe_price_ids": {
     "standard": "price_ssw_standard_2480",
     "professional": "price_ssw_professional_3980"
   },
-  
   "unlock_code": "SSW-2026",
-  
   "ui_settings": {
     "primary_language": "japanese",
     "secondary_language": null,
@@ -88,7 +82,6 @@
     "emphasize_professional_terms": true,
     "use_advanced_UI": true
   },
-  
   "exclusive_scenarios": [
     "emergency_response",
     "family_consultation",
@@ -96,5 +89,11 @@
     "incident_reporting",
     "care_planning",
     "mentoring"
-  ]
+  ],
+  "support": {
+    "email": "support@example.com",
+    "whatsapp": "",
+    "line": "",
+    "hours": "JST 9:00-18:00 / WIB 7:00-16:00"
+  }
 }

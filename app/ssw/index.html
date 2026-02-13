@@ -96,15 +96,39 @@
 .hint .id{ display:block; opacity:.95; }
 textarea.miniArea{ min-height:46px; padding:10px; resize:vertical; }
 
+
+/* ===== Support / Cancel / Help UI ===== */
+.topTools{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px;}
+#usageInfo{margin-top:0 !important; flex:1; min-width:240px;}
+.toolsRight{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+.toolsRight button{padding:8px 10px; border-radius:999px; font-size:13px;}
+
+.modal{position:fixed; inset:0; background:rgba(17,24,39,.55); display:none; align-items:center; justify-content:center; padding:16px; z-index:120;}
+.modal .panel{width:min(760px, 100%); background:#fff; border:1px solid var(--bd); border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.18);}
+.modal .head{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--bd); gap:10px;}
+.modal .body{padding:12px 14px; font-size:13px; color:var(--txt); line-height:1.6;}
+.modal .closeX{border:1px solid var(--bd); background:#fff; border-radius:999px; padding:6px 10px; cursor:pointer; font-size:12px; white-space:nowrap;}
+.modal h2{margin:0; font-size:16px;}
+.kv{display:grid; grid-template-columns: 140px 1fr; gap:6px 10px; margin:8px 0;}
+.kv .k{color:var(--muted); font-size:12px;}
+.kv .v{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px; word-break:break-all;}
+.noteBox{background:#f9fafb; border:1px solid var(--bd); border-radius:12px; padding:10px; margin-top:10px;}
+
 </style>
 </head>
 <body>
   <header>
     <h1>介護ロールプレイAI <span class="pill" id="variantPill">variant</span> <span class="pill" id="planInfo">プラン取得中...</span></h1>
     <div class="sub">日本語・ローマ字・インドネシア語の3段表示で、介護現場の会話練習。</div>
-    <!-- 使用回数表示 -->
-    <div id="usageInfo" style="margin-top:8px;padding:8px 12px;background:#f3f4f6;border-radius:8px;text-align:center;font-weight:600;font-size:13px;"></div>
-  </header>
+    <!-- 使用回数表示 + ヘルプ/解約 -->
+    <div class="topTools">
+      <div id="usageInfo" style="padding:8px 12px;background:#f3f4f6;border-radius:8px;text-align:center;font-weight:600;font-size:13px;"></div>
+      <div class="toolsRight">
+        <button id="btnPortal" class="primary" type="button">プラン/解約 / Kelola</button>
+        <button id="btnHelp" type="button">ヘルプ / Bantuan</button>
+      </div>
+    </div>
+</header>
 
   <main class="grid">
     <section class="card">
@@ -604,10 +628,117 @@ textarea.miniArea{ min-height:46px; padding:10px; resize:vertical; }
     </a>
   </div>
 
+
+  <!-- Help / Support Modal -->
+  <div class="modal" id="helpModal" aria-hidden="true">
+    <div class="panel">
+      <div class="head">
+        <h2>ヘルプ / Bantuan</h2>
+        <button class="closeX" id="helpClose" type="button">閉じる / Tutup</button>
+      </div>
+      <div class="body">
+        <div class="small" style="margin-bottom:8px;">困ったときはここから。/ Jika ada masalah, mulai dari sini.</div>
+
+        <div class="card" style="margin:0 0 10px;">
+          <div class="row" style="align-items:center;">
+            <div class="pill">解約・プラン管理 / Kelola paket</div>
+            <button class="primary" id="helpOpenPortal" type="button" style="margin-left:auto;">プラン/解約を開く / Buka</button>
+          </div>
+          <div class="small" style="margin-top:6px;">
+            Stripeの画面で「Cancel」を選ぶと、通常は請求期間の終了時に停止します。<br>
+            Di halaman Stripe, pilih “Cancel” untuk berhenti di akhir periode tagihan (umumnya).
+          </div>
+        </div>
+
+        <div class="card" style="margin:0 0 10px;">
+          <div class="pill">問い合わせ先 / Kontak</div>
+          <div class="kv">
+            <div class="k">Email</div><div class="v" id="supportEmail">support@example.com</div>
+            <div class="k">WhatsApp</div><div class="v" id="supportWhatsApp">（任意）+62...</div>
+            <div class="k">LINE</div><div class="v" id="supportLine">（任意）LINE公式…</div>
+            <div class="k">対応時間</div><div class="v" id="supportHours">—</div>
+          </div>
+          <div class="small">※運営者が設定できます（config.json の support）。</div>
+        </div>
+
+        <div class="card" style="margin:0 0 10px;">
+          <div class="pill">お問い合わせテンプレ / Template</div>
+          <div class="noteBox mono" id="supportTemplate">
+            App: <span id="helpAppTitle">kaigo-sensei</span><br>
+            URL: <span id="helpUrl"></span><br>
+            Time: <span id="helpTime"></span><br>
+            Plan: <span id="helpPlan"></span><br>
+            Issue: （ここに状況を書いてください / tulis masalahnya）
+          </div>
+          <div class="small">このままコピーして送ってOKです。/ Salin &amp; kirim.</div>
+        </div>
+
+        <div class="card" style="margin:0;">
+          <div class="pill">安心のために / Catatan</div>
+          <ul class="annoList">
+            <li>個人名・住所などの個人情報は入力しないでください。/ Jangan masukkan data pribadi.</li>
+            <li>学習ログはこの端末に保存されます（「リセット」で消去）。/ Log tersimpan di perangkat (hapus dengan “Reset”).</li>
+            <li>不具合のときは、画面のスクショと「URL」「時間」を送ると早いです。/ Kirim screenshot + URL + waktu.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
 /* ========= helpers ========= */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+
+/* ========= Support UI (cancel/help/contact) ========= */
+function setupSupportUi(){
+  // Buttons
+  const portalBtn = document.getElementById('btnPortal');
+  const helpBtn = document.getElementById('btnHelp');
+  const modal = document.getElementById('helpModal');
+  const closeBtn = document.getElementById('helpClose');
+  const portalBtn2 = document.getElementById('helpOpenPortal');
+
+  const open = ()=>{ if(modal) modal.style.display='flex'; };
+  const close = ()=>{ if(modal) modal.style.display='none'; };
+
+  const openPortal = ()=>{
+    if (typeof openCustomerPortal === 'function') return openCustomerPortal();
+    alert('プラン/解約を開けませんでした。管理者へお問い合わせください。\nTidak bisa membuka halaman paket. Silakan hubungi admin.');
+  };
+
+  if (portalBtn && !portalBtn.dataset.bound){ portalBtn.dataset.bound='1'; portalBtn.addEventListener('click', openPortal); }
+  if (portalBtn2 && !portalBtn2.dataset.bound){ portalBtn2.dataset.bound='1'; portalBtn2.addEventListener('click', openPortal); }
+  if (helpBtn && !helpBtn.dataset.bound){ helpBtn.dataset.bound='1'; helpBtn.addEventListener('click', open); }
+  if (closeBtn && !closeBtn.dataset.bound){ closeBtn.dataset.bound='1'; closeBtn.addEventListener('click', close); }
+
+  if (modal && !modal.dataset.bound){
+    modal.dataset.bound='1';
+    modal.addEventListener('click', (e)=>{ if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') close(); });
+  }
+
+  // Fill support info from config (optional)
+  try{
+    const support = (CFG && CFG.support) ? CFG.support : {};
+    const setText = (id, v, fb='—')=>{ const el=document.getElementById(id); if(!el) return; el.textContent = (v && String(v).trim()) ? String(v).trim() : fb; };
+    setText('supportEmail', support.email, 'support@example.com');
+    setText('supportWhatsApp', support.whatsapp, '（任意）+62...');
+    setText('supportLine', support.line, '（任意）LINE公式…');
+    setText('supportHours', support.hours, '—');
+
+    const appTitle = (CFG && CFG.title) ? CFG.title : 'kaigo-sensei';
+    setText('helpAppTitle', appTitle, 'kaigo-sensei');
+
+    const planText = (document.getElementById('planInfo')?.textContent || '').trim();
+    setText('helpPlan', planText || '—', '—');
+    setText('helpUrl', location.href, location.href);
+
+    const now = new Date();
+    setText('helpTime', now.toLocaleString('ja-JP'), now.toISOString());
+  }catch(e){ console.warn('setupSupportUi fill failed', e); }
+}
 
 // 医学・急変用語（表示は「よみ（漢字）」の併記）
 // - 学習者向けに、会話表示だけに併記を足す（履歴データ自体は変えない）
@@ -2309,6 +2440,7 @@ async function init(){
     // load json
     CFG = await loadJson("./config.json");
     EX = await loadJson("./examples.json");
+    try{ setupSupportUi(); }catch(e){ console.warn('setupSupportUi failed', e); }
 
     // allow override by path variant (so /app/ssw でもOK)
     if (VARIANT !== CFG.variant && (VARIANT === "ssw" || VARIANT === "trainee")){

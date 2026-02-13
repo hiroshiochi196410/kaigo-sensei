@@ -6,5 +6,11 @@
   "default_level": "beginner",
   "trial_limit": 3,
   "stripe_price_id": "PRICE_ID_TRAINEE_HERE",
-  "unlock_code": "TRN-2026"
+  "unlock_code": "TRN-2026",
+  "support": {
+    "email": "support@example.com",
+    "whatsapp": "",
+    "line": "",
+    "hours": "JST 9:00-18:00 / WIB 7:00-16:00"
+  }
 }
