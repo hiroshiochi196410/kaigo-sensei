@@ -1903,8 +1903,7 @@ function insertExample(){
 /* ========= render ========= */
 function needsClamp(raw){
   const s = String(raw || "");
-  return (s.length > 260) || (s.split("
-").length > 6);
+  return (s.length > 260) || (s.split("\n").length > 6);
 }
 
 function triHtml(tri, opts = {}){
